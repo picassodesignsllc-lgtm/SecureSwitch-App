@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#06111f" />
+    <title>SecureSwitch — Recovery Security SaaS MVP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="rail" aria-label="Desktop navigation">
+        <a class="brand" href="#landing" data-route="landing" aria-label="SecureSwitch home"><span class="logo-mark"><i></i></span><strong>SecureSwitch</strong></a>
+        <nav class="rail-nav" id="desktop-nav"></nav>
+        <div class="rail-card"><span>Security score</span><strong id="rail-score">86%</strong><small>31 of 36 controls protected</small></div>
+      </aside>
+
+      <main class="viewport">
+        <header class="topbar">
+          <a class="brand mobile-brand" href="#landing" data-route="landing"><span class="logo-mark"><i></i></span><strong>SecureSwitch</strong></a>
+          <div class="top-actions">
+            <button class="ghost-button" id="theme-toggle" type="button">Dark mode</button>
+            <button class="primary-button" data-route="login" type="button">Join Beta</button>
+          </div>
+        </header>
+
+        <section id="landing" class="page active"></section>
+        <section id="login" class="page"></section>
+        <section id="dashboard" class="page"></section>
+        <section id="vault" class="page"></section>
+        <section id="accounts" class="page"></section>
+        <section id="switch-mode" class="page"></section>
+        <section id="blackout-mode" class="page"></section>
+        <section id="emergency-kit" class="page"></section>
+        <section id="settings" class="page"></section>
+      </main>
+
+      <button class="fab" id="fab" type="button" aria-label="Add account">+</button>
+      <nav class="bottom-nav" id="mobile-nav" aria-label="Mobile navigation"></nav>
+    </div>
+
+    <dialog class="modal" id="account-modal">
+      <form method="dialog" class="modal-card" id="account-form">
+        <div class="panel-header"><div><p class="eyebrow">Account manager</p><h2 id="modal-title">Add account</h2></div><button class="icon-button" value="cancel" type="button" id="close-modal">×</button></div>
+        <input type="hidden" id="account-id" />
+        <label>Service name<input id="account-name" required /></label>
+        <label>Category<select id="account-category"><option>Email</option><option>Banking</option><option>Crypto</option><option>Social</option><option>Shopping</option><option>Business</option><option>Entertainment</option><option>Developer</option></select></label>
+        <label>Recovery phone<input id="account-phone" /></label>
+        <label>Recovery email<input id="account-email" type="email" /></label>
+        <label>Authenticator app<input id="account-auth" /></label>
+        <label>Security URL<input id="account-url" type="url" /></label>
+        <button class="primary-button full" type="submit">Save account</button>
+      </form>
+    </dialog>
+
+    <script src="src/app.js"></script>
+  </body>
+</html>
