@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SecureSwitch — Digital Identity Control Panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero-card" aria-labelledby="app-title">
+        <nav class="topbar" aria-label="Primary">
+          <a class="brand" href="#app-title" aria-label="SecureSwitch home">
+            <span class="logo-mark" aria-hidden="true"><span></span></span>
+            <span>SecureSwitch</span>
+          </a>
+          <button class="biometric-button" type="button">Face ID</button>
+        </nav>
+
+        <div class="hero-content">
+          <p class="eyebrow">Zero-knowledge recovery dashboard</p>
+          <h1 id="app-title">Flip the switch on your digital security.</h1>
+          <p class="hero-copy">Manage 2FA, recovery emails, phone numbers, backup codes, and authenticator details in one encrypted control panel.</p>
+          <div class="hero-actions">
+            <a class="primary-action" href="#switch-mode">Open Switch Mode</a>
+            <a class="secondary-action" href="#vault">View vault</a>
+          </div>
+        </div>
+
+        <div class="trust-strip" aria-label="Security architecture highlights">
+          <span>End-to-end encrypted</span>
+          <span>Biometric login</span>
+          <span>Multi-device sync</span>
+        </div>
+      </section>
+
+      <section class="dashboard-grid" aria-label="SecureSwitch dashboard">
+        <article class="panel status-panel">
+          <div class="panel-header">
+            <div>
+              <p class="section-kicker">Today</p>
+              <h2>Identity circuits</h2>
+            </div>
+            <span class="secure-pill">Vault locked</span>
+          </div>
+          <div class="progress-ring" aria-label="82 percent secured">
+            <span>82%</span>
+          </div>
+          <p class="muted">41 of 50 account recovery paths are verified and current.</p>
+          <div class="metrics">
+            <div><strong>18</strong><span>Phone-linked</span></div>
+            <div><strong>24</strong><span>Email-linked</span></div>
+            <div><strong>9</strong><span>Need review</span></div>
+          </div>
+        </article>
+
+        <article class="panel" id="vault">
+          <div class="panel-header">
+            <div>
+              <p class="section-kicker">Encrypted vault</p>
+              <h2>Stored recovery assets</h2>
+            </div>
+          </div>
+          <ul class="vault-list">
+            <li><span>Phone numbers</span><strong>3 saved</strong></li>
+            <li><span>Recovery emails</span><strong>5 saved</strong></li>
+            <li><span>Backup codes</span><strong>28 codes</strong></li>
+            <li><span>Authenticator info</span><strong>12 apps</strong></li>
+          </ul>
+        </article>
+
+        <article class="panel category-panel">
+          <div class="panel-header">
+            <div>
+              <p class="section-kicker">Breaker Box</p>
+              <h2>Account categories</h2>
+            </div>
+          </div>
+          <div class="category-grid" id="category-grid"></div>
+        </article>
+
+        <article class="panel lookup-panel">
+          <div class="panel-header">
+            <div>
+              <p class="section-kicker">Search by recovery path</p>
+              <h2>Linked accounts</h2>
+            </div>
+          </div>
+          <label for="recovery-filter">Phone or recovery email</label>
+          <select id="recovery-filter"></select>
+          <div class="linked-results" id="linked-results" aria-live="polite"></div>
+        </article>
+
+        <article class="panel switch-panel" id="switch-mode">
+          <div class="panel-header">
+            <div>
+              <p class="section-kicker">Switch Mode</p>
+              <h2>Change phone workflow</h2>
+            </div>
+            <button class="switch-toggle" id="switch-toggle" type="button" aria-pressed="false"><span></span></button>
+          </div>
+          <p class="muted">Generate an update checklist for every account still using your old phone number.</p>
+          <form class="phone-form" id="phone-form">
+            <label>
+              Old number
+              <input id="old-phone" type="tel" value="+1 (415) 555-0184" />
+            </label>
+            <label>
+              New number
+              <input id="new-phone" type="tel" value="+1 (628) 555-0149" />
+            </label>
+            <button class="primary-action full" type="submit">Generate checklist</button>
+          </form>
+          <div class="checklist-progress"><span id="checklist-count">0 of 0 complete</span><div><span id="checklist-bar"></span></div></div>
+          <ul class="checklist" id="checklist"></ul>
+        </article>
+
+        <article class="panel emergency-panel">
+          <div class="panel-header">
+            <div>
+              <p class="section-kicker">Blackout Mode</p>
+              <h2>Emergency recovery checklist</h2>
+            </div>
+          </div>
+          <ol class="emergency-list">
+            <li>Lock lost device and revoke active sessions.</li>
+            <li>Use trusted family recovery access if enabled.</li>
+            <li>Restore authenticator seeds from encrypted vault.</li>
+            <li>Rotate backup codes for banking, crypto, and email.</li>
+          </ol>
+        </article>
+      </section>
+    </main>
+    <script src="src/app.js"></script>
+  </body>
+</html>
