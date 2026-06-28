@@ -1,13 +1,15 @@
 const accounts = [
-  { name: 'Gmail', category: 'Email', phone: '+1 (415) 555-0184', email: 'recovery@secureswitch.test', url: 'https://myaccount.google.com/security', done: true },
-  { name: 'Chase', category: 'Banking', phone: '+1 (415) 555-0184', email: 'finance@secureswitch.test', url: 'https://www.chase.com/digital/resources/privacy-security/security-center', done: false },
-  { name: 'Coinbase', category: 'Crypto', phone: '+1 (415) 555-0184', email: 'crypto@secureswitch.test', url: 'https://www.coinbase.com/settings/security', done: false },
-  { name: 'Instagram', category: 'Social Media', phone: '+1 (415) 555-0184', email: 'social@secureswitch.test', url: 'https://www.instagram.com/accounts/privacy_and_security/', done: true },
-  { name: 'Amazon', category: 'Shopping', phone: '+1 (212) 555-0110', email: 'shopping@secureswitch.test', url: 'https://www.amazon.com/a/settings/approval', done: true },
-  { name: 'Slack', category: 'Business', phone: '+1 (628) 555-0149', email: 'work@secureswitch.test', url: 'https://slack.com/account/settings', done: false }
+  { name: 'Gmail', category: 'Email', phone: '+1 (415) 555-0184', email: 'recovery@secureswitch.test', url: 'https://myaccount.google.com/security', done: true, risk: 'Low' },
+  { name: 'Chase', category: 'Banking', phone: '+1 (415) 555-0184', email: 'finance@secureswitch.test', url: 'https://www.chase.com/digital/resources/privacy-security/security-center', done: false, risk: 'High' },
+  { name: 'Coinbase', category: 'Crypto', phone: '+1 (415) 555-0184', email: 'crypto@secureswitch.test', url: 'https://www.coinbase.com/settings/security', done: false, risk: 'High' },
+  { name: 'Instagram', category: 'Social Media', phone: '+1 (415) 555-0184', email: 'social@secureswitch.test', url: 'https://www.instagram.com/accounts/privacy_and_security/', done: true, risk: 'Medium' },
+  { name: 'Amazon', category: 'Shopping', phone: '+1 (212) 555-0110', email: 'shopping@secureswitch.test', url: 'https://www.amazon.com/a/settings/approval', done: true, risk: 'Low' },
+  { name: 'Slack', category: 'Business', phone: '+1 (628) 555-0149', email: 'work@secureswitch.test', url: 'https://slack.com/account/settings', done: false, risk: 'Medium' },
+  { name: 'Vanguard', category: 'Banking', phone: '+1 (212) 555-0110', email: 'finance@secureswitch.test', url: 'https://investor.vanguard.com/security-center', done: true, risk: 'Medium' },
+  { name: 'Apple ID', category: 'Identity', phone: '+1 (628) 555-0149', email: 'recovery@secureswitch.test', url: 'https://appleid.apple.com/account/manage', done: true, risk: 'Low' }
 ];
 
-const categories = ['Banking', 'Social Media', 'Email', 'Crypto', 'Shopping', 'Business'];
+const categories = ['Banking', 'Social Media', 'Email', 'Crypto', 'Shopping', 'Business', 'Identity'];
 const categoryGrid = document.querySelector('#category-grid');
 const recoveryFilter = document.querySelector('#recovery-filter');
 const linkedResults = document.querySelector('#linked-results');
@@ -17,6 +19,13 @@ const checklistBar = document.querySelector('#checklist-bar');
 const switchToggle = document.querySelector('#switch-toggle');
 const phoneForm = document.querySelector('#phone-form');
 const oldPhone = document.querySelector('#old-phone');
+const themeToggle = document.querySelector('#theme-toggle');
+const accountSearch = document.querySelector('#account-search');
+const accountTable = document.querySelector('#account-table');
+const blackoutButton = document.querySelector('#blackout-button');
+const blackoutStatus = document.querySelector('#blackout-status');
+const phoneCount = document.querySelector('#phone-count');
+const emailCount = document.querySelector('#email-count');
 
 function renderCategories() {
   categoryGrid.innerHTML = categories.map((category) => {
@@ -35,10 +44,22 @@ function renderLinkedAccounts() {
   const matches = accounts.filter((account) => account.phone === value || account.email === value);
   linkedResults.innerHTML = matches.map((account) => `
     <article class="linked-card">
-      <div><strong>${account.name}</strong><br><span>${account.category}</span></div>
+      <div><strong>${account.name}</strong><br><span>${account.category} · ${account.risk} risk</span></div>
       <a href="${account.url}" target="_blank" rel="noreferrer">Security page</a>
     </article>
   `).join('') || '<p class="muted">No accounts found for this recovery path.</p>';
+}
+
+function renderAccounts() {
+  const query = accountSearch.value.trim().toLowerCase();
+  const matches = accounts.filter((account) => [account.name, account.category, account.phone, account.email, account.risk].some((value) => value.toLowerCase().includes(query)));
+  accountTable.innerHTML = matches.map((account) => `
+    <article class="account-row">
+      <div><strong>${account.name}</strong><span>${account.category}</span></div>
+      <div><span>${account.phone}</span><span>${account.email}</span></div>
+      <span class="risk-pill ${account.risk.toLowerCase()}">${account.risk}</span>
+    </article>
+  `).join('') || '<p class="muted">No demo accounts match that search.</p>';
 }
 
 function renderChecklist() {
@@ -46,7 +67,7 @@ function renderChecklist() {
   const completed = affected.filter((account) => account.done).length;
   checklistCount.textContent = `${completed} of ${affected.length} complete`;
   checklistBar.style.width = affected.length ? `${(completed / affected.length) * 100}%` : '0%';
-  checklist.innerHTML = affected.map((account, index) => `
+  checklist.innerHTML = affected.map((account) => `
     <li class="${account.done ? 'completed' : ''}">
       <label>
         <input type="checkbox" data-name="${account.name}" ${account.done ? 'checked' : ''} />
@@ -57,7 +78,20 @@ function renderChecklist() {
   `).join('') || '<li>No accounts currently use that phone number.</li>';
 }
 
+function updateMetrics() {
+  phoneCount.textContent = new Set(accounts.map((account) => account.phone)).size;
+  emailCount.textContent = new Set(accounts.map((account) => account.email)).size;
+}
+
+function setTheme(isDark) {
+  document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
+  themeToggle.setAttribute('aria-pressed', String(isDark));
+  themeToggle.textContent = isDark ? 'Light mode' : 'Dark mode';
+}
+
 recoveryFilter.addEventListener('change', renderLinkedAccounts);
+accountSearch.addEventListener('input', renderAccounts);
+themeToggle.addEventListener('click', () => setTheme(document.documentElement.dataset.theme !== 'dark'));
 switchToggle.addEventListener('click', () => {
   const isPressed = switchToggle.getAttribute('aria-pressed') === 'true';
   switchToggle.setAttribute('aria-pressed', String(!isPressed));
@@ -73,8 +107,19 @@ checklist.addEventListener('change', (event) => {
   if (account) account.done = event.target.checked;
   renderChecklist();
 });
+blackoutButton.addEventListener('click', () => {
+  const armed = blackoutButton.getAttribute('aria-pressed') !== 'true';
+  blackoutButton.setAttribute('aria-pressed', String(armed));
+  blackoutButton.textContent = armed ? 'Disarm blackout' : 'Arm blackout';
+  blackoutStatus.textContent = armed
+    ? 'Blackout Mode armed: revoke sessions, freeze financial logins, and use the emergency kit in order.'
+    : 'Blackout Mode is standing by. Arm it to prioritize lockouts, session revokes, and authenticator recovery.';
+});
 
 renderCategories();
 populateRecoveryFilter();
 renderLinkedAccounts();
+renderAccounts();
 renderChecklist();
+updateMetrics();
+setTheme(false);
