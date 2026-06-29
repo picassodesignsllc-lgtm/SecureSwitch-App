@@ -3,181 +3,127 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SecureSwitch 2.0 — Never lose another account again</title>
-    <meta name="description" content="Run a free recovery check and protect recovery emails, backup codes, trusted contacts, and devices before disaster strikes." />
+    <title>SecureSwitch 2.0 — Product Foundation</title>
+    <meta name="description" content="SecureSwitch protects recovery emails, phones, backup codes, trusted contacts, devices, and emergency plans before disaster strikes." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="src/styles.css" />
   </head>
   <body>
-    <div class="ambient" aria-hidden="true"></div>
-
     <header class="mobile-topbar glass-card">
-      <a class="brand" href="#home" aria-label="SecureSwitch home"><span class="logo-mark"><span></span></span><span>SecureSwitch</span></a>
-      <div class="topbar-actions">
-        <button class="ghost-button" id="mobile-search" type="button">⌘K</button>
-        <button class="ghost-button" id="mobile-menu-button" type="button" aria-expanded="false" aria-controls="mobile-menu">Menu</button>
-      </div>
+      <a class="brand" href="#dashboard" aria-label="SecureSwitch dashboard"><span class="logo-mark" aria-hidden="true"><span></span></span><span>SecureSwitch</span></a>
+      <button class="ghost-button" id="mobile-menu-button" type="button" aria-expanded="false" aria-controls="mobile-menu">Menu</button>
     </header>
-
     <nav class="mobile-menu glass-card" id="mobile-menu" aria-label="Mobile navigation">
-      <a href="#dashboard">Dashboard</a>
-      <a href="#accounts">Accounts</a>
-      <a href="#switch-mode">Switch Mode</a>
-      <a href="#blackout-mode">Blackout</a>
-      <a href="#emergency-kit">Emergency Kit</a>
-      <a href="#settings">Settings</a>
+      <a href="#auth">Sign in</a><a href="#dashboard">Dashboard</a><a href="#vault">Vault</a><a href="#blackout-mode">Blackout</a><a href="#recovery-wizard">Wizard</a><a href="#profile">Profile</a>
     </nav>
 
     <div class="app-shell">
-      <aside class="sidebar glass-card" aria-label="Desktop navigation">
-        <a class="brand" href="#home" aria-label="SecureSwitch home"><span class="logo-mark"><span></span></span><span>SecureSwitch</span></a>
-        <button class="command-button" id="command-open" type="button"><span>Search everything</span><kbd>⌘K</kbd></button>
+      <aside class="sidebar glass-card" aria-label="Primary navigation">
+        <a class="brand" href="#dashboard" aria-label="SecureSwitch dashboard"><span class="logo-mark" aria-hidden="true"><span></span></span><span>SecureSwitch</span></a>
         <nav class="nav-stack">
-          <a class="nav-item active" href="#dashboard">Dashboard <kbd>1</kbd></a>
-          <a class="nav-item" href="#accounts">Accounts <kbd>2</kbd></a>
-          <a class="nav-item" href="#switch-mode">Switch Mode <kbd>3</kbd></a>
-          <a class="nav-item" href="#blackout-mode">Blackout <kbd>4</kbd></a>
-          <a class="nav-item" href="#recovery-lookup">Recovery Lookup</a>
+          <a class="nav-item active" href="#auth">Auth</a>
+          <a class="nav-item" href="#dashboard">Dashboard</a>
+          <a class="nav-item" href="#profile">Profile</a>
+          <a class="nav-item" href="#vault">Recovery Vault</a>
+          <a class="nav-item" href="#health-engine">Health Engine</a>
+          <a class="nav-item" href="#blackout-mode">Blackout Wizard</a>
+          <a class="nav-item" href="#recovery-wizard">Recovery Wizard</a>
+          <a class="nav-item" href="#timeline">Timeline</a>
           <a class="nav-item" href="#settings">Settings</a>
         </nav>
-        <article class="upgrade-card">
-          <p class="section-kicker">SecureSwitch Pro</p>
-          <h2>Automate recovery drills.</h2>
-          <p>Family delegates, encrypted exports, and monthly health reports.</p>
-          <button class="secondary-action" type="button" data-toast="Upgrade flow coming soon">Upgrade Pro</button>
+        <article class="sidebar-card">
+          <p class="section-kicker">GitHub Pages ready</p>
+          <p>Static HTML, CSS, and JavaScript foundation. No backend required yet.</p>
         </article>
       </aside>
 
-      <main class="main-stage" id="home">
-        <section class="hero-card glass-card page-section" aria-labelledby="app-title">
-          <div class="hero-copy-block">
-            <p class="eyebrow">SecureSwitch 2.0 · Recovery preparedness</p>
+      <main class="main-stage">
+        <section class="hero-card glass-card" id="dashboard" aria-labelledby="app-title">
+          <div>
+            <p class="eyebrow">SecureSwitch 2.0 · Phase 2</p>
             <h1 id="app-title">Never lose another account again.</h1>
-            <p class="hero-copy">Protect your recovery emails, backup codes, trusted contacts, and devices before disaster strikes.</p>
-            <div class="hero-actions">
-              <button class="primary-action" id="run-check-button" type="button">Run Free Recovery Check</button>
-              <button class="secondary-action" id="onboarding-button" type="button">Add your first account</button>
-            </div>
+            <p class="hero-copy">Protect your recovery emails, backup codes, trusted contacts, passkeys, and devices before disaster strikes.</p>
+            <div class="hero-actions"><button class="primary-action" id="start-onboarding" type="button">Add your first account</button><a class="secondary-action" href="#health-engine">Run Recovery Check</a></div>
           </div>
-          <article class="score-widget">
-            <div class="score-ring" aria-label="Recovery health score 71 percent"><strong>71%</strong><span>Health Score</span></div>
-            <button class="primary-action full" id="improve-score-button" type="button">Improve My Score</button>
+          <article class="score-card" aria-label="Recovery health score 72 out of 100">
+            <span>Recovery Health</span><strong id="hero-score">72 / 100</strong><div class="score-track"><span id="hero-score-bar"></span></div><p id="hero-score-summary">3 recommendations ready</p>
           </article>
         </section>
 
-        <section class="dashboard-grid page-section" id="dashboard">
-          <article class="panel glass-card quick-actions">
-            <p class="section-kicker">Quick actions</p>
-            <div class="action-grid">
-              <button type="button" data-command="onboarding">Add Account</button>
-              <button type="button" data-jump="#switch-mode">Change Phone</button>
-              <button type="button" data-jump="#blackout-mode">Blackout Mode</button>
-              <button type="button" data-command="palette">Command Palette</button>
-            </div>
-          </article>
-
-          <article class="panel glass-card chart-card">
-            <p class="section-kicker">Recovery readiness</p>
-            <div class="bars" aria-label="Recovery readiness chart">
-              <span style="--value: 88%"></span><span style="--value: 64%"></span><span style="--value: 78%"></span><span style="--value: 52%"></span><span style="--value: 91%"></span>
-            </div>
-            <div class="split-row"><strong>5 signals tracked</strong><span>+12% this week</span></div>
-          </article>
-
-          <article class="panel glass-card activity-card">
-            <p class="section-kicker">Recent activity</p>
-            <ul class="activity-list" id="activity-list"></ul>
-          </article>
-        </section>
-
-        <section class="content-grid page-section">
-          <article class="panel glass-card accounts-panel" id="accounts">
-            <div class="panel-header">
-              <div><p class="section-kicker">Accounts</p><h2>Drag recovery cards by priority</h2></div>
-              <button class="primary-action compact" type="button" data-command="onboarding">Add Account</button>
-            </div>
-            <input id="global-search" type="search" placeholder="Search accounts, contacts, notes, phones, emails, and 2FA methods" />
-            <div class="category-grid" id="category-grid"></div>
-            <div class="account-list loading" id="account-list" aria-live="polite">
-              <div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div>
-            </div>
-          </article>
-
-          <article class="panel glass-card health-panel" id="health-score">
-            <div class="panel-header"><div><p class="section-kicker">Killer feature</p><h2>Recovery Health Score</h2></div><strong>71%</strong></div>
-            <div class="health-list" id="health-list"></div>
-            <button class="primary-action full" type="button" id="health-improve-button">Improve My Score</button>
-          </article>
-
-          <article class="panel glass-card lookup-panel" id="recovery-lookup">
-            <p class="section-kicker">Recovery Lookup</p>
-            <h2>Find linked accounts</h2>
-            <label for="recovery-filter">Phone, email, contact, or device</label>
-            <select id="recovery-filter"></select>
-            <div class="linked-results" id="linked-results" aria-live="polite"></div>
-          </article>
-
-          <article class="panel glass-card switch-panel" id="switch-mode">
-            <div class="panel-header"><div><p class="section-kicker">Switch Mode</p><h2>Phone change workflow</h2></div><button class="switch-toggle" id="switch-toggle" type="button" aria-pressed="false"><span></span></button></div>
-            <form class="phone-form" id="phone-form">
-              <label>Old number<input id="old-phone" type="tel" value="+1 (415) 555-0184" /></label>
-              <label>New number<input id="new-phone" type="tel" value="+1 (628) 555-0149" /></label>
-              <button class="primary-action full" type="submit">Generate checklist</button>
+        <section class="grid two-col">
+          <article class="panel glass-card" id="auth">
+            <p class="section-kicker">Authentication</p><h2>Sign in to SecureSwitch</h2>
+            <form class="auth-form" id="auth-form">
+              <label>Email<input id="auth-email" type="email" autocomplete="email" placeholder="you@example.com" required /></label>
+              <button class="primary-action full" type="submit">Continue with email</button>
+              <button class="provider-button" type="button" data-toast="Google sign-in placeholder">Continue with Google</button>
+              <button class="provider-button" type="button" data-toast="Apple sign-in placeholder">Continue with Apple</button>
+              <button class="provider-button" type="button" data-toast="Passkey auth placeholder">Use passkey</button>
             </form>
-            <div class="checklist-progress"><span id="checklist-count">0 of 0 complete</span><div><span id="checklist-bar"></span></div></div>
-            <ul class="checklist" id="checklist"></ul>
           </article>
 
-          <article class="panel glass-card blackout-panel" id="blackout-mode">
-            <div class="panel-header"><div><p class="section-kicker">Blackout Mode</p><h2>Freeze everything</h2></div><button class="danger-action" id="blackout-button" type="button" aria-pressed="false">BLACKOUT MODE</button></div>
-            <p class="muted" id="blackout-status">One button for SIM swap checklists, bank freezes, crypto lockdown, trusted contact alerts, and emergency exports.</p>
-            <ul class="blackout-list"><li>SIM swap checklist</li><li>Freeze bank accounts</li><li>Lock Coinbase</li><li>Notify trusted contacts</li><li>Export recovery sheet</li><li>Police report checklist</li></ul>
+          <article class="panel glass-card" id="profile">
+            <div class="panel-header"><div><p class="section-kicker">User Profile</p><h2>Alex Morgan</h2></div><span class="status-pill">Demo user</span></div>
+            <div class="profile-card"><div class="avatar">AM</div><div><strong>alex@secureswitch.test</strong><span>Family plan · San Francisco · Last verified today</span></div></div>
+            <div class="profile-grid"><div><strong>6</strong><span>Accounts</span></div><div><strong>2</strong><span>Trusted contacts</span></div><div><strong>4</strong><span>Devices</span></div></div>
+          </article>
+        </section>
+
+        <section class="panel glass-card" id="onboarding">
+          <div class="panel-header"><div><p class="section-kicker">Better onboarding</p><h2>Add your first account</h2></div><span class="status-pill" id="onboarding-status">Step 1 of 3</span></div>
+          <form class="onboarding-grid" id="onboarding-form">
+            <label>Account name<input id="account-name" value="Google" required /></label>
+            <label>Recovery email<input id="account-email" type="email" value="alex.recovery@secureswitch.test" required /></label>
+            <label>Recovery phone<input id="account-phone" type="tel" value="+1 (415) 555-0184" required /></label>
+            <label>2FA method<select id="account-2fa"><option>Authenticator app</option><option>Passkey</option><option>Backup codes</option><option>SMS</option></select></label>
+            <label>Trusted contact<input id="account-contact" value="Jordan Lee" /></label>
+            <label>Emergency note<input id="account-note" value="Recovery key printed and stored offline." /></label>
+            <button class="primary-action full-span" type="submit">Save account to demo vault</button>
+          </form>
+        </section>
+
+        <section class="panel glass-card" id="vault">
+          <div class="panel-header"><div><p class="section-kicker">Recovery Vault</p><h2>Production data model preview</h2></div><button class="secondary-action" type="button" data-toast="Vault unlock placeholder">Unlock vault</button></div>
+          <div class="vault-grid" id="vault-grid"></div>
+        </section>
+
+        <section class="grid two-col">
+          <article class="panel glass-card" id="health-engine">
+            <div class="panel-header"><div><p class="section-kicker">Recovery Health Engine</p><h2>Readiness score</h2></div><strong class="big-score" id="health-score">72 / 100</strong></div>
+            <div class="health-list" id="health-list"></div>
+            <div class="recommendations" id="recommendations"></div>
+          </article>
+
+          <article class="panel glass-card" id="timeline">
+            <p class="section-kicker">Timeline</p><h2>Recent account changes</h2><ol class="timeline-list" id="timeline-list"></ol>
+          </article>
+        </section>
+
+        <section class="grid two-col">
+          <article class="panel glass-card wizard-panel" id="blackout-mode">
+            <div class="panel-header"><div><p class="section-kicker">Blackout Mode Wizard</p><h2>Emergency lockdown</h2></div><button class="danger-action" id="blackout-reset" type="button">Reset</button></div>
+            <p class="wizard-question" id="blackout-question"></p><div class="wizard-actions" id="blackout-actions"></div><ul class="wizard-plan" id="blackout-plan"></ul>
           </article>
 
           <article class="panel glass-card wizard-panel" id="recovery-wizard">
-            <p class="section-kicker">Recovery Wizard</p>
-            <h2>I lost my phone.</h2>
-            <p class="muted" id="wizard-question">Step 1 — Don’t panic. Do you still have your recovery email?</p>
-            <div class="two-actions"><button type="button" data-wizard="yes">Yes</button><button type="button" data-wizard="no">No</button></div>
+            <div class="panel-header"><div><p class="section-kicker">Recovery Wizard</p><h2>I lost my phone</h2></div><button class="secondary-action" id="recovery-reset" type="button">Reset</button></div>
+            <p class="wizard-question" id="recovery-question"></p><div class="wizard-actions" id="recovery-actions"></div><ul class="wizard-plan" id="recovery-plan"></ul>
           </article>
+        </section>
 
-          <article class="panel glass-card vault-panel" id="vault">
-            <p class="section-kicker">Recovery Vault</p>
-            <h2>Encrypted recovery data</h2>
-            <ul class="vault-list"><li><span>Recovery phones</span><strong>3</strong></li><li><span>Recovery emails</span><strong>5</strong></li><li><span>Backup codes</span><strong>28</strong></li><li><span>Trusted contacts</span><strong>2</strong></li><li><span>Devices</span><strong>4</strong></li><li><span>Emergency notes</span><strong>6</strong></li></ul>
-          </article>
+        <section class="panel glass-card" id="accounts">
+          <div class="panel-header"><div><p class="section-kicker">Accounts</p><h2>Saved recovery records</h2></div><input id="account-search" type="search" placeholder="Search recovery records" aria-label="Search recovery records" /></div>
+          <div class="account-list" id="account-list"></div>
+        </section>
 
-          <article class="panel glass-card emergency-panel" id="emergency-kit">
-            <div class="panel-header"><div><p class="section-kicker">Emergency Kit</p><h2>Offline recovery packet</h2></div><button class="secondary-action compact" type="button" data-toast="Emergency kit export queued">Export</button></div>
-            <div class="empty-state"><div>✦</div><strong>Your kit is ready.</strong><span>Trusted contacts, offline codes, recovery letter, and emergency notes are bundled for export.</span></div>
-          </article>
-
-          <article class="panel glass-card settings-panel" id="settings">
-            <div class="panel-header"><div><p class="section-kicker">Settings</p><h2>Workspace controls</h2></div><button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="true">Light mode</button></div>
-            <div class="settings-grid"><label><input type="checkbox" checked /> Biometric unlock</label><label><input type="checkbox" checked /> Keyboard shortcuts</label><label><input type="checkbox" checked /> Toast notifications</label><label><input type="checkbox" /> Family approval</label></div>
-          </article>
+        <section class="panel glass-card" id="settings">
+          <div class="panel-header"><div><p class="section-kicker">Settings</p><h2>Accessibility and preferences</h2></div><button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="true">Light mode</button></div>
+          <div class="settings-grid"><label><input type="checkbox" checked /> Keyboard navigation</label><label><input type="checkbox" checked /> Toast notifications</label><label><input type="checkbox" checked /> Respect reduced motion</label><label><input type="checkbox" /> Require trusted contact approval</label></div>
         </section>
       </main>
     </div>
-
-    <dialog class="onboarding-modal glass-card" id="onboarding-modal">
-      <form method="dialog" class="onboarding-form" id="onboarding-form">
-        <div class="panel-header"><div><p class="section-kicker">Interactive onboarding</p><h2>Add your first account</h2></div><button class="ghost-button" value="cancel" type="submit">Close</button></div>
-        <label>Account name<input id="new-account-name" value="Google" /></label>
-        <label>Recovery email<input id="new-account-email" value="alex.recovery@secureswitch.test" /></label>
-        <label>Recovery phone<input id="new-account-phone" value="+1 (415) 555-0184" /></label>
-        <label>2FA method<select id="new-account-2fa"><option>Authenticator app</option><option>Passkey</option><option>SMS</option><option>Backup codes</option></select></label>
-        <button class="primary-action full" id="save-account-button" value="default" type="submit">Save demo account</button>
-      </form>
-    </dialog>
-
-    <dialog class="command-palette glass-card" id="command-palette">
-      <input id="command-input" placeholder="Search everything or run a command…" />
-      <div class="command-results" id="command-results"></div>
-    </dialog>
-
     <div class="toast" id="toast" role="status" aria-live="polite">Ready</div>
     <script src="src/app.js"></script>
   </body>

@@ -1,237 +1,213 @@
 const accounts = [
-  { name: 'Google Workspace', category: 'Password', phone: '+1 (415) 555-0184', email: 'alex.recovery@secureswitch.test', twoFactor: 'Authenticator app', contact: 'Jordan Lee', device: 'MacBook Pro', score: 82, done: true, risk: 'Medium', notes: 'Recovery key printed and stored.' },
-  { name: 'Chase Sapphire', category: 'Recovery Phone', phone: '+1 (415) 555-0184', email: 'finance@secureswitch.test', twoFactor: 'SMS fallback', contact: 'Priya Shah', device: 'iPhone 15', score: 58, done: false, risk: 'High', notes: 'Old phone still linked.' },
-  { name: 'Coinbase', category: 'Backup Codes', phone: '+1 (415) 555-0184', email: 'crypto@secureswitch.test', twoFactor: 'Hardware key', contact: 'Jordan Lee', device: 'YubiKey 5C', score: 64, done: false, risk: 'High', notes: 'Rotate backup codes this week.' },
-  { name: 'Apple ID', category: 'Trusted Contacts', phone: '+1 (628) 555-0149', email: 'alex.recovery@secureswitch.test', twoFactor: 'Passkey', contact: 'Priya Shah', device: 'iPad Air', score: 94, done: true, risk: 'Low', notes: 'Recovery key stored in vault.' },
-  { name: 'Instagram', category: 'Authenticator', phone: '+1 (415) 555-0184', email: 'social@secureswitch.test', twoFactor: 'Authenticator app', contact: 'Jordan Lee', device: 'Pixel 8', score: 76, done: true, risk: 'Medium', notes: 'Trusted devices reviewed.' },
-  { name: 'Amazon', category: 'Recovery Email', phone: '+1 (212) 555-0110', email: 'shopping@secureswitch.test', twoFactor: 'Passkey', contact: 'Priya Shah', device: 'MacBook Pro', score: 88, done: true, risk: 'Low', notes: 'Passkey and backup email confirmed.' }
+  { name: 'Google', password: true, recoveryEmail: 'alex.recovery@secureswitch.test', recoveryPhone: '+1 (415) 555-0184', backupCodes: 8, trustedContact: 'Jordan Lee', authenticator: '1Password', passkey: true, recentVerification: true, notes: 'Recovery key printed and stored offline.' },
+  { name: 'Chase', password: true, recoveryEmail: 'finance@secureswitch.test', recoveryPhone: '+1 (415) 555-0184', backupCodes: 0, trustedContact: 'Priya Shah', authenticator: 'SMS fallback', passkey: false, recentVerification: false, notes: 'Old phone still linked.' },
+  { name: 'Coinbase', password: true, recoveryEmail: 'crypto@secureswitch.test', recoveryPhone: '+1 (415) 555-0184', backupCodes: 2, trustedContact: 'Jordan Lee', authenticator: 'YubiKey', passkey: true, recentVerification: false, notes: 'Rotate backup codes this week.' },
+  { name: 'Apple ID', password: true, recoveryEmail: 'alex.recovery@secureswitch.test', recoveryPhone: '+1 (628) 555-0149', backupCodes: 10, trustedContact: 'Priya Shah', authenticator: 'Apple Passwords', passkey: true, recentVerification: true, notes: 'Recovery key stored in vault.' }
+];
+
+const timeline = [
+  ['Today', 'Recovery Health Engine calculated a 72 / 100 score.'],
+  ['Today', 'Apple ID passkey verification completed.'],
+  ['Yesterday', 'Coinbase backup code warning added.'],
+  ['Jun 24', 'Priya Shah accepted trusted contact invite.']
 ];
 
 const healthSignals = [
-  ['Password', 84], ['Recovery Email', 78], ['Recovery Phone', 62], ['Backup Codes', 51], ['Trusted Contacts', 74], ['Authenticator', 79]
+  ['Password', 'password', 12],
+  ['Recovery email', 'recoveryEmail', 14],
+  ['Recovery phone', 'recoveryPhone', 14],
+  ['Backup codes', 'backupCodes', 14],
+  ['Trusted contacts', 'trustedContact', 12],
+  ['Authenticator', 'authenticator', 12],
+  ['Passkeys', 'passkey', 12],
+  ['Recent verification', 'recentVerification', 10]
 ];
-const activities = ['Recovery Health Score recalculated', 'Coinbase backup code warning added', 'Priya Shah accepted trusted contact invite', 'Switch Mode checklist generated'];
-const wizardSteps = ['Do you still have your recovery email?', 'Do you have backup codes?', 'Do you have another trusted device?', 'Do you want to notify trusted contacts?'];
-let wizardIndex = 0;
-let draggedAccount = null;
+
+const blackoutSteps = [
+  { question: 'Are you dealing with a lost phone or SIM swap right now?', yes: 'Prioritize SIM carrier lockdown.', no: 'Prepare a preventive emergency checklist.' },
+  { question: 'Do you need to freeze banks and crypto accounts?', yes: 'Add bank freeze and Coinbase lock tasks.', no: 'Skip financial freeze for now.' },
+  { question: 'Should trusted contacts be notified?', yes: 'Notify trusted contacts and export recovery sheet.', no: 'Keep contacts on standby.' }
+];
+const recoverySteps = [
+  { question: 'Do you still have access to your recovery email?', yes: 'Use recovery email as the primary route.', no: 'Route around missing recovery email.' },
+  { question: 'Do you have backup codes?', yes: 'Use backup codes before resetting 2FA.', no: 'Flag backup codes as a missing control.' },
+  { question: 'Do you have another trusted device?', yes: 'Use trusted device to approve sign-ins.', no: 'Escalate to trusted contact and account support.' }
+];
 
 const $ = (selector) => document.querySelector(selector);
-const categoryGrid = $('#category-grid');
-const recoveryFilter = $('#recovery-filter');
-const linkedResults = $('#linked-results');
-const checklist = $('#checklist');
-const checklistCount = $('#checklist-count');
-const checklistBar = $('#checklist-bar');
-const switchToggle = $('#switch-toggle');
-const phoneForm = $('#phone-form');
-const oldPhone = $('#old-phone');
-const themeToggle = $('#theme-toggle');
-const globalSearch = $('#global-search');
-const accountList = $('#account-list');
-const blackoutButton = $('#blackout-button');
-const blackoutStatus = $('#blackout-status');
-const activityList = $('#activity-list');
-const mobileMenu = $('#mobile-menu');
-const mobileMenuButton = $('#mobile-menu-button');
 const toast = $('#toast');
-const onboardingModal = $('#onboarding-modal');
-const commandPalette = $('#command-palette');
-const commandInput = $('#command-input');
-const commandResults = $('#command-results');
+let blackoutIndex = 0;
+let recoveryIndex = 0;
+let blackoutPlan = [];
+let recoveryPlan = [];
 
 function showToast(message) {
   toast.textContent = message;
   toast.classList.add('show');
-  window.setTimeout(() => toast.classList.remove('show'), 2400);
+  window.setTimeout(() => toast.classList.remove('show'), 2200);
 }
 
-function allSearchItems() {
-  return [
-    ...accounts.map((account) => ({ label: account.name, detail: `${account.email} · ${account.phone}`, action: () => { globalSearch.value = account.name; renderAccounts(); jumpTo('#accounts'); } })),
-    { label: 'Run Free Recovery Check', detail: 'Open Recovery Health Score', action: () => jumpTo('#health-score') },
-    { label: 'Add your first account', detail: 'Start onboarding', action: openOnboarding },
-    { label: 'Switch Mode', detail: 'Change phone workflow', action: () => jumpTo('#switch-mode') },
-    { label: 'Blackout Mode', detail: 'Emergency lockdown', action: () => jumpTo('#blackout-mode') },
-    { label: 'Recovery Wizard', detail: 'Lost phone guided plan', action: () => jumpTo('#recovery-wizard') }
-  ];
+function hasSignal(account, key) {
+  if (key === 'backupCodes') return account.backupCodes >= 6;
+  return Boolean(account[key]);
 }
 
-function jumpTo(selector) {
-  document.querySelector(selector)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+function calculateHealth() {
+  let score = 0;
+  const rows = healthSignals.map(([label, key, weight]) => {
+    const readyCount = accounts.filter((account) => hasSignal(account, key)).length;
+    const percent = Math.round((readyCount / accounts.length) * 100);
+    const points = Math.round((percent / 100) * weight);
+    score += points;
+    return { label, key, weight, percent, points };
+  });
+  score = Math.round(score * 0.85);
+  return { score, rows };
 }
 
-function renderCategories() {
-  const categories = [...new Set(accounts.map((account) => account.category))];
-  categoryGrid.innerHTML = categories.map((category) => `<button class="category-card" type="button" data-category="${category}"><strong>${category}</strong><span>${accounts.filter((account) => account.category === category).length} signal(s)</span></button>`).join('');
-}
-
-function populateRecoveryFilter() {
-  const values = [...new Set(accounts.flatMap((account) => [account.phone, account.email, account.contact, account.device]))];
-  recoveryFilter.innerHTML = values.map((value) => `<option value="${value}">${value}</option>`).join('');
-}
-
-function renderLinkedAccounts() {
-  const value = recoveryFilter.value;
-  const matches = accounts.filter((account) => [account.phone, account.email, account.contact, account.device].includes(value));
-  linkedResults.innerHTML = matches.map((account) => `<article class="linked-card"><div><strong>${account.name}</strong><span>${account.twoFactor} · ${account.notes}</span></div><button type="button" data-toast="Opened ${account.name} recovery details">Open</button></article>`).join('') || '<p class="muted">No accounts found for this recovery path.</p>';
-}
-
-function renderAccounts() {
-  const query = globalSearch.value.trim().toLowerCase();
-  const matches = accounts.filter((account) => Object.values(account).some((value) => String(value).toLowerCase().includes(query)));
-  accountList.classList.remove('loading');
-  accountList.innerHTML = matches.map((account, index) => `
-    <article class="account-card" draggable="true" data-index="${index}">
-      <div class="drag-handle" aria-hidden="true">⋮⋮</div>
-      <div class="account-icon">${account.name.charAt(0)}</div>
-      <div class="account-main"><strong>${account.name}</strong><span>${account.category} · ${account.twoFactor}</span><small>${account.notes}</small></div>
-      <div class="mini-score"><strong>${account.score}%</strong><span>ready</span></div>
-      <span class="risk-pill ${account.risk.toLowerCase()}">${account.risk}</span>
-    </article>`).join('') || '<div class="empty-state"><div>⌕</div><strong>No recovery records found.</strong><span>Try another search or add your first account.</span></div>';
-}
-
-function renderChecklist() {
-  const affected = accounts.filter((account) => account.phone === oldPhone.value.trim());
-  const completed = affected.filter((account) => account.done).length;
-  checklistCount.textContent = `${completed} of ${affected.length} complete`;
-  checklistBar.style.width = affected.length ? `${(completed / affected.length) * 100}%` : '0%';
-  checklist.innerHTML = affected.map((account) => `<li class="${account.done ? 'completed' : ''}"><label><input type="checkbox" data-name="${account.name}" ${account.done ? 'checked' : ''} /><span>${account.name}</span><small>${account.notes}</small></label><button type="button" data-toast="Opened ${account.name} update flow">Update</button></li>`).join('') || '<li>No accounts currently use that phone number.</li>';
+function recommendationsFrom(rows) {
+  return rows
+    .filter((row) => row.percent < 80)
+    .map((row) => `Improve ${row.label.toLowerCase()} coverage across saved accounts.`)
+    .slice(0, 4);
 }
 
 function renderHealth() {
-  $('#health-list').innerHTML = healthSignals.map(([label, score]) => `<div class="health-row"><span>${label}</span><div><i style="width:${score}%"></i></div><strong>${score}%</strong></div>`).join('');
+  const { score, rows } = calculateHealth();
+  $('#hero-score').textContent = `${score} / 100`;
+  $('#health-score').textContent = `${score} / 100`;
+  $('#hero-score-bar').style.width = `${score}%`;
+  $('#hero-score-summary').textContent = `${recommendationsFrom(rows).length} recommendations ready`;
+  $('#health-list').innerHTML = rows.map((row) => `<div class="health-row"><span>${row.label}</span><div><i style="width:${row.percent}%"></i></div><strong>${row.percent}%</strong></div>`).join('');
+  $('#recommendations').innerHTML = `<h3>Recommendations</h3>${recommendationsFrom(rows).map((item) => `<p>• ${item}</p>`).join('')}`;
 }
 
-function renderActivity() {
-  activityList.innerHTML = activities.map((item, index) => `<li><span>${index + 1}</span>${item}</li>`).join('');
+function renderVault() {
+  const vaultGroups = [
+    ['Recovery emails', [...new Set(accounts.map((account) => account.recoveryEmail))]],
+    ['Recovery phones', [...new Set(accounts.map((account) => account.recoveryPhone))]],
+    ['Backup codes', accounts.map((account) => `${account.name}: ${account.backupCodes} codes`)],
+    ['Trusted contacts', [...new Set(accounts.map((account) => account.trustedContact))]],
+    ['Authenticator apps', [...new Set(accounts.map((account) => account.authenticator))]],
+    ['Emergency notes', accounts.map((account) => `${account.name}: ${account.notes}`)]
+  ];
+  $('#vault-grid').innerHTML = vaultGroups.map(([title, items]) => `<article class="vault-card"><h3>${title}</h3><ul>${items.map((item) => `<li>${item}</li>`).join('')}</ul></article>`).join('');
 }
 
-function renderCommands() {
-  const query = commandInput.value.trim().toLowerCase();
-  const results = allSearchItems().filter((item) => `${item.label} ${item.detail}`.toLowerCase().includes(query));
-  commandResults.innerHTML = results.map((item, index) => `<button type="button" data-command-index="${index}"><strong>${item.label}</strong><span>${item.detail}</span></button>`).join('');
-  commandResults.querySelectorAll('button').forEach((button, index) => button.addEventListener('click', () => {
-    results[index].action();
-    commandPalette.close();
-    showToast(results[index].label);
-  }));
+function renderAccounts() {
+  const query = $('#account-search').value.trim().toLowerCase();
+  const matches = accounts.filter((account) => Object.values(account).some((value) => String(value).toLowerCase().includes(query)));
+  $('#account-list').innerHTML = matches.map((account) => `<article class="account-card" tabindex="0"><div class="account-icon">${account.name.charAt(0)}</div><div><strong>${account.name}</strong><span>${account.recoveryEmail} · ${account.recoveryPhone}</span><small>${account.notes}</small></div><span class="pill">${account.passkey ? 'Passkey' : 'No passkey'}</span></article>`).join('') || '<div class="empty-state">No matching recovery records.</div>';
 }
 
-function openPalette() {
-  commandPalette.showModal();
-  commandInput.value = '';
-  renderCommands();
-  commandInput.focus();
+function renderTimeline() {
+  $('#timeline-list').innerHTML = timeline.map(([date, detail]) => `<li><time>${date}</time><span>${detail}</span></li>`).join('');
 }
 
-function openOnboarding() {
-  onboardingModal.showModal();
-  $('#new-account-name').focus();
+function renderWizard(kind) {
+  const isBlackout = kind === 'blackout';
+  const steps = isBlackout ? blackoutSteps : recoverySteps;
+  const index = isBlackout ? blackoutIndex : recoveryIndex;
+  const question = isBlackout ? $('#blackout-question') : $('#recovery-question');
+  const actions = isBlackout ? $('#blackout-actions') : $('#recovery-actions');
+  const plan = isBlackout ? $('#blackout-plan') : $('#recovery-plan');
+  const currentPlan = isBlackout ? blackoutPlan : recoveryPlan;
+  question.textContent = steps[index]?.question || 'Personalized recovery plan generated.';
+  actions.innerHTML = steps[index] ? `<button type="button" data-wizard="${kind}" data-answer="yes">Yes</button><button type="button" data-wizard="${kind}" data-answer="no">No</button>` : `<button type="button" data-reset="${kind}">Start over</button>`;
+  plan.innerHTML = currentPlan.map((item) => `<li>${item}</li>`).join('');
+}
+
+function answerWizard(kind, answer) {
+  const isBlackout = kind === 'blackout';
+  const steps = isBlackout ? blackoutSteps : recoverySteps;
+  const index = isBlackout ? blackoutIndex : recoveryIndex;
+  if (!steps[index]) return;
+  const response = steps[index][answer];
+  if (isBlackout) {
+    blackoutPlan.push(response);
+    blackoutIndex += 1;
+  } else {
+    recoveryPlan.push(response);
+    recoveryIndex += 1;
+  }
+  renderWizard(kind);
+  showToast('Wizard step saved');
+}
+
+function resetWizard(kind) {
+  if (kind === 'blackout') {
+    blackoutIndex = 0;
+    blackoutPlan = [];
+  } else {
+    recoveryIndex = 0;
+    recoveryPlan = [];
+  }
+  renderWizard(kind);
+}
+
+function addAccount(event) {
+  event.preventDefault();
+  accounts.unshift({
+    name: $('#account-name').value,
+    password: true,
+    recoveryEmail: $('#account-email').value,
+    recoveryPhone: $('#account-phone').value,
+    backupCodes: $('#account-2fa').value === 'Backup codes' ? 8 : 0,
+    trustedContact: $('#account-contact').value,
+    authenticator: $('#account-2fa').value,
+    passkey: $('#account-2fa').value === 'Passkey',
+    recentVerification: true,
+    notes: $('#account-note').value
+  });
+  timeline.unshift(['Just now', `${$('#account-name').value} added to Recovery Vault.`]);
+  renderAll();
+  showToast('Account saved to demo vault');
 }
 
 function setTheme(isDark) {
   document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
-  themeToggle.textContent = isDark ? 'Light mode' : 'Dark mode';
-  themeToggle.setAttribute('aria-pressed', String(isDark));
+  $('#theme-toggle').textContent = isDark ? 'Light mode' : 'Dark mode';
+  $('#theme-toggle').setAttribute('aria-pressed', String(isDark));
 }
 
-function updateWizard(answer) {
-  wizardIndex += 1;
-  const plan = answer === 'yes' ? 'Great — we will use that in your recovery plan.' : 'No problem — we will route around that gap.';
-  $('#wizard-question').textContent = wizardSteps[wizardIndex] ? `Step ${wizardIndex + 1} — ${plan} ${wizardSteps[wizardIndex]}` : 'Recovery plan generated: freeze SIM, recover email, use backup codes, verify trusted device, then rotate credentials.';
+function renderAll() {
+  renderHealth();
+  renderVault();
+  renderAccounts();
+  renderTimeline();
 }
 
-setTimeout(renderAccounts, 450);
-renderCategories();
-populateRecoveryFilter();
-renderLinkedAccounts();
-renderChecklist();
-renderHealth();
-renderActivity();
+renderAll();
+renderWizard('blackout');
+renderWizard('recovery');
 setTheme(true);
 
-recoveryFilter.addEventListener('change', renderLinkedAccounts);
-globalSearch.addEventListener('input', renderAccounts);
-categoryGrid.addEventListener('click', (event) => {
-  const card = event.target.closest('[data-category]');
-  if (!card) return;
-  globalSearch.value = card.dataset.category;
-  renderAccounts();
-  showToast(`${card.dataset.category} filtered`);
-});
-accountList.addEventListener('dragstart', (event) => {
-  draggedAccount = event.target.closest('.account-card');
-  if (draggedAccount) draggedAccount.classList.add('dragging');
-});
-accountList.addEventListener('dragend', () => {
-  draggedAccount?.classList.remove('dragging');
-  draggedAccount = null;
-  showToast('Account priority updated');
-});
-accountList.addEventListener('dragover', (event) => {
+$('#auth-form').addEventListener('submit', (event) => {
   event.preventDefault();
-  const target = event.target.closest('.account-card');
-  if (target && draggedAccount && target !== draggedAccount) accountList.insertBefore(draggedAccount, target);
+  showToast(`Magic link placeholder sent to ${$('#auth-email').value}`);
 });
-phoneForm.addEventListener('submit', (event) => {
-  event.preventDefault();
-  switchToggle.setAttribute('aria-pressed', 'true');
-  renderChecklist();
-  showToast('Switch Mode checklist generated');
+$('#onboarding-form').addEventListener('submit', addAccount);
+$('#account-search').addEventListener('input', renderAccounts);
+$('#start-onboarding').addEventListener('click', () => $('#onboarding').scrollIntoView({ behavior: 'smooth' }));
+$('#theme-toggle').addEventListener('click', () => setTheme(document.documentElement.dataset.theme !== 'dark'));
+$('#mobile-menu-button').addEventListener('click', () => {
+  const expanded = $('#mobile-menu-button').getAttribute('aria-expanded') === 'true';
+  $('#mobile-menu-button').setAttribute('aria-expanded', String(!expanded));
+  $('#mobile-menu').classList.toggle('open', !expanded);
 });
-checklist.addEventListener('change', (event) => {
-  const account = accounts.find((item) => item.name === event.target.dataset.name);
-  if (account) account.done = event.target.checked;
-  renderChecklist();
-});
-blackoutButton.addEventListener('click', () => {
-  const armed = blackoutButton.getAttribute('aria-pressed') !== 'true';
-  blackoutButton.setAttribute('aria-pressed', String(armed));
-  blackoutStatus.textContent = armed ? 'Blackout armed. Trusted contacts notified, recovery sheet queued, and critical account checklist prioritized.' : 'One button for SIM swap checklists, bank freezes, crypto lockdown, trusted contact alerts, and emergency exports.';
-  showToast(armed ? 'Blackout Mode armed' : 'Blackout Mode disarmed');
-});
-switchToggle.addEventListener('click', () => switchToggle.setAttribute('aria-pressed', String(switchToggle.getAttribute('aria-pressed') !== 'true')));
-themeToggle.addEventListener('click', () => setTheme(document.documentElement.dataset.theme !== 'dark'));
-mobileMenuButton.addEventListener('click', () => {
-  const expanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
-  mobileMenuButton.setAttribute('aria-expanded', String(!expanded));
-  mobileMenu.classList.toggle('open', !expanded);
-});
+$('#blackout-reset').addEventListener('click', () => resetWizard('blackout'));
+$('#recovery-reset').addEventListener('click', () => resetWizard('recovery'));
 document.addEventListener('click', (event) => {
   const toastButton = event.target.closest('[data-toast]');
-  const jumpButton = event.target.closest('[data-jump]');
-  const commandButton = event.target.closest('[data-command]');
   const wizardButton = event.target.closest('[data-wizard]');
+  const resetButton = event.target.closest('[data-reset]');
   if (toastButton) showToast(toastButton.dataset.toast);
-  if (jumpButton) jumpTo(jumpButton.dataset.jump);
-  if (commandButton?.dataset.command === 'onboarding') openOnboarding();
-  if (commandButton?.dataset.command === 'palette') openPalette();
-  if (wizardButton) updateWizard(wizardButton.dataset.wizard);
+  if (wizardButton) answerWizard(wizardButton.dataset.wizard, wizardButton.dataset.answer);
+  if (resetButton) resetWizard(resetButton.dataset.reset);
 });
 document.addEventListener('keydown', (event) => {
-  if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+  if (event.key === '/' && document.activeElement.tagName !== 'INPUT') {
     event.preventDefault();
-    openPalette();
+    $('#account-search').focus();
   }
-  if (event.key >= '1' && event.key <= '4') {
-    const targets = ['#dashboard', '#accounts', '#switch-mode', '#blackout-mode'];
-    jumpTo(targets[Number(event.key) - 1]);
-  }
-});
-commandInput.addEventListener('input', renderCommands);
-$('#command-open').addEventListener('click', openPalette);
-$('#mobile-search').addEventListener('click', openPalette);
-$('#run-check-button').addEventListener('click', () => jumpTo('#health-score'));
-$('#improve-score-button').addEventListener('click', () => jumpTo('#recovery-wizard'));
-$('#health-improve-button').addEventListener('click', () => jumpTo('#recovery-wizard'));
-$('#onboarding-button').addEventListener('click', openOnboarding);
-$('#onboarding-form').addEventListener('submit', (event) => {
-  if (event.submitter?.value === 'cancel') return;
-  event.preventDefault();
-  accounts.unshift({ name: $('#new-account-name').value, category: 'Recovery Email', phone: $('#new-account-phone').value, email: $('#new-account-email').value, twoFactor: $('#new-account-2fa').value, contact: 'New trusted contact', device: 'New device', score: 67, done: false, risk: 'Medium', notes: 'Added during onboarding.' });
-  onboardingModal.close();
-  renderCategories();
-  populateRecoveryFilter();
-  renderAccounts();
-  showToast('Demo account added');
 });
