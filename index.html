@@ -3,74 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SecureSwitch 2.0 — Never lose another account again</title>
-    <meta name="description" content="SecureSwitch is a premium recovery operating system for accounts, devices, backup codes, trusted contacts, and emergency workflows." />
+    <title>SecureSwitch — Architecture Refactor</title>
+    <meta name="description" content="SecureSwitch is a premium account recovery dashboard with reusable static components." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="src/styles.css" />
   </head>
   <body>
+    <a class="skip-link" href="#app-main">Skip to dashboard</a>
     <div class="aurora" aria-hidden="true"></div>
-    <header class="mobile-topbar glass"><a class="brand" href="#dashboard"><span class="logo"><span></span></span>SecureSwitch</a><button class="ghost" id="mobile-menu-button" aria-expanded="false" aria-controls="mobile-menu">Menu</button></header>
-    <nav class="mobile-menu glass" id="mobile-menu" aria-label="Mobile navigation"><a href="#login">Login</a><a href="#dashboard">Dashboard</a><a href="#vault">Vault</a><a href="#emergency">Emergency</a><a href="#assistant">AI</a></nav>
-
-    <div class="app-shell">
-      <aside class="sidebar glass" aria-label="Primary navigation">
-        <a class="brand" href="#dashboard"><span class="logo"><span></span></span>SecureSwitch</a>
-        <button class="command-open" id="command-open">Search or jump anywhere <kbd>⌘K</kbd></button>
-        <nav class="nav-stack">
-          <a href="#login">Login</a><a href="#dashboard">Dashboard</a><a href="#onboarding">Onboarding</a><a href="#accounts">Accounts</a><a href="#vault">Vault</a><a href="#devices">Devices</a><a href="#contacts">Contacts</a><a href="#emergency">Emergency</a><a href="#assistant">AI Assistant</a><a href="#billing">Billing</a><a href="#team">Team</a><a href="#settings">Settings</a>
-        </nav>
-        <article class="mini-card"><p class="kicker">Workspace</p><strong>Alex Morgan</strong><span>Personal recovery OS</span></article>
-      </aside>
-
-      <main class="main">
-        <section class="login-screen glass" id="login">
-          <div><p class="kicker">Beautiful login</p><h1>Never lose another account again.</h1><p class="hero-copy">Protect recovery emails, backup codes, trusted contacts, devices, and emergency plans before disaster strikes.</p></div>
-          <form class="login-card" id="login-form"><h2>Sign in</h2><label>Email<input id="login-email" type="email" value="alex@secureswitch.test" autocomplete="email" /></label><button class="primary full">Continue with email</button><button type="button" data-toast="Google OAuth placeholder">Continue with Google</button><button type="button" data-toast="Apple OAuth placeholder">Continue with Apple</button><button type="button" data-toast="Passkey sign-in placeholder">Use passkey</button></form>
-        </section>
-
-        <section class="hero glass" id="dashboard"><div><p class="kicker">SecureSwitch 2.0 · Phase 2</p><h2>Recovery command center</h2><p class="muted">A production-style static foundation with real product surfaces, wizards, vault modules, and instant interactions.</p><div class="actions"><button class="primary" data-jump="#onboarding">Add your first account</button><button class="secondary" data-jump="#health">Improve My Score</button></div></div><div class="score-orb"><strong id="score-value">72</strong><span>/ 100 recovery health</span></div></section>
-
-        <section class="grid three">
-          <article class="panel glass"><p class="kicker">Animated readiness</p><div class="bars"><span style="--h:90%"></span><span style="--h:72%"></span><span style="--h:58%"></span><span style="--h:84%"></span><span style="--h:66%"></span></div></article>
-          <article class="panel glass"><p class="kicker">Live notifications</p><ul class="notification-list" id="notification-list"></ul></article>
-          <article class="panel glass" id="health"><p class="kicker">Recovery health</p><div id="health-list"></div><button class="primary full" data-jump="#checklist">Improve My Score</button></article>
-        </section>
-
-        <section class="panel glass" id="onboarding"><div class="panel-head"><div><p class="kicker">Onboarding wizard</p><h2>Add your first account</h2></div><span class="pill" id="onboarding-step">Step 1 of 3</span></div><form class="onboarding" id="onboarding-form"><label>Account name<input id="new-name" value="Google" /></label><label>Recovery email<input id="new-email" value="alex.recovery@secureswitch.test" /></label><label>Recovery phone<input id="new-phone" value="+1 (415) 555-0184" /></label><label>Backup codes<input id="new-codes" type="number" value="8" /></label><label>Device<input id="new-device" value="MacBook Pro" /></label><label>Trusted contact<input id="new-contact" value="Jordan Lee" /></label><button class="primary full-span">Save to SecureSwitch</button></form></section>
-
-        <section class="panel glass" id="accounts"><div class="panel-head"><div><p class="kicker">Accounts</p><h2>Search instantly. Drag to organize.</h2></div><input id="account-search" type="search" placeholder="Search every account, device, contact, note…" aria-label="Search accounts" /></div><div class="skeletons" id="skeletons"><span></span><span></span><span></span></div><div class="account-list" id="account-list"></div></section>
-
-        <section class="grid two">
-          <article class="panel glass" id="checklist"><p class="kicker">Interactive recovery checklist</p><h2>Phone switch checklist</h2><ul class="checklist" id="checklist-list"></ul></article>
-          <article class="panel glass" id="timeline"><p class="kicker">Recovery timeline</p><h2>Recent changes</h2><ol class="timeline" id="timeline-list"></ol></article>
-        </section>
-
-        <section class="grid two">
-          <article class="panel glass" id="vault"><p class="kicker">Backup code vault</p><h2>Encrypted recovery vault</h2><div class="vault-grid" id="vault-grid"></div></article>
-          <article class="panel glass" id="devices"><p class="kicker">Device inventory</p><h2>Trusted devices</h2><div class="device-list" id="device-list"></div></article>
-        </section>
-
-        <section class="grid two">
-          <article class="panel glass" id="contacts"><p class="kicker">Trusted contacts manager</p><h2>People who can help</h2><div class="contact-list" id="contact-list"></div></article>
-          <article class="panel glass wizard" id="emergency"><div class="panel-head"><div><p class="kicker">Emergency mode wizard</p><h2>Blackout Mode</h2></div><button class="danger" id="emergency-reset">Reset</button></div><p id="emergency-question" class="muted"></p><div class="wizard-actions" id="emergency-actions"></div><ul id="emergency-plan"></ul></article>
-        </section>
-
-        <section class="grid two">
-          <article class="panel glass wizard" id="recovery-wizard"><p class="kicker">Recovery wizard</p><h2>I lost my phone</h2><p id="recovery-question" class="muted"></p><div class="wizard-actions" id="recovery-actions"></div><ul id="recovery-plan"></ul></article>
-          <article class="panel glass" id="assistant"><p class="kicker">AI Recovery Assistant</p><h2>Ask SecureSwitch</h2><div class="assistant-box"><p>“I lost my phone in New York.”</p><strong>I created a recovery plan. Start with SIM freeze, then recover Google using backup codes.</strong></div><label>Message<input id="assistant-input" placeholder="Ask for recovery help…" /></label><button class="primary full" data-toast="AI assistant UI placeholder">Send</button></article>
-        </section>
-
-        <section class="grid two"><article class="panel glass" id="profile"><p class="kicker">Profile page</p><h2>Alex Morgan</h2><div class="profile"><div class="avatar">AM</div><div><strong>alex@secureswitch.test</strong><span>San Francisco · Personal workspace · Verified today</span></div></div></article><article class="panel glass" id="billing"><p class="kicker">Billing placeholder</p><h2>SecureSwitch Pro</h2><p class="muted">Family recovery, PDF exports, AI assistant, and monthly drills.</p><button class="secondary" data-toast="Billing portal placeholder">Manage billing</button></article></section>
-
-        <section class="grid two"><article class="panel glass" id="team"><p class="kicker">Team workspace placeholder</p><h2>Family workspace</h2><p class="muted">Invite delegates, assign emergency roles, and require approvals.</p><button class="secondary" data-toast="Team invite placeholder">Invite teammate</button></article><article class="panel glass" id="settings"><div class="panel-head"><div><p class="kicker">Settings page</p><h2>Preferences</h2></div><button class="secondary" id="theme-toggle" aria-pressed="true">Light mode</button></div><div class="settings"><label><input type="checkbox" checked /> Keyboard shortcuts</label><label><input type="checkbox" checked /> Reduced motion support</label><label><input type="checkbox" checked /> Toast notifications</label><label><input type="checkbox" /> Family approvals</label></div></article></section>
-      </main>
-    </div>
-
-    <dialog class="command glass" id="command-palette"><input id="command-input" placeholder="Search accounts or run a command…" /><div id="command-results"></div></dialog>
-    <div class="toast" id="toast" role="status" aria-live="polite">Ready</div>
-    <script src="src/app.js"></script>
+    <div id="app" class="app-shell" aria-live="polite"></div>
+    <script type="module" src="src/app.js"></script>
   </body>
 </html>
