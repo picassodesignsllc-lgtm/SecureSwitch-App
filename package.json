@@ -4,11 +4,10 @@
   "description": "Mobile-first SecureSwitch digital identity recovery dashboard prototype.",
   "main": "index.html",
   "scripts": {
-    "test": "node --check src/app.js",
     "start": "python3 -m http.server 4173",
     "build": "node scripts/build.mjs",
+    "test": "node --check src/app.js && node --check src/crypto.js && node --check scripts/build.mjs && node --check scripts/verify-layout.mjs",
     "verify:layout": "node scripts/verify-layout.mjs"
-    "build": "node scripts/build.mjs"
   },
   "keywords": [
     "security",

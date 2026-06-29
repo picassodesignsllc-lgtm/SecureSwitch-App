@@ -280,7 +280,7 @@ function FloatingAICoach() {
 function Dashboard() {
   return h('main', { className: 'dashboard' },
     h('div', { className: 'main-column' }, h(TopActions), h(Hero), h(HealthScoreGrid), h(Shortcuts), h(LiveThreatFeed), h('div', { className: 'lower-grid' }, h(Accounts), h(Activity)), h(IdentityHealthDashboard), h(HealthScan), h(EmergencyButton), h(RecoveryCoach), h(EmergencySimulator), h(RecoveryTimeline), h(FamilyMode), h(WeeklyReport), h(RecoveryInsights), h(IdentityDNA), h(RecoveryMap), h(AccountForm), h(SwitchMode), h(BlackoutMode), h(EmergencyKit), h(RecoveryLookup), h(Settings)),
-    h('aside', { className: 'dashboard-side' }, h(ProtectedStatus), h(QuickActions), h(Readiness))
+    h('aside', { className: 'dashboard-side' }, h(ProtectedStatus), h(QuickActions), h(Readiness), h(FloatingAICoach))
   );
 }
 
@@ -299,7 +299,6 @@ function App() {
   return h('div', { className: 'app-shell' },
     h(Sidebar),
     h(ProtectionScore),
-    h(FloatingAICoach),
     h('section', { className: 'content-shell' },
       h(Dashboard),
       h(SyncAndAuthPanel),
