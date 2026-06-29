@@ -8,6 +8,17 @@ const accounts = [
   { name: 'Vanguard', category: 'Banking', phone: '+1 (212) 555-0110', email: 'finance@secureswitch.test', url: 'https://investor.vanguard.com/security-center', done: true, risk: 'Medium' },
   { name: 'Apple ID', category: 'Identity', phone: '+1 (628) 555-0149', email: 'recovery@secureswitch.test', url: 'https://appleid.apple.com/account/manage', done: true, risk: 'Low' }
 ];
+const familyMembers = [
+  { name: 'Dad', score: 92, note: 'Recovery plan verified' },
+  { name: 'Mom', score: 81, note: 'Needs backup code refresh' },
+  { name: 'Brother', score: 68, note: 'Missing trusted contact' },
+  { name: 'Grandma', score: 34, note: '⚠ No recovery phone' }
+];
+let React;
+let root;
+
+const state = { user: null, auth: null, db: null, firebase: null, vaultKey: null, mode: 'login', accounts: demoAccounts, selectedRecovery: '+1 (415) 555-0184', switchOld: '+1 (415) 555-0184', switchNew: '+1 (628) 555-0149', blackoutArmed: false, emergencyActive: false, scanComplete: false, aiStep: 0, timelineFilter: 'All', simulatorScenario: 'My phone was stolen', simulatorRan: false, activeProfile: null, toast: 'Ready' };
+const h = (...args) => React.createElement(...args);
 
 const categories = ['Banking', 'Social Media', 'Email', 'Crypto', 'Shopping', 'Business', 'Identity'];
 const categoryGrid = document.querySelector('#category-grid');

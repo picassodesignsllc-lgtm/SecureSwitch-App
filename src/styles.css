@@ -30,7 +30,8 @@
 html { scroll-behavior: smooth; }
 body {
   margin: 0;
-  color: var(--ink);
+  min-height: 100vh;
+  color: var(--text);
   background:
     radial-gradient(circle at top right, rgba(11, 124, 255, 0.25), transparent 34rem),
     radial-gradient(circle at 5% 35%, rgba(87, 199, 255, 0.18), transparent 30rem),
