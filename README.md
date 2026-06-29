@@ -70,38 +70,47 @@ Run the JavaScript syntax check:
 npm test
 ```
 
-For architecture work, also check module files directly:
+## Firebase setup for real authentication and cloud sync
 
-```bash
-for f in components/*.js data/*.js pages/*.js utils/*.js src/app.js; do node --check "$f"; done
-```
+SecureSwitch can run as a static GitHub Pages app while using Firebase for real authentication and Firestore cloud sync.
 
-## How to contribute
+1. Create a Firebase project.
+2. Enable Authentication providers:
+   - Email/password
+   - Google
+   - Apple when ready
+3. Enable Cloud Firestore.
+4. Copy your Firebase web app config into `src/firebaseConfig.js`.
+5. Deploy the static files or run locally with `npm start`.
 
-SecureSwitch should grow in controlled, reviewable milestones. Contributions should be small enough to review and should preserve the premium product experience.
+Vault records are encrypted in the browser with Web Crypto AES-GCM before they are saved to Firestore. The vault passphrase is not sent to Firebase.
 
-Good contribution areas:
+### End-to-end recovery foundation
 
-- Improve reusable components.
-- Add tests for utilities and product logic.
-- Improve accessibility and keyboard navigation.
-- Strengthen mobile responsiveness.
-- Expand recovery-health scoring logic.
-- Improve onboarding and emergency workflows.
-- Document product decisions and security assumptions.
+The current product foundation focuses on five testable flows:
 
-Before opening a PR:
+1. A user can create an account or log in with Firebase Authentication.
+2. A signed-in user can unlock a local AES-GCM vault key from a passphrase.
+3. Recovery records are encrypted in the browser before being saved to Firestore.
+4. Signing in on another device and entering the same vault passphrase decrypts the same synced records.
+5. Recovery Score, AI Advisor, and Recovery Mode are generated from actual decrypted vault data.
 
-1. Create a focused branch.
-2. Keep static GitHub Pages compatibility unless a milestone explicitly introduces backend tooling.
-3. Run `npm test`.
-4. Include screenshots or notes for visible UI changes.
-5. Update `ROADMAP.md` or this README when product direction changes.
+### SecureSwitch 3.0 recovery workflow focus
 
-## Product principles
+SecureSwitch 3.0 should prioritize a complete recovery loop before adding broad new product areas:
 
-- **Clarity over complexity.** Recovery workflows must be understandable under stress.
-- **Trust over growth hacks.** Sensitive recovery data requires careful product decisions.
-- **Guidance over dashboards.** Metrics should lead users to useful action.
-- **Security by design.** Authentication, vault storage, and AI features must be built deliberately.
-- **Premium UX matters.** SecureSwitch should feel as polished as the best modern SaaS products.
+- Authenticated users save encrypted recovery records.
+- Recovery Score and Digital Safety Score are calculated from actual vault fields.
+- AI Advisor recommendations come from missing encrypted account metadata.
+- Recovery Mode asks what happened and generates instructions from saved accounts and trusted contacts.
+- Recovery Simulator checks whether a disaster scenario would succeed before it happens.
+
+### SecureSwitch 4.0 digital recovery platform direction
+
+The 4.0 work keeps the product focused on digital recovery outcomes:
+
+- Instant Scan summarizes how recoverable the user is across critical services.
+- AI Recovery Coach prioritizes fixes from real vault metadata.
+- Panic Mode generates emergency instructions for a selected incident.
+- Recovery Simulator lets users practice before a disaster happens.
+- Identity Timeline, Breach Radar, Digital Will, Device Center, and Identity Center are connected to encrypted vault metadata rather than standalone pages.
