@@ -1,139 +1,184 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SecureSwitch — Digital Identity Control Panel</title>
+    <title>SecureSwitch 2.0 — Never lose another account again</title>
+    <meta name="description" content="Run a free recovery check and protect recovery emails, backup codes, trusted contacts, and devices before disaster strikes." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="src/styles.css" />
   </head>
   <body>
-    <main class="app-shell">
-      <section class="hero-card" aria-labelledby="app-title">
-        <nav class="topbar" aria-label="Primary">
-          <a class="brand" href="#app-title" aria-label="SecureSwitch home">
-            <span class="logo-mark" aria-hidden="true"><span></span></span>
-            <span>SecureSwitch</span>
-          </a>
-          <button class="biometric-button" type="button">Face ID</button>
+    <div class="ambient" aria-hidden="true"></div>
+
+    <header class="mobile-topbar glass-card">
+      <a class="brand" href="#home" aria-label="SecureSwitch home"><span class="logo-mark"><span></span></span><span>SecureSwitch</span></a>
+      <div class="topbar-actions">
+        <button class="ghost-button" id="mobile-search" type="button">⌘K</button>
+        <button class="ghost-button" id="mobile-menu-button" type="button" aria-expanded="false" aria-controls="mobile-menu">Menu</button>
+      </div>
+    </header>
+
+    <nav class="mobile-menu glass-card" id="mobile-menu" aria-label="Mobile navigation">
+      <a href="#dashboard">Dashboard</a>
+      <a href="#accounts">Accounts</a>
+      <a href="#switch-mode">Switch Mode</a>
+      <a href="#blackout-mode">Blackout</a>
+      <a href="#emergency-kit">Emergency Kit</a>
+      <a href="#settings">Settings</a>
+    </nav>
+
+    <div class="app-shell">
+      <aside class="sidebar glass-card" aria-label="Desktop navigation">
+        <a class="brand" href="#home" aria-label="SecureSwitch home"><span class="logo-mark"><span></span></span><span>SecureSwitch</span></a>
+        <button class="command-button" id="command-open" type="button"><span>Search everything</span><kbd>⌘K</kbd></button>
+        <nav class="nav-stack">
+          <a class="nav-item active" href="#dashboard">Dashboard <kbd>1</kbd></a>
+          <a class="nav-item" href="#accounts">Accounts <kbd>2</kbd></a>
+          <a class="nav-item" href="#switch-mode">Switch Mode <kbd>3</kbd></a>
+          <a class="nav-item" href="#blackout-mode">Blackout <kbd>4</kbd></a>
+          <a class="nav-item" href="#recovery-lookup">Recovery Lookup</a>
+          <a class="nav-item" href="#settings">Settings</a>
         </nav>
-
-        <div class="hero-content">
-          <p class="eyebrow">Zero-knowledge recovery dashboard</p>
-          <h1 id="app-title">Flip the switch on your digital security.</h1>
-          <p class="hero-copy">Manage 2FA, recovery emails, phone numbers, backup codes, and authenticator details in one encrypted control panel.</p>
-          <div class="hero-actions">
-            <a class="primary-action" href="#switch-mode">Open Switch Mode</a>
-            <a class="secondary-action" href="#vault">View vault</a>
-          </div>
-        </div>
-
-        <div class="trust-strip" aria-label="Security architecture highlights">
-          <span>End-to-end encrypted</span>
-          <span>Biometric login</span>
-          <span>Multi-device sync</span>
-        </div>
-      </section>
-
-      <section class="dashboard-grid" aria-label="SecureSwitch dashboard">
-        <article class="panel status-panel">
-          <div class="panel-header">
-            <div>
-              <p class="section-kicker">Today</p>
-              <h2>Identity circuits</h2>
-            </div>
-            <span class="secure-pill">Vault locked</span>
-          </div>
-          <div class="progress-ring" aria-label="82 percent secured">
-            <span>82%</span>
-          </div>
-          <p class="muted">41 of 50 account recovery paths are verified and current.</p>
-          <div class="metrics">
-            <div><strong>18</strong><span>Phone-linked</span></div>
-            <div><strong>24</strong><span>Email-linked</span></div>
-            <div><strong>9</strong><span>Need review</span></div>
-          </div>
+        <article class="upgrade-card">
+          <p class="section-kicker">SecureSwitch Pro</p>
+          <h2>Automate recovery drills.</h2>
+          <p>Family delegates, encrypted exports, and monthly health reports.</p>
+          <button class="secondary-action" type="button" data-toast="Upgrade flow coming soon">Upgrade Pro</button>
         </article>
+      </aside>
 
-        <article class="panel" id="vault">
-          <div class="panel-header">
-            <div>
-              <p class="section-kicker">Encrypted vault</p>
-              <h2>Stored recovery assets</h2>
+      <main class="main-stage" id="home">
+        <section class="hero-card glass-card page-section" aria-labelledby="app-title">
+          <div class="hero-copy-block">
+            <p class="eyebrow">SecureSwitch 2.0 · Recovery preparedness</p>
+            <h1 id="app-title">Never lose another account again.</h1>
+            <p class="hero-copy">Protect your recovery emails, backup codes, trusted contacts, and devices before disaster strikes.</p>
+            <div class="hero-actions">
+              <button class="primary-action" id="run-check-button" type="button">Run Free Recovery Check</button>
+              <button class="secondary-action" id="onboarding-button" type="button">Add your first account</button>
             </div>
           </div>
-          <ul class="vault-list">
-            <li><span>Phone numbers</span><strong>3 saved</strong></li>
-            <li><span>Recovery emails</span><strong>5 saved</strong></li>
-            <li><span>Backup codes</span><strong>28 codes</strong></li>
-            <li><span>Authenticator info</span><strong>12 apps</strong></li>
-          </ul>
-        </article>
+          <article class="score-widget">
+            <div class="score-ring" aria-label="Recovery health score 71 percent"><strong>71%</strong><span>Health Score</span></div>
+            <button class="primary-action full" id="improve-score-button" type="button">Improve My Score</button>
+          </article>
+        </section>
 
-        <article class="panel category-panel">
-          <div class="panel-header">
-            <div>
-              <p class="section-kicker">Breaker Box</p>
-              <h2>Account categories</h2>
+        <section class="dashboard-grid page-section" id="dashboard">
+          <article class="panel glass-card quick-actions">
+            <p class="section-kicker">Quick actions</p>
+            <div class="action-grid">
+              <button type="button" data-command="onboarding">Add Account</button>
+              <button type="button" data-jump="#switch-mode">Change Phone</button>
+              <button type="button" data-jump="#blackout-mode">Blackout Mode</button>
+              <button type="button" data-command="palette">Command Palette</button>
             </div>
-          </div>
-          <div class="category-grid" id="category-grid"></div>
-        </article>
+          </article>
 
-        <article class="panel lookup-panel">
-          <div class="panel-header">
-            <div>
-              <p class="section-kicker">Search by recovery path</p>
-              <h2>Linked accounts</h2>
+          <article class="panel glass-card chart-card">
+            <p class="section-kicker">Recovery readiness</p>
+            <div class="bars" aria-label="Recovery readiness chart">
+              <span style="--value: 88%"></span><span style="--value: 64%"></span><span style="--value: 78%"></span><span style="--value: 52%"></span><span style="--value: 91%"></span>
             </div>
-          </div>
-          <label for="recovery-filter">Phone or recovery email</label>
-          <select id="recovery-filter"></select>
-          <div class="linked-results" id="linked-results" aria-live="polite"></div>
-        </article>
+            <div class="split-row"><strong>5 signals tracked</strong><span>+12% this week</span></div>
+          </article>
 
-        <article class="panel switch-panel" id="switch-mode">
-          <div class="panel-header">
-            <div>
-              <p class="section-kicker">Switch Mode</p>
-              <h2>Change phone workflow</h2>
-            </div>
-            <button class="switch-toggle" id="switch-toggle" type="button" aria-pressed="false"><span></span></button>
-          </div>
-          <p class="muted">Generate an update checklist for every account still using your old phone number.</p>
-          <form class="phone-form" id="phone-form">
-            <label>
-              Old number
-              <input id="old-phone" type="tel" value="+1 (415) 555-0184" />
-            </label>
-            <label>
-              New number
-              <input id="new-phone" type="tel" value="+1 (628) 555-0149" />
-            </label>
-            <button class="primary-action full" type="submit">Generate checklist</button>
-          </form>
-          <div class="checklist-progress"><span id="checklist-count">0 of 0 complete</span><div><span id="checklist-bar"></span></div></div>
-          <ul class="checklist" id="checklist"></ul>
-        </article>
+          <article class="panel glass-card activity-card">
+            <p class="section-kicker">Recent activity</p>
+            <ul class="activity-list" id="activity-list"></ul>
+          </article>
+        </section>
 
-        <article class="panel emergency-panel">
-          <div class="panel-header">
-            <div>
-              <p class="section-kicker">Blackout Mode</p>
-              <h2>Emergency recovery checklist</h2>
+        <section class="content-grid page-section">
+          <article class="panel glass-card accounts-panel" id="accounts">
+            <div class="panel-header">
+              <div><p class="section-kicker">Accounts</p><h2>Drag recovery cards by priority</h2></div>
+              <button class="primary-action compact" type="button" data-command="onboarding">Add Account</button>
             </div>
-          </div>
-          <ol class="emergency-list">
-            <li>Lock lost device and revoke active sessions.</li>
-            <li>Use trusted family recovery access if enabled.</li>
-            <li>Restore authenticator seeds from encrypted vault.</li>
-            <li>Rotate backup codes for banking, crypto, and email.</li>
-          </ol>
-        </article>
-      </section>
-    </main>
+            <input id="global-search" type="search" placeholder="Search accounts, contacts, notes, phones, emails, and 2FA methods" />
+            <div class="category-grid" id="category-grid"></div>
+            <div class="account-list loading" id="account-list" aria-live="polite">
+              <div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div>
+            </div>
+          </article>
+
+          <article class="panel glass-card health-panel" id="health-score">
+            <div class="panel-header"><div><p class="section-kicker">Killer feature</p><h2>Recovery Health Score</h2></div><strong>71%</strong></div>
+            <div class="health-list" id="health-list"></div>
+            <button class="primary-action full" type="button" id="health-improve-button">Improve My Score</button>
+          </article>
+
+          <article class="panel glass-card lookup-panel" id="recovery-lookup">
+            <p class="section-kicker">Recovery Lookup</p>
+            <h2>Find linked accounts</h2>
+            <label for="recovery-filter">Phone, email, contact, or device</label>
+            <select id="recovery-filter"></select>
+            <div class="linked-results" id="linked-results" aria-live="polite"></div>
+          </article>
+
+          <article class="panel glass-card switch-panel" id="switch-mode">
+            <div class="panel-header"><div><p class="section-kicker">Switch Mode</p><h2>Phone change workflow</h2></div><button class="switch-toggle" id="switch-toggle" type="button" aria-pressed="false"><span></span></button></div>
+            <form class="phone-form" id="phone-form">
+              <label>Old number<input id="old-phone" type="tel" value="+1 (415) 555-0184" /></label>
+              <label>New number<input id="new-phone" type="tel" value="+1 (628) 555-0149" /></label>
+              <button class="primary-action full" type="submit">Generate checklist</button>
+            </form>
+            <div class="checklist-progress"><span id="checklist-count">0 of 0 complete</span><div><span id="checklist-bar"></span></div></div>
+            <ul class="checklist" id="checklist"></ul>
+          </article>
+
+          <article class="panel glass-card blackout-panel" id="blackout-mode">
+            <div class="panel-header"><div><p class="section-kicker">Blackout Mode</p><h2>Freeze everything</h2></div><button class="danger-action" id="blackout-button" type="button" aria-pressed="false">BLACKOUT MODE</button></div>
+            <p class="muted" id="blackout-status">One button for SIM swap checklists, bank freezes, crypto lockdown, trusted contact alerts, and emergency exports.</p>
+            <ul class="blackout-list"><li>SIM swap checklist</li><li>Freeze bank accounts</li><li>Lock Coinbase</li><li>Notify trusted contacts</li><li>Export recovery sheet</li><li>Police report checklist</li></ul>
+          </article>
+
+          <article class="panel glass-card wizard-panel" id="recovery-wizard">
+            <p class="section-kicker">Recovery Wizard</p>
+            <h2>I lost my phone.</h2>
+            <p class="muted" id="wizard-question">Step 1 — Don’t panic. Do you still have your recovery email?</p>
+            <div class="two-actions"><button type="button" data-wizard="yes">Yes</button><button type="button" data-wizard="no">No</button></div>
+          </article>
+
+          <article class="panel glass-card vault-panel" id="vault">
+            <p class="section-kicker">Recovery Vault</p>
+            <h2>Encrypted recovery data</h2>
+            <ul class="vault-list"><li><span>Recovery phones</span><strong>3</strong></li><li><span>Recovery emails</span><strong>5</strong></li><li><span>Backup codes</span><strong>28</strong></li><li><span>Trusted contacts</span><strong>2</strong></li><li><span>Devices</span><strong>4</strong></li><li><span>Emergency notes</span><strong>6</strong></li></ul>
+          </article>
+
+          <article class="panel glass-card emergency-panel" id="emergency-kit">
+            <div class="panel-header"><div><p class="section-kicker">Emergency Kit</p><h2>Offline recovery packet</h2></div><button class="secondary-action compact" type="button" data-toast="Emergency kit export queued">Export</button></div>
+            <div class="empty-state"><div>✦</div><strong>Your kit is ready.</strong><span>Trusted contacts, offline codes, recovery letter, and emergency notes are bundled for export.</span></div>
+          </article>
+
+          <article class="panel glass-card settings-panel" id="settings">
+            <div class="panel-header"><div><p class="section-kicker">Settings</p><h2>Workspace controls</h2></div><button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="true">Light mode</button></div>
+            <div class="settings-grid"><label><input type="checkbox" checked /> Biometric unlock</label><label><input type="checkbox" checked /> Keyboard shortcuts</label><label><input type="checkbox" checked /> Toast notifications</label><label><input type="checkbox" /> Family approval</label></div>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <dialog class="onboarding-modal glass-card" id="onboarding-modal">
+      <form method="dialog" class="onboarding-form" id="onboarding-form">
+        <div class="panel-header"><div><p class="section-kicker">Interactive onboarding</p><h2>Add your first account</h2></div><button class="ghost-button" value="cancel" type="submit">Close</button></div>
+        <label>Account name<input id="new-account-name" value="Google" /></label>
+        <label>Recovery email<input id="new-account-email" value="alex.recovery@secureswitch.test" /></label>
+        <label>Recovery phone<input id="new-account-phone" value="+1 (415) 555-0184" /></label>
+        <label>2FA method<select id="new-account-2fa"><option>Authenticator app</option><option>Passkey</option><option>SMS</option><option>Backup codes</option></select></label>
+        <button class="primary-action full" id="save-account-button" value="default" type="submit">Save demo account</button>
+      </form>
+    </dialog>
+
+    <dialog class="command-palette glass-card" id="command-palette">
+      <input id="command-input" placeholder="Search everything or run a command…" />
+      <div class="command-results" id="command-results"></div>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite">Ready</div>
     <script src="src/app.js"></script>
   </body>
 </html>
