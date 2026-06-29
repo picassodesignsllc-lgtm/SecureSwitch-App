@@ -8,7 +8,7 @@ const demoAccounts = [
   { name: 'Amazon', handle: 'keith.harrison@gmail.com', status: 'Secure', color: '#ff9900', category: 'Shopping', phone: '+1 (212) 555-0110', email: 'keith.harrison@gmail.com', recoveryEmail: 'backup@secureswitch.app', recoveryPhone: '+1 (212) 555-0110', backupCodes: '10 encrypted codes', trustedContacts: 'Priya Shah', authenticator: 'Passkey', ready: true },
   { name: 'Slack', handle: 'keith@picassodesigns.com', status: 'Review', color: '#4a154b', category: 'Business', phone: '+1 (628) 555-0149', email: 'keith@picassodesigns.com', recoveryEmail: 'admin@picassodesigns.com', recoveryPhone: '+1 (628) 555-0149', backupCodes: '', trustedContacts: 'IT admin', authenticator: 'Okta Verify', ready: false }
 ];
-const activity = ['Password changed — Google — 2h ago', 'Recovery email added — Coinbase — 5h ago', 'Account scanned — Instagram — 1d ago', 'Backup code updated — GitHub — 2d ago'];
+const activity = ['Google password updated — Google Workspace — 2h ago', 'Apple ID secured — iCloud — 4h ago', 'Recovery email verified — Coinbase — 5h ago', 'Bank account backed up — Chase — 8h ago', 'Passkey created — Microsoft — 1d ago', 'Device removed — Instagram — 1d ago', 'Recovery kit exported — SecureSwitch — 2d ago', 'Breach scan completed — Identity Monitor — 2d ago'];
 const timelineEvents = [
   { date: 'June 29', title: 'Phone changed', status: 'Done' },
   { date: 'June 29', title: 'Recovery email updated', status: 'Done' },
@@ -27,7 +27,7 @@ const familyMembers = [
 let React;
 let root;
 
-const state = { user: null, auth: null, db: null, firebase: null, vaultKey: null, mode: 'login', accounts: demoAccounts, selectedRecovery: '+1 (415) 555-0184', switchOld: '+1 (415) 555-0184', switchNew: '+1 (628) 555-0149', blackoutArmed: false, emergencyActive: false, scanComplete: false, aiStep: 0, timelineFilter: 'All', simulatorScenario: 'My phone was stolen', simulatorRan: false, activeProfile: null, toast: 'Ready' };
+const state = { user: null, auth: null, db: null, firebase: null, vaultKey: null, mode: 'login', accounts: demoAccounts, selectedRecovery: '+1 (415) 555-0184', switchOld: '+1 (415) 555-0184', switchNew: '+1 (628) 555-0149', blackoutArmed: false, emergencyActive: false, scanComplete: false, aiStep: 0, timelineFilter: 'All', simulatorScenario: 'My phone was stolen', simulatorRan: false, activeProfile: null, vaultUnlocked: false, toast: 'Ready' };
 const h = (...args) => React.createElement(...args);
 
 function hasFirebaseConfig() { return Object.values(firebaseConfig).every(Boolean); }
@@ -144,19 +144,40 @@ function AuthCard() {
   return h('section', { className: 'auth-card glass' }, h('h2', null, 'Sign in to sync your encrypted vault'), h('form', { onSubmit: submitAuth }, h('input', { name: 'email', type: 'email', placeholder: 'Email', required: true }), h('input', { name: 'password', type: 'password', placeholder: 'Password', minLength: 6, required: true }), h('button', { className: 'primary full' }, state.mode === 'signup' ? 'Create Account' : 'Login')), h('div', { className: 'auth-actions' }, h('button', { onClick: () => setState({ mode: state.mode === 'signup' ? 'login' : 'signup' }) }, state.mode === 'signup' ? 'Use login' : 'Create account'), h('button', { onClick: () => state.auth ? state.firebase.sendPasswordResetEmail(state.auth, document.querySelector('[name=email]').value) : toast('Configure Firebase first') }, 'Forgot Password')), h('button', { onClick: () => state.auth ? state.firebase.signInWithPopup(state.auth, new state.firebase.GoogleAuthProvider()) : toast('Configure Firebase first') }, 'Continue with Google'), h('button', { onClick: () => state.auth ? state.firebase.signInWithPopup(state.auth, new state.firebase.OAuthProvider('apple.com')) : toast('Configure Firebase first') }, 'Continue with Apple'));
 }
 
+function PremiumVault() {
+  const assets = [
+    ['Recovery Emails', 'Protected', 'Jun 29'], ['Phone Numbers', 'Verified', 'Jun 28'], ['Authenticator Apps', 'Hardware-ready', 'Jun 27'],
+    ['Passkeys', 'Synced', 'Jun 26'], ['Recovery Codes', 'Sealed', 'Jun 25'], ['Crypto Wallets', 'Cold backup', 'Jun 22'],
+    ['Trusted Contacts', 'Ready', 'Jun 20'], ['Family Recovery', 'Shared', 'Jun 18'], ['Digital Will', 'Attorney-ready', 'Jun 16'], ['Emergency Documents', 'Locked', 'Jun 12']
+  ];
+  return h('section', { className: `premium-vault ${state.vaultUnlocked ? 'unlocked' : 'locked'}`, 'aria-label': 'Interactive encrypted digital vault' },
+    h('button', { className: 'vault-stage', onClick: () => { setState({ vaultUnlocked: !state.vaultUnlocked }); toast(state.vaultUnlocked ? 'Digital vault locked' : 'Digital vault unlocked'); }, 'aria-pressed': state.vaultUnlocked },
+      h('span', { className: 'vault-glow-ring', 'aria-hidden': true }),
+      h('span', { className: 'vault-particles', 'aria-hidden': true }, Array.from({ length: 12 }).map((_, index) => h('i', { key: index, style: { '--p': index } }))),
+      h('span', { className: 'vault-body', 'aria-hidden': true },
+        h('span', { className: 'vault-door' }, h('span', { className: 'vault-reflection' }), h('span', { className: 'vault-wheel' }), h('span', { className: 'vault-keypad' }, Array.from({ length: 9 }).map((_, index) => h('i', { key: index }))), h('span', { className: 'vault-fingerprint' }), h('span', { className: 'vault-shield' }, '⬟'), h('span', { className: 'vault-lock' }, state.vaultUnlocked ? '🔓' : '🔒')),
+        h('span', { className: 'vault-interior' }, 'Encrypted assets')
+      ),
+      h('span', { className: 'vault-caption' }, state.vaultUnlocked ? 'Vault unlocked — recovery assets visible' : 'Click to unlock encrypted vault')
+    ),
+    h('div', { className: 'vault-assets', 'aria-live': 'polite' }, assets.map(([name, status, date]) => h('article', { key: name, className: 'vault-asset' }, h('span', { className: 'asset-status' }), h('strong', null, name), h('small', null, `Last updated ${date}`), h('ul', null, ['Encrypted', status, 'Backup verified'].map((item) => h('li', { key: item }, '✓ ', item))), h('b', null, 'AES-256'), h('i', null, state.vaultUnlocked ? '🔓' : '🔒'))))
+  );
+}
+
 function Hero() {
-  return h('section', { className: 'hero glass', id: 'dashboard' }, h('div', null, h('p', { className: 'eyebrow' }, '✦ Polished SaaS MVP'), h('h1', null, 'Never lose another account ', h('span', null, 'again.')), h('p', null, 'SecureSwitch protects your logins, recovery options, and digital identity before disaster strikes.'), h('div', { className: 'hero-actions' }, h('button', { className: 'primary', onClick: runHealthScan }, 'Run Health Check'), h('button', { onClick: () => toast('Demo walkthrough coming soon') }, 'Watch Demo'))), h('div', { className: 'safe-visual', 'aria-hidden': true }, h('span', null), h('i', null)));
+  return h('section', { className: 'hero glass', id: 'dashboard' }, h('div', null, h('p', { className: 'eyebrow' }, '✦ Polished SaaS MVP'), h('h1', null, 'Never lose another account ', h('span', null, 'again.')), h('p', null, 'SecureSwitch protects your logins, recovery options, and digital identity before disaster strikes.'), h('div', { className: 'hero-actions' }, h('button', { className: 'primary', onClick: runHealthScan }, 'Run Health Check'), h('button', { onClick: () => toast('Demo walkthrough coming soon') }, 'Watch Demo'))), h(PremiumVault));
 }
 
 function ProtectionScore() {
-  return h('section', { className: 'right-column' },
-    h('article', { className: 'score-card glass' },
-      h('p', { className: 'eyebrow score-title' }, 'Live Protection Score ⓘ'),
-      h('div', { className: 'ring', style: { '--score': `${liveProtectionScore() * 3.6}deg` } }, h('strong', null, `${liveProtectionScore()}%`), h('span', null, '▾ Excellent')),
-      h('div', { className: 'stats' }, h('span', null, h('strong', null, '50'), 'Accounts'), h('span', null, h('strong', null, '9'), 'Need Review'), h('span', null, h('strong', null, '3m'), 'Switch Plan'))
-    ),
-    h('article', { className: 'protected glass' }, h('span', { className: 'check-orb' }, '▣'), h('div', null, h('h3', null, 'You’re protected'), h('p', null, 'Great job! Keep your recovery methods up to date.')), h('b', null, '›'))
+  return h('aside', { className: 'floating-score glass', 'aria-label': 'Live Protection Score' },
+    h('div', null, h('p', { className: 'eyebrow score-title' }, 'Live Protection Score'), h('strong', null, `${liveProtectionScore()}%`), h('span', null, 'Excellent')),
+    h('div', { className: 'mini-score-ring', style: { '--score': `${liveProtectionScore() * 3.6}deg` } }),
+    h('dl', null, h('div', null, h('dt', null, 'Accounts'), h('dd', null, '50')), h('div', null, h('dt', null, 'Review'), h('dd', null, '9')), h('div', null, h('dt', null, 'Plan'), h('dd', null, '3m')))
   );
+}
+
+function ProtectedStatus() {
+  return h('article', { className: 'protected glass' }, h('span', { className: 'check-orb' }, '▣'), h('div', null, h('h3', null, 'You’re protected'), h('p', null, 'Great job! Keep your recovery methods up to date.')), h('b', null, '›'));
 }
 
 function QuickActions() {
@@ -233,10 +254,33 @@ function TopActions() { return h('header', { className: 'top-actions' }, h('butt
 
 function Shortcuts() { const cards = [['♙', 'Accounts', 'Manage and secure all your accounts', 'accounts'], ['⇄', 'Switch Mode', 'Change access in seconds', 'switch'], ['⌾', 'Blackout Mode', 'Lock down and hide your data', 'blackout'], ['▣', 'Emergency Kit', 'Access critical info anywhere', 'kit']]; return h('section', { className: 'shortcut-grid' }, cards.map(([icon, label, copy, id]) => h('a', { key: label, className: 'shortcut glass', href: `#${id}` }, h('span', null, icon), h('div', null, h('strong', null, label), h('small', null, copy)), h('b', null, '›')))); }
 
+function HealthScoreGrid() {
+  const scores = [
+    ['Recovery Readiness', 86, 'Ready for the unexpected'], ['Identity Health', 91, 'Identity packet verified'],
+    ['Encryption Strength', 98, 'AES-GCM vault active'], ['Cloud Sync', 88, 'Firebase-ready encrypted sync'],
+    ['Recovery Coverage', 84, 'Five accounts mapped'], ['Device Trust', 92, 'Trusted devices reviewed']
+  ];
+  return h('section', { className: 'health-score-grid', 'aria-label': 'Animated health scores' },
+    scores.map(([title, score, copy]) => h('article', { className: 'health-score-card glass', key: title }, h('div', { className: 'animated-ring', style: { '--score': `${score * 3.6}deg` } }, h('strong', null, `${score}%`)), h('h3', null, title), h('p', null, copy)))
+  );
+}
+
+function LiveThreatFeed() {
+  return h('section', { className: 'panel glass threat-feed', 'aria-label': 'Live cybersecurity threat feed' },
+    h('div', { className: 'panel-head' }, h('div', null, h('p', { className: 'eyebrow' }, 'Live Threat Feed'), h('h2', null, 'Recovery activity that looks real')), h('span', null, 'Live')),
+    activity.map((item, index) => { const [title, service, time] = item.split(' — '); return h('article', { className: 'threat-row', key: item, style: { '--delay': `${index * 70}ms` } }, h('span', null, index % 3 === 0 ? '✓' : index % 3 === 1 ? '⬟' : '↻'), h('div', null, h('strong', null, title), h('small', null, service)), h('time', null, time)); })
+  );
+}
+
+function FloatingAICoach() {
+  const messages = ['Your Google account is protected.', 'You still need recovery codes for Chase.', 'Your Apple ID is missing a trusted device.', 'Excellent work. Recovery readiness increased.'];
+  return h('aside', { className: 'floating-ai-coach glass', 'aria-label': 'AI Recovery Coach' }, h('p', { className: 'eyebrow' }, 'AI Recovery Coach'), h('strong', null, 'Next best actions'), messages.map((message) => h('p', { key: message }, message)), h('button', { className: 'primary', onClick: runHealthScan }, 'Review fixes'));
+}
+
 function Dashboard() {
   return h('main', { className: 'dashboard' },
-    h('div', { className: 'main-column' }, h(TopActions), h(Hero), h(Shortcuts), h('div', { className: 'lower-grid' }, h(Accounts), h(Activity)), h(IdentityHealthDashboard), h(HealthScan), h(EmergencyButton), h(RecoveryCoach), h(EmergencySimulator), h(RecoveryTimeline), h(FamilyMode), h(WeeklyReport), h(RecoveryInsights), h(IdentityDNA), h(RecoveryMap), h(AccountForm), h(SwitchMode), h(BlackoutMode), h(EmergencyKit), h(RecoveryLookup), h(Settings)),
-    h('aside', { className: 'dashboard-side' }, h(ProtectionScore), h(QuickActions), h(Readiness))
+    h('div', { className: 'main-column' }, h(TopActions), h(Hero), h(HealthScoreGrid), h(Shortcuts), h(LiveThreatFeed), h('div', { className: 'lower-grid' }, h(Accounts), h(Activity)), h(IdentityHealthDashboard), h(HealthScan), h(EmergencyButton), h(RecoveryCoach), h(EmergencySimulator), h(RecoveryTimeline), h(FamilyMode), h(WeeklyReport), h(RecoveryInsights), h(IdentityDNA), h(RecoveryMap), h(AccountForm), h(SwitchMode), h(BlackoutMode), h(EmergencyKit), h(RecoveryLookup), h(Settings)),
+    h('aside', { className: 'dashboard-side' }, h(ProtectedStatus), h(QuickActions), h(Readiness))
   );
 }
 
@@ -254,6 +298,8 @@ function SyncAndAuthPanel() {
 function App() {
   return h('div', { className: 'app-shell' },
     h(Sidebar),
+    h(ProtectionScore),
+    h(FloatingAICoach),
     h('section', { className: 'content-shell' },
       h(Dashboard),
       h(SyncAndAuthPanel),
