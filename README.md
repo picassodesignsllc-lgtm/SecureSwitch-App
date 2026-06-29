@@ -31,3 +31,48 @@ Then visit `http://127.0.0.1:4173`.
 ```bash
 npm test
 ```
+
+## Firebase setup for real authentication and cloud sync
+
+SecureSwitch can run as a static GitHub Pages app while using Firebase for real authentication and Firestore cloud sync.
+
+1. Create a Firebase project.
+2. Enable Authentication providers:
+   - Email/password
+   - Google
+   - Apple when ready
+3. Enable Cloud Firestore.
+4. Copy your Firebase web app config into `src/firebaseConfig.js`.
+5. Deploy the static files or run locally with `npm start`.
+
+Vault records are encrypted in the browser with Web Crypto AES-GCM before they are saved to Firestore. The vault passphrase is not sent to Firebase.
+
+### End-to-end recovery foundation
+
+The current product foundation focuses on five testable flows:
+
+1. A user can create an account or log in with Firebase Authentication.
+2. A signed-in user can unlock a local AES-GCM vault key from a passphrase.
+3. Recovery records are encrypted in the browser before being saved to Firestore.
+4. Signing in on another device and entering the same vault passphrase decrypts the same synced records.
+5. Recovery Score, AI Advisor, and Recovery Mode are generated from actual decrypted vault data.
+
+### SecureSwitch 3.0 recovery workflow focus
+
+SecureSwitch 3.0 should prioritize a complete recovery loop before adding broad new product areas:
+
+- Authenticated users save encrypted recovery records.
+- Recovery Score and Digital Safety Score are calculated from actual vault fields.
+- AI Advisor recommendations come from missing encrypted account metadata.
+- Recovery Mode asks what happened and generates instructions from saved accounts and trusted contacts.
+- Recovery Simulator checks whether a disaster scenario would succeed before it happens.
+
+### SecureSwitch 4.0 digital recovery platform direction
+
+The 4.0 work keeps the product focused on digital recovery outcomes:
+
+- Instant Scan summarizes how recoverable the user is across critical services.
+- AI Recovery Coach prioritizes fixes from real vault metadata.
+- Panic Mode generates emergency instructions for a selected incident.
+- Recovery Simulator lets users practice before a disaster happens.
+- Identity Timeline, Breach Radar, Digital Will, Device Center, and Identity Center are connected to encrypted vault metadata rather than standalone pages.

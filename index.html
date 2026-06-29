@@ -1,139 +1,71 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SecureSwitch — Digital Identity Control Panel</title>
+    <title>SecureSwitch — Premium Recovery Dashboard</title>
+    <meta name="description" content="SecureSwitch protects logins, recovery options, and digital identity before disaster strikes." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="src/styles.css" />
   </head>
   <body>
-    <main class="app-shell">
-      <section class="hero-card" aria-labelledby="app-title">
-        <nav class="topbar" aria-label="Primary">
-          <a class="brand" href="#app-title" aria-label="SecureSwitch home">
-            <span class="logo-mark" aria-hidden="true"><span></span></span>
-            <span>SecureSwitch</span>
-          </a>
-          <button class="biometric-button" type="button">Face ID</button>
-        </nav>
-
-        <div class="hero-content">
-          <p class="eyebrow">Zero-knowledge recovery dashboard</p>
-          <h1 id="app-title">Flip the switch on your digital security.</h1>
-          <p class="hero-copy">Manage 2FA, recovery emails, phone numbers, backup codes, and authenticator details in one encrypted control panel.</p>
-          <div class="hero-actions">
-            <a class="primary-action" href="#switch-mode">Open Switch Mode</a>
-            <a class="secondary-action" href="#vault">View vault</a>
-          </div>
-        </div>
-
-        <div class="trust-strip" aria-label="Security architecture highlights">
-          <span>End-to-end encrypted</span>
-          <span>Biometric login</span>
-          <span>Multi-device sync</span>
-        </div>
-      </section>
-
-      <section class="dashboard-grid" aria-label="SecureSwitch dashboard">
-        <article class="panel status-panel">
-          <div class="panel-header">
-            <div>
-              <p class="section-kicker">Today</p>
-              <h2>Identity circuits</h2>
+    <div id="app" aria-live="polite">
+      <div class="app-shell static-premium-preview">
+        <aside class="sidebar" aria-label="SecureSwitch navigation preview">
+          <a class="brand" href="#dashboard"><span class="logo" aria-hidden="true">0</span><span class="brand-wordmark">SecureSwitch</span><b>PRO</b></a>
+          <nav>
+            <a class="active" href="#dashboard"><span class="nav-glyph">▦</span><span>Dashboard</span></a>
+            <a href="#accounts"><span class="nav-glyph">♙</span><span>Accounts</span></a>
+            <a href="#switch"><span class="nav-glyph">⇄</span><span>Switch Mode</span></a>
+            <a href="#blackout"><span class="nav-glyph">⌾</span><span>Blackout Mode</span></a>
+            <a href="#kit"><span class="nav-glyph">▣</span><span>Emergency Kit</span></a>
+            <a href="#lookup"><span class="nav-glyph">⌕</span><span>Recovery Lookup</span></a>
+            <a href="#settings"><span class="nav-glyph">⚙</span><span>Settings</span></a>
+          </nav>
+          <article class="go-pro"><p class="eyebrow">✦ Go Pro</p><p>Unlock unlimited accounts, advanced monitoring, and priority recovery.</p><button class="primary">Upgrade Now</button></article>
+          <footer class="profile"><span>KH</span><div><strong>Keith Harrison</strong><small>keith@secureswitch.app</small></div><i>⌄</i></footer>
+        </aside>
+        <section class="content-shell">
+          <main class="dashboard">
+            <div class="main-column">
+              <header class="top-actions"><button>☾</button><button>♧<b>3</b></button><button class="primary add-account">+ Add Account</button></header>
+              <section class="hero glass" id="dashboard">
+                <div><p class="eyebrow">✦ Polished SaaS MVP</p><h1>Never lose another account <span>again.</span></h1><p>SecureSwitch protects your logins, recovery options, and digital identity before disaster strikes.</p><div class="hero-actions"><button class="primary">Run Health Check</button><button>Watch Demo</button></div></div>
+                <div class="safe-visual" aria-hidden="true"><span></span><i></i></div>
+              </section>
+              <section class="shortcut-grid">
+                <a class="shortcut glass" href="#accounts"><span>♙</span><div><strong>Accounts</strong><small>Manage and secure all your accounts</small></div><b>›</b></a>
+                <a class="shortcut glass" href="#switch"><span>⇄</span><div><strong>Switch Mode</strong><small>Change access in seconds</small></div><b>›</b></a>
+                <a class="shortcut glass" href="#blackout"><span>⌾</span><div><strong>Blackout Mode</strong><small>Lock down and hide your data</small></div><b>›</b></a>
+                <a class="shortcut glass" href="#kit"><span>▣</span><div><strong>Emergency Kit</strong><small>Access critical info anywhere</small></div><b>›</b></a>
+              </section>
+              <div class="lower-grid">
+                <section class="panel glass"><div class="panel-head"><p class="eyebrow">Your Accounts</p><a href="#accounts">View all</a></div>
+                  <article class="account-row"><span class="app-icon" style="background:#4285f4">G</span><div><strong>Google</strong><small>keith.harrison@gmail.com</small></div><b class="secure">Secure</b></article>
+                  <article class="account-row"><span class="app-icon" style="background:#e4405f">I</span><div><strong>Instagram</strong><small>@mr3rdward</small></div><b class="review">Review</b></article>
+                  <article class="account-row"><span class="app-icon" style="background:#0052ff">C</span><div><strong>Coinbase</strong><small>keith.harrison.cb.id</small></div><b class="secure">Secure</b></article>
+                  <article class="account-row"><span class="app-icon" style="background:#ff9900">A</span><div><strong>Amazon</strong><small>keith.harrison@gmail.com</small></div><b class="secure">Secure</b></article>
+                  <article class="account-row"><span class="app-icon" style="background:#4a154b">S</span><div><strong>Slack</strong><small>keith@picassodesigns.com</small></div><b class="review">Review</b></article>
+                </section>
+                <section class="panel glass activity-panel"><div class="panel-head"><p class="eyebrow">Recent Activity</p><a href="#timeline">View all</a></div>
+                  <article class="activity"><span>▣</span><div><strong>Password changed</strong><small>Google</small></div><time>2h ago</time></article>
+                  <article class="activity"><span>✉</span><div><strong>Recovery email added</strong><small>Coinbase</small></div><time>5h ago</time></article>
+                  <article class="activity"><span>⌗</span><div><strong>Account scanned</strong><small>Instagram</small></div><time>1d ago</time></article>
+                  <article class="activity"><span>⌁</span><div><strong>Backup code updated</strong><small>GitHub</small></div><time>2d ago</time></article>
+                </section>
+              </div>
             </div>
-            <span class="secure-pill">Vault locked</span>
-          </div>
-          <div class="progress-ring" aria-label="82 percent secured">
-            <span>82%</span>
-          </div>
-          <p class="muted">41 of 50 account recovery paths are verified and current.</p>
-          <div class="metrics">
-            <div><strong>18</strong><span>Phone-linked</span></div>
-            <div><strong>24</strong><span>Email-linked</span></div>
-            <div><strong>9</strong><span>Need review</span></div>
-          </div>
-        </article>
-
-        <article class="panel" id="vault">
-          <div class="panel-header">
-            <div>
-              <p class="section-kicker">Encrypted vault</p>
-              <h2>Stored recovery assets</h2>
-            </div>
-          </div>
-          <ul class="vault-list">
-            <li><span>Phone numbers</span><strong>3 saved</strong></li>
-            <li><span>Recovery emails</span><strong>5 saved</strong></li>
-            <li><span>Backup codes</span><strong>28 codes</strong></li>
-            <li><span>Authenticator info</span><strong>12 apps</strong></li>
-          </ul>
-        </article>
-
-        <article class="panel category-panel">
-          <div class="panel-header">
-            <div>
-              <p class="section-kicker">Breaker Box</p>
-              <h2>Account categories</h2>
-            </div>
-          </div>
-          <div class="category-grid" id="category-grid"></div>
-        </article>
-
-        <article class="panel lookup-panel">
-          <div class="panel-header">
-            <div>
-              <p class="section-kicker">Search by recovery path</p>
-              <h2>Linked accounts</h2>
-            </div>
-          </div>
-          <label for="recovery-filter">Phone or recovery email</label>
-          <select id="recovery-filter"></select>
-          <div class="linked-results" id="linked-results" aria-live="polite"></div>
-        </article>
-
-        <article class="panel switch-panel" id="switch-mode">
-          <div class="panel-header">
-            <div>
-              <p class="section-kicker">Switch Mode</p>
-              <h2>Change phone workflow</h2>
-            </div>
-            <button class="switch-toggle" id="switch-toggle" type="button" aria-pressed="false"><span></span></button>
-          </div>
-          <p class="muted">Generate an update checklist for every account still using your old phone number.</p>
-          <form class="phone-form" id="phone-form">
-            <label>
-              Old number
-              <input id="old-phone" type="tel" value="+1 (415) 555-0184" />
-            </label>
-            <label>
-              New number
-              <input id="new-phone" type="tel" value="+1 (628) 555-0149" />
-            </label>
-            <button class="primary-action full" type="submit">Generate checklist</button>
-          </form>
-          <div class="checklist-progress"><span id="checklist-count">0 of 0 complete</span><div><span id="checklist-bar"></span></div></div>
-          <ul class="checklist" id="checklist"></ul>
-        </article>
-
-        <article class="panel emergency-panel">
-          <div class="panel-header">
-            <div>
-              <p class="section-kicker">Blackout Mode</p>
-              <h2>Emergency recovery checklist</h2>
-            </div>
-          </div>
-          <ol class="emergency-list">
-            <li>Lock lost device and revoke active sessions.</li>
-            <li>Use trusted family recovery access if enabled.</li>
-            <li>Restore authenticator seeds from encrypted vault.</li>
-            <li>Rotate backup codes for banking, crypto, and email.</li>
-          </ol>
-        </article>
-      </section>
-    </main>
-    <script src="src/app.js"></script>
+            <aside class="dashboard-side">
+              <section class="right-column"><article class="score-card glass"><p class="eyebrow score-title">Live Protection Score ⓘ</p><div class="ring" style="--score:309.6deg"><strong>86%</strong><span>▾ Excellent</span></div><div class="stats"><span><strong>50</strong>Accounts</span><span><strong>9</strong>Need Review</span><span><strong>3m</strong>Switch Plan</span></div></article><article class="protected glass"><span class="check-orb">▣</span><div><h3>You’re protected</h3><p>Great job! Keep your recovery methods up to date.</p></div><b>›</b></article></section>
+              <section class="quick-panel glass"><p class="eyebrow">Quick Actions</p><button class="quick-row"><span>＋</span>Add New Account<b>›</b></button><button class="quick-row"><span>▣</span>Run Health Check<b>›</b></button><button class="quick-row"><span>⌁</span>Generate Backup Codes<b>›</b></button><button class="quick-row"><span>♟</span>View Recovery Contacts<b>›</b></button></section>
+              <section class="panel glass readiness-panel"><div class="panel-head"><p class="eyebrow">Recovery Readiness</p><strong>86%</strong></div><div class="progress"><span style="width:86%"></span></div><p>You’re ready for the unexpected. Keep it up!</p></section>
+            </aside>
+          </main>
+        </section>
+      </div>
+    </div>
+    <script type="module" src="src/app.js"></script>
   </body>
 </html>
