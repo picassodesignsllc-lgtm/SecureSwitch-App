@@ -1,71 +1,197 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SecureSwitch — Premium Recovery Dashboard</title>
-    <meta name="description" content="SecureSwitch protects logins, recovery options, and digital identity before disaster strikes." />
+    <title>SecureSwitch — Digital Identity Recovery SaaS</title>
+    <meta name="description" content="SecureSwitch is a polished SaaS MVP for managing account recovery, switch mode, blackout mode, and emergency kits." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="src/styles.css" />
   </head>
   <body>
-    <div id="app" aria-live="polite">
-      <div class="app-shell static-premium-preview">
-        <aside class="sidebar" aria-label="SecureSwitch navigation preview">
-          <a class="brand" href="#dashboard"><span class="logo" aria-hidden="true">0</span><span class="brand-wordmark">SecureSwitch</span><b>PRO</b></a>
-          <nav>
-            <a class="active" href="#dashboard"><span class="nav-glyph">▦</span><span>Dashboard</span></a>
-            <a href="#accounts"><span class="nav-glyph">♙</span><span>Accounts</span></a>
-            <a href="#switch"><span class="nav-glyph">⇄</span><span>Switch Mode</span></a>
-            <a href="#blackout"><span class="nav-glyph">⌾</span><span>Blackout Mode</span></a>
-            <a href="#kit"><span class="nav-glyph">▣</span><span>Emergency Kit</span></a>
-            <a href="#lookup"><span class="nav-glyph">⌕</span><span>Recovery Lookup</span></a>
-            <a href="#settings"><span class="nav-glyph">⚙</span><span>Settings</span></a>
-          </nav>
-          <article class="go-pro"><p class="eyebrow">✦ Go Pro</p><p>Unlock unlimited accounts, advanced monitoring, and priority recovery.</p><button class="primary">Upgrade Now</button></article>
-          <footer class="profile"><span>KH</span><div><strong>Keith Harrison</strong><small>keith@secureswitch.app</small></div><i>⌄</i></footer>
+    <header class="site-header">
+      <a class="brand" href="#landing" aria-label="SecureSwitch home">
+        <span class="logo-mark" aria-hidden="true"><span></span></span>
+        <span>SecureSwitch</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#dashboard">Dashboard</a>
+        <a href="#accounts">Accounts</a>
+        <a href="#switch-mode">Switch Mode</a>
+        <a href="#blackout-mode">Blackout</a>
+      </nav>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false">Dark mode</button>
+    </header>
+
+    <main>
+      <section class="hero" id="landing" aria-labelledby="app-title">
+        <div class="hero-copy-block">
+          <p class="eyebrow">Polished SaaS MVP · demo workspace</p>
+          <h1 id="app-title">The command center for account recovery chaos.</h1>
+          <p class="hero-copy">SecureSwitch helps people inventory recovery phones, emails, backup codes, and trusted contacts, then run guided workflows before a SIM swap, lost phone, or emergency lockout becomes a crisis.</p>
+          <div class="hero-actions">
+            <a class="primary-action" href="#dashboard">Launch demo</a>
+            <a class="secondary-action" href="#emergency-kit">View emergency kit</a>
+          </div>
+          <div class="trust-strip" aria-label="Security highlights">
+            <span>Zero-knowledge vault</span>
+            <span>Biometric unlock</span>
+            <span>Audit-ready checklists</span>
+          </div>
+        </div>
+        <aside class="hero-product-card" aria-label="SecureSwitch product preview">
+          <div class="mini-window-bar"><span></span><span></span><span></span></div>
+          <p class="section-kicker">Live protection score</p>
+          <div class="score-orb"><strong>86%</strong><span>secured</span></div>
+          <div class="hero-stat-grid">
+            <div><strong>50</strong><span>demo accounts</span></div>
+            <div><strong>9</strong><span>need review</span></div>
+            <div><strong>3m</strong><span>switch plan</span></div>
+          </div>
         </aside>
-        <section class="content-shell">
-          <main class="dashboard">
-            <div class="main-column">
-              <header class="top-actions"><button>☾</button><button>♧<b>3</b></button><button class="primary add-account">+ Add Account</button></header>
-              <section class="hero glass" id="dashboard">
-                <div><p class="eyebrow">✦ Polished SaaS MVP</p><h1>Never lose another account <span>again.</span></h1><p>SecureSwitch protects your logins, recovery options, and digital identity before disaster strikes.</p><div class="hero-actions"><button class="primary">Run Health Check</button><button>Watch Demo</button></div></div>
-                <div class="safe-visual" aria-hidden="true"><span></span><i></i></div>
-              </section>
-              <section class="shortcut-grid">
-                <a class="shortcut glass" href="#accounts"><span>♙</span><div><strong>Accounts</strong><small>Manage and secure all your accounts</small></div><b>›</b></a>
-                <a class="shortcut glass" href="#switch"><span>⇄</span><div><strong>Switch Mode</strong><small>Change access in seconds</small></div><b>›</b></a>
-                <a class="shortcut glass" href="#blackout"><span>⌾</span><div><strong>Blackout Mode</strong><small>Lock down and hide your data</small></div><b>›</b></a>
-                <a class="shortcut glass" href="#kit"><span>▣</span><div><strong>Emergency Kit</strong><small>Access critical info anywhere</small></div><b>›</b></a>
-              </section>
-              <div class="lower-grid">
-                <section class="panel glass"><div class="panel-head"><p class="eyebrow">Your Accounts</p><a href="#accounts">View all</a></div>
-                  <article class="account-row"><span class="app-icon" style="background:#4285f4">G</span><div><strong>Google</strong><small>keith.harrison@gmail.com</small></div><b class="secure">Secure</b></article>
-                  <article class="account-row"><span class="app-icon" style="background:#e4405f">I</span><div><strong>Instagram</strong><small>@mr3rdward</small></div><b class="review">Review</b></article>
-                  <article class="account-row"><span class="app-icon" style="background:#0052ff">C</span><div><strong>Coinbase</strong><small>keith.harrison.cb.id</small></div><b class="secure">Secure</b></article>
-                  <article class="account-row"><span class="app-icon" style="background:#ff9900">A</span><div><strong>Amazon</strong><small>keith.harrison@gmail.com</small></div><b class="secure">Secure</b></article>
-                  <article class="account-row"><span class="app-icon" style="background:#4a154b">S</span><div><strong>Slack</strong><small>keith@picassodesigns.com</small></div><b class="review">Review</b></article>
-                </section>
-                <section class="panel glass activity-panel"><div class="panel-head"><p class="eyebrow">Recent Activity</p><a href="#timeline">View all</a></div>
-                  <article class="activity"><span>▣</span><div><strong>Password changed</strong><small>Google</small></div><time>2h ago</time></article>
-                  <article class="activity"><span>✉</span><div><strong>Recovery email added</strong><small>Coinbase</small></div><time>5h ago</time></article>
-                  <article class="activity"><span>⌗</span><div><strong>Account scanned</strong><small>Instagram</small></div><time>1d ago</time></article>
-                  <article class="activity"><span>⌁</span><div><strong>Backup code updated</strong><small>GitHub</small></div><time>2d ago</time></article>
-                </section>
+      </section>
+
+      <section class="workspace" id="dashboard" aria-label="SecureSwitch SaaS dashboard">
+        <aside class="sidebar panel">
+          <div>
+            <p class="section-kicker">Workspace</p>
+            <h2>Alex Morgan</h2>
+            <p class="muted">Family plan · demo data enabled</p>
+          </div>
+          <a href="#vault">Vault</a>
+          <a href="#accounts">Accounts</a>
+          <a href="#switch-mode">Switch Mode</a>
+          <a href="#blackout-mode">Blackout Mode</a>
+          <a href="#settings">Settings</a>
+        </aside>
+
+        <section class="dashboard-grid">
+          <article class="panel status-panel">
+            <div class="panel-header">
+              <div>
+                <p class="section-kicker">Dashboard</p>
+                <h2>Identity circuits</h2>
+              </div>
+              <span class="secure-pill">Vault locked</span>
+            </div>
+            <div class="progress-ring" aria-label="86 percent secured"><span>86%</span></div>
+            <p class="muted">43 of 50 account recovery paths are verified and current. Two high-risk services still use an old phone number.</p>
+            <div class="metrics">
+              <div><strong id="phone-count">0</strong><span>Phone-linked</span></div>
+              <div><strong id="email-count">0</strong><span>Email-linked</span></div>
+              <div><strong>9</strong><span>Need review</span></div>
+            </div>
+          </article>
+
+          <article class="panel vault-panel" id="vault">
+            <div class="panel-header">
+              <div>
+                <p class="section-kicker">Encrypted vault</p>
+                <h2>Recovery assets</h2>
+              </div>
+              <button class="ghost-button" type="button">Unlock</button>
+            </div>
+            <ul class="vault-list">
+              <li><span>Phone numbers</span><strong>3 saved</strong></li>
+              <li><span>Recovery emails</span><strong>5 saved</strong></li>
+              <li><span>Backup codes</span><strong>28 codes</strong></li>
+              <li><span>Authenticator info</span><strong>12 apps</strong></li>
+            </ul>
+          </article>
+
+          <article class="panel accounts-panel" id="accounts">
+            <div class="panel-header">
+              <div>
+                <p class="section-kicker">Accounts</p>
+                <h2>Recovery map</h2>
+              </div>
+              <label class="search-label" for="account-search">Search accounts</label>
+            </div>
+            <input id="account-search" type="search" placeholder="Search by name, category, phone, or email" />
+            <div class="category-grid" id="category-grid"></div>
+            <div class="account-table" id="account-table" aria-live="polite"></div>
+          </article>
+
+          <article class="panel lookup-panel">
+            <div class="panel-header">
+              <div>
+                <p class="section-kicker">Lookup</p>
+                <h2>Linked accounts</h2>
               </div>
             </div>
-            <aside class="dashboard-side">
-              <section class="right-column"><article class="score-card glass"><p class="eyebrow score-title">Live Protection Score ⓘ</p><div class="ring" style="--score:309.6deg"><strong>86%</strong><span>▾ Excellent</span></div><div class="stats"><span><strong>50</strong>Accounts</span><span><strong>9</strong>Need Review</span><span><strong>3m</strong>Switch Plan</span></div></article><article class="protected glass"><span class="check-orb">▣</span><div><h3>You’re protected</h3><p>Great job! Keep your recovery methods up to date.</p></div><b>›</b></article></section>
-              <section class="quick-panel glass"><p class="eyebrow">Quick Actions</p><button class="quick-row"><span>＋</span>Add New Account<b>›</b></button><button class="quick-row"><span>▣</span>Run Health Check<b>›</b></button><button class="quick-row"><span>⌁</span>Generate Backup Codes<b>›</b></button><button class="quick-row"><span>♟</span>View Recovery Contacts<b>›</b></button></section>
-              <section class="panel glass readiness-panel"><div class="panel-head"><p class="eyebrow">Recovery Readiness</p><strong>86%</strong></div><div class="progress"><span style="width:86%"></span></div><p>You’re ready for the unexpected. Keep it up!</p></section>
-            </aside>
-          </main>
+            <label for="recovery-filter">Phone or recovery email</label>
+            <select id="recovery-filter"></select>
+            <div class="linked-results" id="linked-results" aria-live="polite"></div>
+          </article>
+
+          <article class="panel switch-panel" id="switch-mode">
+            <div class="panel-header">
+              <div>
+                <p class="section-kicker">Switch Mode</p>
+                <h2>Change phone workflow</h2>
+              </div>
+              <button class="switch-toggle" id="switch-toggle" type="button" aria-pressed="false" aria-label="Toggle Switch Mode"><span></span></button>
+            </div>
+            <p class="muted">Generate an update checklist for every account still using your old phone number.</p>
+            <form class="phone-form" id="phone-form">
+              <label>Old number<input id="old-phone" type="tel" value="+1 (415) 555-0184" /></label>
+              <label>New number<input id="new-phone" type="tel" value="+1 (628) 555-0149" /></label>
+              <button class="primary-action full" type="submit">Generate checklist</button>
+            </form>
+            <div class="checklist-progress"><span id="checklist-count">0 of 0 complete</span><div><span id="checklist-bar"></span></div></div>
+            <ul class="checklist" id="checklist"></ul>
+          </article>
+
+          <article class="panel blackout-panel" id="blackout-mode">
+            <div class="panel-header">
+              <div>
+                <p class="section-kicker">Blackout Mode</p>
+                <h2>Emergency lockdown</h2>
+              </div>
+              <button class="danger-button" id="blackout-button" type="button" aria-pressed="false">Arm blackout</button>
+            </div>
+            <p class="muted" id="blackout-status">Blackout Mode is standing by. Arm it to prioritize lockouts, session revokes, and authenticator recovery.</p>
+            <ol class="emergency-list">
+              <li>Lock lost device and revoke active sessions.</li>
+              <li>Use trusted family recovery access if enabled.</li>
+              <li>Restore authenticator seeds from encrypted vault.</li>
+              <li>Rotate backup codes for banking, crypto, and email.</li>
+            </ol>
+          </article>
+
+          <article class="panel emergency-panel" id="emergency-kit">
+            <div class="panel-header">
+              <div>
+                <p class="section-kicker">Emergency kit</p>
+                <h2>Shareable recovery packet</h2>
+              </div>
+              <span class="secure-pill">Ready</span>
+            </div>
+            <div class="kit-grid">
+              <div><strong>Trusted contacts</strong><span>Jordan, Priya</span></div>
+              <div><strong>Offline codes</strong><span>Printed Jun 2026</span></div>
+              <div><strong>Recovery letter</strong><span>Notarized copy saved</span></div>
+            </div>
+          </article>
+
+          <article class="panel settings-panel" id="settings">
+            <div class="panel-header">
+              <div>
+                <p class="section-kicker">Settings</p>
+                <h2>Workspace controls</h2>
+              </div>
+            </div>
+            <div class="settings-grid">
+              <label><input type="checkbox" checked /> Biometric unlock required</label>
+              <label><input type="checkbox" checked /> Monthly recovery audit reminders</label>
+              <label><input type="checkbox" /> Family delegate approval</label>
+            </div>
+          </article>
         </section>
-      </div>
-    </div>
-    <script type="module" src="src/app.js"></script>
+      </section>
+    </main>
+    <script src="src/app.js"></script>
   </body>
 </html>
