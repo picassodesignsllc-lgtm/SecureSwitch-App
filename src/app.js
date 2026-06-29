@@ -9,10 +9,25 @@ const demoAccounts = [
   { name: 'Slack', handle: 'keith@picassodesigns.com', status: 'Review', color: '#4a154b', category: 'Business', phone: '+1 (628) 555-0149', email: 'keith@picassodesigns.com', recoveryEmail: 'admin@picassodesigns.com', recoveryPhone: '+1 (628) 555-0149', backupCodes: '', trustedContacts: 'IT admin', authenticator: 'Okta Verify', ready: false }
 ];
 const activity = ['Password changed — Google — 2h ago', 'Recovery email added — Coinbase — 5h ago', 'Account scanned — Instagram — 1d ago', 'Backup code updated — GitHub — 2d ago'];
+const timelineEvents = [
+  { date: 'June 29', title: 'Phone changed', status: 'Done' },
+  { date: 'June 29', title: 'Recovery email updated', status: 'Done' },
+  { date: 'June 29', title: 'Google verified', status: 'Done' },
+  { date: 'June 29', title: 'Coinbase still pending', status: 'Review' },
+  { date: 'June 29', title: 'Instagram completed', status: 'Done' },
+  { date: 'June 29', title: 'Bank accounts verified', status: 'Done' },
+  { date: 'June 29', title: 'Recovery score 82% → 91%', status: 'Improved' }
+];
+const familyMembers = [
+  { name: 'Dad', score: 92, note: 'Recovery plan verified' },
+  { name: 'Mom', score: 81, note: 'Needs backup code refresh' },
+  { name: 'Brother', score: 68, note: 'Missing trusted contact' },
+  { name: 'Grandma', score: 34, note: '⚠ No recovery phone' }
+];
 let React;
 let root;
 
-const state = { user: null, auth: null, db: null, firebase: null, vaultKey: null, mode: 'login', accounts: demoAccounts, selectedRecovery: '+1 (415) 555-0184', switchOld: '+1 (415) 555-0184', switchNew: '+1 (628) 555-0149', blackoutArmed: false, toast: 'Ready' };
+const state = { user: null, auth: null, db: null, firebase: null, vaultKey: null, mode: 'login', accounts: demoAccounts, selectedRecovery: '+1 (415) 555-0184', switchOld: '+1 (415) 555-0184', switchNew: '+1 (628) 555-0149', blackoutArmed: false, emergencyActive: false, scanComplete: false, aiStep: 0, toast: 'Ready' };
 const h = (...args) => React.createElement(...args);
 
 function hasFirebaseConfig() { return Object.values(firebaseConfig).every(Boolean); }
@@ -81,9 +96,17 @@ function averageScore() { return Math.round(state.accounts.reduce((sum, account)
 function reviewCount() { return state.accounts.filter((account) => account.status === 'Review' || scoreFor(account) < 80).length; }
 function linkedAccounts() { return state.accounts.filter((account) => [account.phone, account.email, account.recoveryPhone, account.recoveryEmail].includes(state.selectedRecovery)); }
 function switchAccounts() { return state.accounts.filter((account) => account.phone === state.switchOld || account.recoveryPhone === state.switchOld); }
+function weakAccounts() { return state.accounts.filter((account) => scoreFor(account) < 90 || account.status === 'Review'); }
+function duplicatedRecoveryEmails() {
+  const counts = state.accounts.reduce((map, account) => { const email = account.recoveryEmail || account.email; if (email) map[email] = (map[email] || 0) + 1; return map; }, {});
+  return Object.values(counts).filter((count) => count > 1).reduce((sum, count) => sum + count, 0);
+}
+function oldPhoneAccounts() { return state.accounts.filter((account) => account.phone === state.switchOld || account.recoveryPhone === state.switchOld); }
+function riskScore() { return Math.min(10, Math.round(((reviewCount() * 1.7) + (oldPhoneAccounts().length * 0.8) + duplicatedRecoveryEmails()) * 10) / 10); }
+function runHealthScan() { setState({ scanComplete: true }); toast(`Recovery Health Scan complete: ${averageScore()}%`); }
 
 function Sidebar() {
-  const links = [['Dashboard', 'dashboard'], ['Accounts', 'accounts'], ['Switch Mode', 'switch'], ['Blackout Mode', 'blackout'], ['Emergency Kit', 'kit'], ['Recovery Lookup', 'lookup'], ['Settings', 'settings']];
+  const links = [['Dashboard', 'dashboard'], ['Accounts', 'accounts'], ['Health Scan', 'scan'], ['Recovery Timeline', 'timeline'], ['Switch AI', 'switch-ai'], ['Family Mode', 'family'], ['Switch Mode', 'switch'], ['Blackout Mode', 'blackout'], ['Emergency Kit', 'kit'], ['Recovery Lookup', 'lookup'], ['Settings', 'settings']];
   return h('aside', { className: 'sidebar' },
     h('a', { className: 'brand', href: '#dashboard' }, h('span', { className: 'logo' }, 'S'), h('span', null, 'SecureSwitch'), h('b', null, 'PRO')),
     h('nav', null, links.map(([label, id]) => h('a', { key: id, href: `#${id}` }, label))),
@@ -97,15 +120,21 @@ function AuthCard() {
 }
 
 function Hero() {
-  return h('section', { className: 'hero glass', id: 'dashboard' }, h('div', null, h('p', { className: 'eyebrow' }, 'Premium recovery command center'), h('h1', null, 'Never lose another account again.'), h('p', null, 'SecureSwitch protects your logins, recovery options, and digital identity before disaster strikes.'), h('div', { className: 'hero-actions' }, h('button', { className: 'primary', onClick: () => toast(`Health check complete: ${averageScore()}%`) }, 'Run Health Check'), h('button', { onClick: () => toast('Demo walkthrough coming soon') }, 'Watch Demo'))), h('div', { className: 'safe-visual', 'aria-hidden': true }, h('span', null), h('i', null)));
+  return h('section', { className: 'hero glass', id: 'dashboard' }, h('div', null, h('p', { className: 'eyebrow' }, 'Premium recovery command center'), h('h1', null, 'Never lose another account again.'), h('p', null, 'SecureSwitch protects your logins, recovery options, and digital identity before disaster strikes.'), h('div', { className: 'hero-actions' }, h('button', { className: 'primary', onClick: runHealthScan }, '🚀 Recovery Health Scan'), h('button', { onClick: () => toast('Demo walkthrough coming soon') }, 'Watch Demo'))), h('div', { className: 'safe-visual', 'aria-hidden': true }, h('span', null), h('i', null)));
 }
 
 function ProtectionScore() {
-  return h('section', { className: 'right-column' }, h('article', { className: 'score-card glass' }, h('div', { className: 'ring', style: { '--score': `${averageScore() * 3.6}deg` } }, h('strong', null, `${averageScore()}%`)), h('h3', null, 'Excellent'), h('div', { className: 'stats' }, h('span', null, `${state.accounts.length} Accounts`), h('span', null, `${reviewCount()} Need Review`), h('span', null, '3m Switch Plan'))), h('article', { className: 'protected glass' }, h('h3', null, 'You’re protected'), h('p', null, 'Great job! Keep your recovery methods up to date.')));
+  return h('section', { className: 'right-column' }, h('article', { className: 'score-card glass' }, h('div', { className: 'ring', style: { '--score': `${averageScore() * 3.6}deg` } }, h('strong', null, `${averageScore()}%`)), h('p', { className: 'eyebrow' }, 'Recovery Health'), h('h3', null, '↑ +5 this week'), h('div', { className: 'stats' }, h('span', null, `${state.accounts.length} Accounts`), h('span', null, `${reviewCount()} Need Review`), h('span', null, '3m Switch Plan'))), h('article', { className: 'protected glass' }, h('h3', null, 'You’re protected'), h('p', null, 'Great job! Keep your recovery methods up to date.')));
 }
 
 function QuickActions() {
-  return h('section', { className: 'quick-grid' }, ['Add New Account', 'Run Health Check', 'Generate Backup Codes', 'View Recovery Contacts'].map((label) => h('button', { key: label, className: 'quick-card', onClick: () => toast(label) }, label)));
+  const actions = [
+    ['Add New Account', () => location.hash = 'accounts'],
+    ['Recovery Health Scan', runHealthScan],
+    ['PHONE STOLEN', () => setState({ emergencyActive: true })],
+    ['View Recovery Contacts', () => location.hash = 'kit']
+  ];
+  return h('section', { className: 'quick-grid' }, actions.map(([label, action]) => h('button', { key: label, className: label === 'PHONE STOLEN' ? 'quick-card emergency-action' : 'quick-card', onClick: action }, label)));
 }
 
 function AccountCard({ account }) {
@@ -138,12 +167,27 @@ function EmergencyKit() {
   return h('section', { className: 'panel glass', id: 'kit' }, h('p', { className: 'eyebrow' }, 'Emergency Kit'), h('h2', null, 'Ready packet'), h('div', { className: 'kit-grid' }, ['Trusted contacts', 'Offline backup codes', 'Recovery letter', 'Insurance notes'].map((item) => h('div', { key: item }, h('strong', null, item), h('small', null, 'Ready')))));
 }
 
+function HealthScan() {
+  const scanned = ['Google ✓', 'Apple ✓', 'Coinbase ⚠', 'Instagram ⚠', 'Banking ✓'];
+  const gaps = [`${oldPhoneAccounts().length} still use an old phone`, `${duplicatedRecoveryEmails()} recovery emails are duplicated`, 'Coinbase has no trusted contacts', 'Apple ID has no backup key'];
+  return h('section', { className: 'panel glass scan-panel', id: 'scan' }, h('div', { className: 'panel-head' }, h('div', null, h('p', { className: 'eyebrow' }, 'Recovery Health Scan'), h('h2', null, 'Analyze my recovery health')), h('button', { className: 'primary', onClick: runHealthScan }, state.scanComplete ? 'Scan Again' : 'Analyze my recovery health')), state.scanComplete ? h('div', { className: 'scan-results' }, h('div', { className: 'scan-services' }, scanned.map((item) => h('span', { key: item }, item))), h('h3', null, `Overall Recovery Health ${averageScore()}%`), h('p', null, `Fix ${reviewCount()} accounts to move closer to 100%. Estimated completion: 12 minutes.`), h('ul', null, gaps.map((gap) => h('li', { key: gap }, gap))), h('strong', { className: 'risk-score' }, `Risk Score: ${riskScore()} / 10`)) : h('p', { className: 'muted' }, 'One click scans every saved account, calculates your recovery score, finds weak points, builds a checklist, and celebrates progress.'));
+}
+function EmergencyButton() {
+  const steps = ['Revoke active sessions', 'Open Apple and Google recovery links', 'Notify trusted contacts', 'Export emergency checklist', 'Freeze crypto checklist', 'Call carrier', 'Save police report number'];
+  return h('section', { className: 'panel glass emergency-panel' }, h('p', { className: 'eyebrow' }, 'Emergency Button'), h('h2', null, 'PHONE STOLEN'), h('button', { className: 'danger full', onClick: () => setState({ emergencyActive: !state.emergencyActive }) }, state.emergencyActive ? 'Emergency checklist active' : 'Start emergency recovery'), state.emergencyActive && h('ol', { className: 'mini-list emergency-list' }, steps.map((step) => h('li', { key: step }, step))));
+}
+function SwitchAI() {
+  const steps = ['Lock Find My iPhone — Estimated: 30 seconds', 'Secure Google and recovery email', 'Lock Coinbase and banking apps', 'Review Instagram and social accounts', 'Done — export recovery summary'];
+  return h('section', { className: 'panel glass ai-panel', id: 'switch-ai' }, h('p', { className: 'eyebrow' }, 'Switch AI'), h('h2', null, '“I lost my iPhone.”'), h('p', null, `Step ${state.aiStep + 1}: ${steps[state.aiStep]}`), h('button', { className: 'primary', onClick: () => setState({ aiStep: Math.min(state.aiStep + 1, steps.length - 1) }) }, 'Next →'));
+}
+function RecoveryTimeline() { return h('section', { className: 'panel glass timeline-panel', id: 'timeline' }, h('p', { className: 'eyebrow' }, 'Recovery Timeline'), h('h2', null, 'Progress people can feel'), h('div', { className: 'timeline-list' }, timelineEvents.map((event) => h('article', { key: event.title }, h('time', null, event.date), h('span', null, event.title), h('b', null, event.status))))); }
+function FamilyMode() { return h('section', { className: 'panel glass family-panel', id: 'family' }, h('p', { className: 'eyebrow' }, 'Family Mode'), h('h2', null, 'Everybody protected'), familyMembers.map((member) => h('article', { className: 'family-row', key: member.name }, h('strong', null, member.name), h('span', null, `${member.score}%`), h('small', null, member.note)))); }
 function Activity() { return h('section', { className: 'panel glass' }, h('p', { className: 'eyebrow' }, 'Recent Activity'), activity.map((item) => h('p', { className: 'activity', key: item }, item))); }
 function Readiness() { return h('section', { className: 'panel glass' }, h('p', { className: 'eyebrow' }, 'Recovery Readiness'), h('h2', null, `${averageScore()}%`), h('div', { className: 'progress' }, h('span', { style: { width: `${averageScore()}%` } })), h('p', null, 'You’re ready for the unexpected. Keep it up!')); }
 function Settings() { return h('section', { className: 'panel glass', id: 'settings' }, h('p', { className: 'eyebrow' }, 'Settings'), h('h2', null, 'Workspace preferences'), ['Dark mode', 'Notifications', 'Privacy', 'Data export'].map((item) => h('label', { key: item }, h('input', { type: 'checkbox', defaultChecked: true }), item))); }
 
 function Dashboard() {
-  return h('main', { className: 'dashboard' }, h('div', { className: 'main-column' }, h(Hero), h(QuickActions), h('section', { className: 'shortcut-grid' }, ['Accounts', 'Switch Mode', 'Blackout Mode', 'Emergency Kit'].map((label) => h('a', { key: label, className: 'shortcut glass', href: `#${label.toLowerCase().split(' ')[0]}` }, label))), h(Accounts), h(AccountForm), h(SwitchMode), h(BlackoutMode), h(EmergencyKit), h(RecoveryLookup), h(Settings)), h('aside', { className: 'dashboard-side' }, h(ProtectionScore), h(Activity), h(Readiness)));
+  return h('main', { className: 'dashboard' }, h('div', { className: 'main-column' }, h(Hero), h(QuickActions), h(HealthScan), h(EmergencyButton), h(SwitchAI), h(RecoveryTimeline), h(FamilyMode), h('section', { className: 'shortcut-grid' }, [['Accounts', 'accounts'], ['Switch Mode', 'switch'], ['Blackout Mode', 'blackout'], ['Emergency Kit', 'kit']].map(([label, id]) => h('a', { key: label, className: 'shortcut glass', href: `#${id}` }, label))), h(Accounts), h(AccountForm), h(SwitchMode), h(BlackoutMode), h(EmergencyKit), h(RecoveryLookup), h(Settings)), h('aside', { className: 'dashboard-side' }, h(ProtectionScore), h(Activity), h(Readiness)));
 }
 
 function App() {
