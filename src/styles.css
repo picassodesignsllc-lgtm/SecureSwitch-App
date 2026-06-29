@@ -54,6 +54,46 @@ button { cursor: pointer; }
   grid-template-columns: 292px minmax(0, 1fr);
   min-height: 100vh;
 }
+:root[data-theme="dark"] body { background: linear-gradient(145deg, #030712, #081426 50%, #0b1b31); }
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  border-right: 1px solid var(--panel-line);
+  background: linear-gradient(180deg, rgba(6, 12, 29, 0.94), rgba(10, 14, 32, 0.78));
+  backdrop-filter: blur(24px);
+  z-index: 5;
+}
+
+.brand { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.brand-mark {
+  width: 46px;
+  height: 46px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 16px;
+  color: white;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  box-shadow: var(--glow);
+}
+.brand-title { margin: 0; font-weight: 900; letter-spacing: -0.04em; }
+.brand-subtitle { margin: 2px 0 0; color: var(--muted); font-size: 0.78rem; }
+.pro-badge, .status-pill {
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: #b9efff;
+  background: rgba(56, 189, 248, 0.12);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
 
 .sidebar {
   position: sticky;
