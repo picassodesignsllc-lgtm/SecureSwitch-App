@@ -17,12 +17,16 @@ for (const width of ['1260px', '1024px', '390px']) {
   if (!css.includes(`max-width: ${width}`)) throw new Error(`Missing responsive overlap check breakpoint: ${width}`);
 }
 
-for (const component of ['h(ProtectedStatus)', 'h(QuickActions)', 'h(Readiness)', 'h(FloatingAICoach)']) {
+for (const component of ['h(Activity)', 'h(FloatingAICoach)', 'h(Readiness)', 'h(QuickActions)', 'h(EmergencyKitSummary)', 'h(SuggestedFixes)', 'h(LiveThreatFeed)', 'h(ProtectedStatus)']) {
   if (!app.includes(component)) throw new Error(`Missing dashboard-side component: ${component}`);
 }
 
-if (!app.includes("h('aside', { className: 'dashboard-side' }, h(ProtectedStatus), h(QuickActions), h(Readiness), h(FloatingAICoach))")) {
-  throw new Error('Protected, Quick Actions, Readiness, and AI Coach must stay inside dashboard-side grid.');
+if (!app.includes("h('aside', { className: 'dashboard-side' }, h(Activity), h(FloatingAICoach), h(Readiness), h(QuickActions), h(EmergencyKitSummary), h(SuggestedFixes), h(LiveThreatFeed), h(ProtectedStatus))")) {
+  throw new Error('Right intelligence widgets must stay inside dashboard-side grid.');
 }
 
-console.log('Layout verification passed: right-rail cards are in normal grid flow with responsive breakpoints.');
+for (const required of ['grid-template-columns: minmax(520px, 1fr) 360px', 'repeat(auto-fit, minmax(160px, 1fr))', 'min-width: 120px']) {
+  if (!css.includes(required)) throw new Error(`Missing responsive command-center layout rule: ${required}`);
+}
+
+console.log('Layout verification passed: right rail widgets are in normal grid flow with responsive command-center rules.');

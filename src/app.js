@@ -144,7 +144,7 @@ function AuthCard() {
   return h('section', { className: 'auth-card glass' }, h('h2', null, 'Sign in to sync your encrypted vault'), h('form', { onSubmit: submitAuth }, h('input', { name: 'email', type: 'email', placeholder: 'Email', required: true }), h('input', { name: 'password', type: 'password', placeholder: 'Password', minLength: 6, required: true }), h('button', { className: 'primary full' }, state.mode === 'signup' ? 'Create Account' : 'Login')), h('div', { className: 'auth-actions' }, h('button', { onClick: () => setState({ mode: state.mode === 'signup' ? 'login' : 'signup' }) }, state.mode === 'signup' ? 'Use login' : 'Create account'), h('button', { onClick: () => state.auth ? state.firebase.sendPasswordResetEmail(state.auth, document.querySelector('[name=email]').value) : toast('Configure Firebase first') }, 'Forgot Password')), h('button', { onClick: () => state.auth ? state.firebase.signInWithPopup(state.auth, new state.firebase.GoogleAuthProvider()) : toast('Configure Firebase first') }, 'Continue with Google'), h('button', { onClick: () => state.auth ? state.firebase.signInWithPopup(state.auth, new state.firebase.OAuthProvider('apple.com')) : toast('Configure Firebase first') }, 'Continue with Apple'));
 }
 
-function PremiumVault() {
+function VaultHeroVisual() {
   const assets = [
     ['Recovery Emails', 'Protected', 'Jun 29'], ['Phone Numbers', 'Verified', 'Jun 28'], ['Authenticator Apps', 'Hardware-ready', 'Jun 27'],
     ['Passkeys', 'Synced', 'Jun 26'], ['Recovery Codes', 'Sealed', 'Jun 25'], ['Crypto Wallets', 'Cold backup', 'Jun 22'],
@@ -165,7 +165,7 @@ function PremiumVault() {
 }
 
 function Hero() {
-  return h('section', { className: 'hero glass', id: 'dashboard' }, h('div', null, h('p', { className: 'eyebrow' }, '✦ Polished SaaS MVP'), h('h1', null, 'Never lose another account ', h('span', null, 'again.')), h('p', null, 'SecureSwitch protects your logins, recovery options, and digital identity before disaster strikes.'), h('div', { className: 'hero-actions' }, h('button', { className: 'primary', onClick: runHealthScan }, 'Run Health Check'), h('button', { onClick: () => toast('Demo walkthrough coming soon') }, 'Watch Demo'))), h(PremiumVault));
+  return h('section', { className: 'hero glass', id: 'dashboard' }, h('div', null, h('p', { className: 'eyebrow' }, '✦ Polished SaaS MVP'), h('h1', null, 'Never lose another account ', h('span', null, 'again.')), h('p', null, 'SecureSwitch protects your logins, recovery options, and digital identity before disaster strikes.'), h('div', { className: 'hero-actions' }, h('button', { className: 'primary', onClick: runHealthScan }, 'Run Health Check'), h('button', { onClick: () => toast('Demo walkthrough coming soon') }, 'Watch Demo'))), h(VaultHeroVisual));
 }
 
 function ProtectionScore() {
@@ -218,6 +218,15 @@ function RecoveryLookup() {
 
 function EmergencyKit() {
   return h('section', { className: 'panel glass', id: 'kit' }, h('p', { className: 'eyebrow' }, 'Emergency Kit'), h('h2', null, 'Ready packet'), h('div', { className: 'kit-grid' }, ['Trusted contacts', 'Offline backup codes', 'Recovery letter', 'Insurance notes'].map((item) => h('div', { key: item }, h('strong', null, item), h('small', null, 'Ready')))));
+}
+
+function EmergencyKitSummary() {
+  return h('section', { className: 'panel glass emergency-summary' }, h('p', { className: 'eyebrow' }, 'Emergency Kit'), h('h2', null, 'Ready to export'), h('p', null, 'Trusted contacts, offline backup codes, recovery letter, and insurance notes are prepared.'), h('a', { className: 'rail-link', href: '#kit' }, 'Open kit →'));
+}
+
+function SuggestedFixes() {
+  const fixes = ['Add Chase recovery codes', 'Verify Apple trusted device', 'Rotate Instagram backup email'];
+  return h('section', { className: 'panel glass suggested-fixes' }, h('p', { className: 'eyebrow' }, 'Suggested Fixes'), h('h2', null, 'Next 7 minutes'), fixes.map((fix) => h('button', { key: fix, onClick: () => toast(`${fix} workflow started`) }, h('span', null, '✦'), fix)));
 }
 
 function ScoreRing({ item }) { return h('article', { className: 'mini-ring-card' }, h('div', { className: 'mini-ring', style: { '--ring': `${item.score * 3.6}deg`, '--ring-color': item.color } }, h('strong', null, item.score)), h('h3', null, item.label), h('p', null, item.explanation), h('small', null, item.recommendation)); }
@@ -279,8 +288,8 @@ function FloatingAICoach() {
 
 function Dashboard() {
   return h('main', { className: 'dashboard' },
-    h('div', { className: 'main-column' }, h(TopActions), h(Hero), h(HealthScoreGrid), h(Shortcuts), h(LiveThreatFeed), h('div', { className: 'lower-grid' }, h(Accounts), h(Activity)), h(IdentityHealthDashboard), h(HealthScan), h(EmergencyButton), h(RecoveryCoach), h(EmergencySimulator), h(RecoveryTimeline), h(FamilyMode), h(WeeklyReport), h(RecoveryInsights), h(IdentityDNA), h(RecoveryMap), h(AccountForm), h(SwitchMode), h(BlackoutMode), h(EmergencyKit), h(RecoveryLookup), h(Settings)),
-    h('aside', { className: 'dashboard-side' }, h(ProtectedStatus), h(QuickActions), h(Readiness), h(FloatingAICoach))
+    h('div', { className: 'main-column' }, h(TopActions), h(Hero), h(HealthScoreGrid), h(Shortcuts), h('div', { className: 'lower-grid' }, h(Accounts)), h(IdentityHealthDashboard), h(HealthScan), h(EmergencyButton), h(RecoveryCoach), h(EmergencySimulator), h(RecoveryTimeline), h(FamilyMode), h(WeeklyReport), h(RecoveryInsights), h(IdentityDNA), h(RecoveryMap), h(AccountForm), h(SwitchMode), h(BlackoutMode), h(EmergencyKit), h(RecoveryLookup), h(Settings)),
+    h('aside', { className: 'dashboard-side' }, h(Activity), h(FloatingAICoach), h(Readiness), h(QuickActions), h(EmergencyKitSummary), h(SuggestedFixes), h(LiveThreatFeed), h(ProtectedStatus))
   );
 }
 
