@@ -43,3 +43,16 @@ for (const requiredFlow of ['DemoModeBanner', 'OnboardingPanel', 'RecoveryWizard
 }
 
 console.log('Layout verification passed: right rail, fixed score widget, readable account cards, and product states are guarded.');
+for (const component of ['h(Activity)', 'h(FloatingAICoach)', 'h(Readiness)', 'h(QuickActions)', 'h(EmergencyKitSummary)', 'h(SuggestedFixes)', 'h(LiveThreatFeed)', 'h(ProtectedStatus)']) {
+  if (!app.includes(component)) throw new Error(`Missing dashboard-side component: ${component}`);
+}
+
+if (!app.includes("h('aside', { className: 'dashboard-side' }, h(Activity), h(FloatingAICoach), h(Readiness), h(QuickActions), h(EmergencyKitSummary), h(SuggestedFixes), h(LiveThreatFeed), h(ProtectedStatus))")) {
+  throw new Error('Right intelligence widgets must stay inside dashboard-side grid.');
+}
+
+for (const required of ['grid-template-columns: minmax(520px, 1fr) 360px', 'repeat(auto-fit, minmax(160px, 1fr))', 'min-width: 120px']) {
+  if (!css.includes(required)) throw new Error(`Missing responsive command-center layout rule: ${required}`);
+}
+
+console.log('Layout verification passed: right rail widgets are in normal grid flow with responsive command-center rules.');
