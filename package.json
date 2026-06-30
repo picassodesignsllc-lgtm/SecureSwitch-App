@@ -6,6 +6,9 @@
   "scripts": {
     "start": "python3 -m http.server 4173",
     "build": "node scripts/build.mjs",
+    "test": "node --check src/app.js && node --check src/crypto.js && node --check src/recoveryEngine.js && node --check scripts/build.mjs && node --check scripts/verify-layout.mjs && node --check scripts/audit-rendered-dom.mjs",
+    "verify:layout": "node scripts/verify-layout.mjs",
+    "audit:dom": "node scripts/audit-rendered-dom.mjs"
     "test": "node --check src/app.js && node --check src/crypto.js && node --check scripts/build.mjs && node --check scripts/verify-layout.mjs",
     "verify:layout": "node scripts/verify-layout.mjs"
   },
@@ -16,5 +19,6 @@
     "vault"
   ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "type": "module"
 }

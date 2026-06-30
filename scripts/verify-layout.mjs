@@ -17,6 +17,32 @@ for (const width of ['1260px', '1024px', '390px']) {
   if (!css.includes(`max-width: ${width}`)) throw new Error(`Missing responsive overlap check breakpoint: ${width}`);
 }
 
+for (const component of ['h(ProtectionScore)', 'h(ProtectedStatus)', 'h(QuickActions)', 'h(Readiness)', 'h(Activity)', 'h(FloatingAICoach)', 'h(LiveThreatFeed)', 'h(SuggestedFixes)']) {
+  if (!app.includes(component)) throw new Error(`Missing dashboard-side component: ${component}`);
+}
+
+if (!app.includes("h('aside', { className: 'dashboard-side' }, h(ProtectionScore), h(ProtectedStatus), h(QuickActions), h(Readiness), h(FloatingAICoach), h(LiveThreatFeed), h(SuggestedFixes))")) {
+  throw new Error('Reference right rail widgets must stay inside dashboard-side grid.');
+}
+
+for (const required of ['grid-template-columns: var(--reference-sidebar) minmax(0, 1fr)', 'gap: 32px', 'max-width: 1800px', 'grid-template-columns: minmax(0, 1fr) var(--reference-rail)', 'repeat(auto-fit, minmax(160px, 1fr))', 'min-width: 0', '--reference-sidebar: 260px', '--reference-rail: 360px', 'position: sticky !important', 'word-break: normal']) {
+  if (!css.includes(required)) throw new Error(`Missing responsive command-center layout rule: ${required}`);
+}
+
+const rightRailCount = (app.match(/h\(ProtectionScore\)|h\(ProtectedStatus\)|h\(QuickActions\)|h\(Readiness\)|h\(FloatingAICoach\)|h\(LiveThreatFeed\)|h\(SuggestedFixes\)/g) ?? []).length;
+if (rightRailCount !== 7) throw new Error(`Expected 7 right-rail widgets, found ${rightRailCount}`);
+
+for (const forbidden of ['writing-mode', 'word-break: break-all']) {
+  if (css.includes(forbidden)) throw new Error(`Account cards must not use broken vertical text styling: ${forbidden}`);
+}
+if (!app.includes("className: 'empty-state'")) throw new Error('Account empty state must render from the app.');
+if (!app.includes("className: 'loading-state'")) throw new Error('Loading state must render from the app.');
+if (!app.includes("className: 'error-state'")) throw new Error('Error state must render from the app.');
+for (const requiredFlow of ['DemoModeBanner', 'OnboardingPanel', 'RecoveryWizardMVP', 'recoveryPlaybooks']) {
+  if (!app.includes(requiredFlow)) throw new Error(`Missing MVP flow: ${requiredFlow}`);
+}
+
+console.log('Layout verification passed: right rail, fixed score widget, readable account cards, and product states are guarded.');
 for (const component of ['h(Activity)', 'h(FloatingAICoach)', 'h(Readiness)', 'h(QuickActions)', 'h(EmergencyKitSummary)', 'h(SuggestedFixes)', 'h(LiveThreatFeed)', 'h(ProtectedStatus)']) {
   if (!app.includes(component)) throw new Error(`Missing dashboard-side component: ${component}`);
 }
