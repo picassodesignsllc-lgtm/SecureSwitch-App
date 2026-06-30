@@ -13,7 +13,7 @@ for (const required of ['display: grid', 'gap: 18px']) {
   if (!protectionPanel.includes(required)) throw new Error(`Right protection panel missing layout guard: ${required}`);
 }
 
-for (const width of ['1260px', '1024px', '768px', '480px', '390px']) {
+for (const width of ['1260px', '1024px', '768px', '480px', '414px', '390px', '375px', '320px']) {
   if (!css.includes(`max-width: ${width}`)) throw new Error(`Missing responsive overlap check breakpoint: ${width}`);
 }
 
@@ -32,6 +32,11 @@ for (const required of ['grid-template-columns: var(--reference-sidebar) minmax(
 const rightRailCount = (app.match(/h\(ProtectionScore\)|h\(QuickActions\)|h\(SuggestedFixes\)/g) ?? []).length;
 if (rightRailCount !== 3) throw new Error(`Expected 3 focused right-rail widgets, found ${rightRailCount}`);
 
+
+
+for (const requiredNativeMobileRule of ['width: calc(100% - 24px)', 'max-width: 440px', 'account-row.collapsed .monitoring-grid', 'grid-template-columns: repeat(5, minmax(0, 1fr))', 'touch-action: manipulation']) {
+  if (!css.includes(requiredNativeMobileRule)) throw new Error(`Missing native mobile polish guard: ${requiredNativeMobileRule}`);
+}
 
 for (const requiredMobileRule of ['overflow-x: hidden', 'grid-template-columns: repeat(5, minmax(0, 1fr))', 'padding-bottom: calc(76px + env(safe-area-inset-bottom))', 'font-size: min(1rem, 16px)', 'width: 100% !important; min-width: 0']) {
   if (!css.includes(requiredMobileRule)) throw new Error(`Missing mobile-first guard: ${requiredMobileRule}`);

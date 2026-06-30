@@ -4319,3 +4319,83 @@ img, svg, canvas, video { max-width: 100%; }
   .status-pill { font-size: .62rem; padding: .22rem .48rem; }
   .svg-chart-card svg { height: 58px; }
 }
+
+/* Phase 21 native mobile product polish */
+@media (max-width: 1024px) {
+  .dashboard[data-route="dashboard"] .executive-score-card { order: 1; }
+  .dashboard[data-route="dashboard"] .dashboard-home-grid { order: 2; }
+  .dashboard[data-route="dashboard"] .dashboard-side { order: 3; }
+  .command-metric-grid { align-items: stretch; }
+  .command-metric-grid article { min-height: 92px; }
+}
+
+@media (max-width: 768px) {
+  :root { --mobile-card-pad: 14px; --mobile-radius: 18px; }
+  body { -webkit-text-size-adjust: 100%; touch-action: manipulation; }
+  .content-shell { padding-bottom: calc(88px + env(safe-area-inset-bottom)) !important; }
+  .sidebar { width: calc(100% - 24px) !important; left: 12px !important; right: 12px !important; bottom: max(10px, env(safe-area-inset-bottom)) !important; border: 1px solid rgba(255,255,255,.12) !important; border-radius: 24px !important; box-shadow: 0 24px 80px rgba(0,0,0,.42), 0 0 40px rgba(56,189,248,.12); }
+  .sidebar nav { grid-template-columns: repeat(5, minmax(0, 1fr)) !important; align-items: center; }
+  .sidebar nav a { min-height: 50px; color: rgba(226,232,240,.72); }
+  .sidebar nav a.active { color: #fff; background: linear-gradient(135deg, rgba(56,189,248,.18), rgba(124,58,237,.18)); box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); transform: translateY(-2px); }
+  .nav-glyph { width: 22px; height: 22px; display: grid; place-items: center; font-size: 1rem !important; }
+  h1, .hero h1 { letter-spacing: -.055em !important; }
+  h2 { letter-spacing: -.035em !important; }
+  h3 { font-size: 1rem !important; }
+  .executive-score-card { padding: 16px !important; }
+  .executive-score-hero { gap: 10px !important; text-align: center; }
+  .executive-ring { width: 132px !important; height: 132px !important; }
+  .executive-ring strong { font-size: 2.35rem !important; }
+  .command-metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .command-metric-grid article { min-height: 74px; padding: 12px !important; }
+  .command-metric-grid strong { font-size: 1.35rem !important; letter-spacing: -.04em; }
+  .priority-recommendation { padding: 12px !important; gap: 8px !important; }
+  .dashboard-home-grid { gap: 10px !important; }
+  .dashboard-home-grid .panel { max-height: none !important; }
+  .account-toolbar { display: grid !important; grid-template-columns: 1fr 1fr; gap: 8px !important; padding: 0 !important; }
+  .account-toolbar input { grid-column: 1 / -1; }
+  .account-toolbar button, .account-toolbar select { min-height: 42px; }
+  .account-row { min-height: 0 !important; border-radius: 18px !important; }
+  .account-row.collapsed .monitoring-grid, .account-row.collapsed .score-reason { display: none !important; }
+  .account-row.expanded .monitoring-grid { display: grid !important; margin-top: 8px; }
+  .account-row > b { justify-self: start; padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,.05); }
+  .account-actions { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  .account-actions button { min-height: 40px !important; padding: 0 10px !important; }
+  .activity-panel { gap: 8px !important; }
+  .activity { min-height: 58px; border-radius: 16px !important; }
+  .activity span:first-child { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 10px; background: rgba(56,189,248,.1); }
+  .floating-score .mini-score-ring { width: 118px !important; height: 118px !important; }
+  .floating-score strong { font-size: 2.45rem !important; }
+  .quick-row { min-height: 48px; padding: 10px 12px !important; }
+  .security-alert-stack article, .recommendation-stack article { display: grid; grid-template-columns: auto minmax(0,1fr); gap: 8px 10px; align-items: start; }
+  .security-alert-stack article button, .recommendation-stack article button { grid-column: 1 / -1; }
+  .auth-card { max-width: 440px; margin-inline: auto; }
+  .auth-card form { gap: 10px; }
+  .auth-card input { min-height: 46px; }
+  .auth-card button { min-height: 44px; }
+  .settings-section-grid article { padding: 14px !important; }
+  .settings-section-grid label { min-height: 44px; }
+}
+
+@media (max-width: 414px) {
+  .hero { padding: 14px !important; }
+  .hero h1 { font-size: clamp(2rem, 11vw, 2.55rem) !important; }
+  .command-metric-grid { gap: 8px !important; }
+  .account-toolbar { grid-template-columns: 1fr !important; }
+  .account-actions { grid-template-columns: 1fr !important; }
+  .polished-notifications article, .security-alert-stack article, .recommendation-stack article { grid-template-columns: 1fr !important; }
+}
+
+@media (max-width: 375px) {
+  .sidebar { width: calc(100% - 16px) !important; left: 8px !important; right: 8px !important; border-radius: 20px !important; }
+  .sidebar nav a { font-size: .58rem !important; min-height: 46px; }
+  .content-shell, .dashboard, .main-column, .app-page-shell { padding-inline: 6px !important; }
+  .panel, .glass { padding: 12px !important; }
+  .command-metric-grid { grid-template-columns: 1fr !important; }
+}
+
+@media (max-width: 320px) {
+  .sidebar nav a { font-size: 0 !important; }
+  .sidebar nav a .nav-glyph { font-size: 1rem !important; }
+  .hero h1 { font-size: 2rem !important; }
+  .status-pill { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+}
