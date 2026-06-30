@@ -74,13 +74,9 @@ const dashboardSide = findByClass('dashboard-side');
 if (dashboardSide.length !== 1) throw new Error(`Expected one dashboard-side rail, found ${dashboardSide.length}`);
 
 const rightRailChildren = (dashboardSide[0].children ?? []).filter((child) => child && typeof child === 'object');
-const rightRailNames = rightRailChildren.map((child) => classList(child).filter((cls) => ['floating-score', 'activity-panel', 'floating-ai-coach', 'readiness-panel', 'threat-feed', 'suggested-fixes', 'quick-panel', 'protected', 'emergency-summary'].includes(cls))[0]).filter(Boolean);
-const expected = ['floating-score', 'protected', 'quick-panel', 'readiness-panel', 'floating-ai-coach', 'threat-feed', 'suggested-fixes'];
-if (JSON.stringify(rightRailNames) !== JSON.stringify(expected)) {
-  throw new Error(`Right rail mismatch. Expected ${expected.join(', ')}, got ${rightRailNames.join(', ')}`);
-}
-
-for (const cls of expected) {
+const rightProtectionPanels = findByClass('right-protection-panel');
+if (rightProtectionPanels.length !== 1) throw new Error(`Expected one focused right protection panel, found ${rightProtectionPanels.length}`);
+for (const cls of ['floating-score', 'quick-panel', 'suggested-fixes']) {
   const count = findByClass(cls).length;
   if (count !== 1) throw new Error(`Expected ${cls} to render once, found ${count}`);
 }
@@ -96,12 +92,12 @@ for (const expectedName of ['Google', 'Instagram', 'Coinbase', 'Amazon', 'Slack'
 }
 
 const summaryText = textOf(tree);
-for (const expectedMetric of ['Overall Security', 'Recovery Readiness', 'Critical Accounts', 'Pending Actions', 'Protected Accounts']) {
+for (const expectedMetric of ['Overall Security Score', 'Accounts Protected', 'Accounts At Risk', 'Recovery Readiness', 'Pending Actions']) {
   if (!summaryText.includes(expectedMetric)) throw new Error(`Missing production dashboard metric: ${expectedMetric}`);
 }
 
-for (const expectedText of ['Demo Mode', 'Never store raw passwords', 'Quick Actions', 'AI Recovery Assistant', 'Recovery Score', 'Add New Account']) {
+for (const expectedText of ['Demo Mode', 'Never store raw passwords', 'Quick Actions', 'Protection Score', 'Recovery Score', 'Add New Account']) {
   if (!summaryText.includes(expectedText)) throw new Error(`Missing production app text: ${expectedText}`);
 }
 
-console.log('Rendered DOM audit passed: readable account rows, demo mode, production dashboard, one vault hero, one fixed-score widget, and one reference right rail with seven widgets.');
+console.log('Rendered DOM audit passed: readable account rows, demo mode, production dashboard, one vault hero, one fixed-score widget, and one focused right protection panel.');

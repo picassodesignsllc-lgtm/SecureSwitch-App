@@ -65,8 +65,9 @@ let root;
 function onboardingSeen() { try { return localStorage.getItem('secureswitch:onboarded') === 'yes'; } catch { return false; } }
 function rememberOnboarding() { try { localStorage.setItem('secureswitch:onboarded', 'yes'); } catch { /* Ignore private browsing storage failures. */ } }
 
-const state = { user: null, auth: null, db: null, firebase: null, firebaseReady: false, vaultKey: null, mode: 'login', userProfile: null, accounts: demoAccounts.map(normalizeAccount), recoveryMethods: [], trustedContacts: [], backupCodes: [], securityAlerts: [], recoveryTimeline: timelineEvents, emergencyKits: [], settings: {}, selectedRecovery: '+1 (415) 555-0184', switchOld: '+1 (415) 555-0184', switchNew: '+1 (628) 555-0149', blackoutArmed: false, emergencyActive: false, scanComplete: false, aiStep: 0, timelineFilter: 'All', simulatorScenario: 'My phone was stolen', simulatorRan: false, activeProfile: null, vaultUnlocked: false, selectedVaultCategory: 'Recovery Emails', assistantPrompt: 'My phone was stolen', assistantStep: 0, emergencyScenario: 'Phone Stolen', recoveryWizardScenario: 'Phone stolen', recoveryWizardStep: 0, accountSearch: '', accountCategory: 'All', editingAccountId: '', loading: false, authError: '', dataError: '', exportStatus: '', importStatus: '', onboardingOpen: !onboardingSeen(), onboardingStep: 0, onboardingProtection: 'Advanced', onboardingAccounts: ['Google', 'Apple', 'Instagram'], vaultCreating: false, onboardingComplete: false, globalSearch: '', rememberMe: true, notificationsRead: [], notifications: [], activityFeed: [], recoveryContacts: [], securityScores: [], adminVisible: false, organizations: demoOrganizations, selectedOrgRole: 'Member', inviteEmail: '', productTourStep: 0, commandPaletteOpen: false, selectedAccountId: '', accountDetailTab: 'Overview', auditRan: false, auditReport: '', upgradeModal: '', route: (location.hash || '#dashboard').replace('#', '') || 'dashboard', reportType: 'Recovery Report', waitlistStatus: '', waitlistReferral: '', importSource: 'CSV', isOffline: typeof navigator !== 'undefined' ? !navigator.onLine : false, securityEvents: [], auditEvents: [], devices: [], subscriptionPlan: 'free', backupStatus: 'Automatic encrypted backups ready', toast: 'Ready' };
+const state = { user: null, auth: null, db: null, firebase: null, firebaseReady: false, vaultKey: null, mode: 'login', userProfile: null, accounts: demoAccounts.map(normalizeAccount), recoveryMethods: [], trustedContacts: [], backupCodes: [], securityAlerts: [], recoveryTimeline: timelineEvents, emergencyKits: [], settings: {}, selectedRecovery: '+1 (415) 555-0184', switchOld: '+1 (415) 555-0184', switchNew: '+1 (628) 555-0149', blackoutArmed: false, emergencyActive: false, emergencyRecoveryActive: false, scanComplete: false, aiStep: 0, timelineFilter: 'All', simulatorScenario: 'My phone was stolen', simulatorRan: false, activeProfile: null, vaultUnlocked: false, selectedVaultCategory: 'Recovery Emails', assistantPrompt: 'My phone was stolen', assistantStep: 0, emergencyScenario: 'Phone Stolen', recoveryWizardScenario: 'Phone stolen', recoveryWizardStep: 0, accountSearch: '', accountCategory: 'All', editingAccountId: '', loading: false, authError: '', dataError: '', exportStatus: '', importStatus: '', onboardingOpen: !onboardingSeen(), onboardingStep: 0, onboardingProtection: 'Advanced', onboardingAccounts: ['Google', 'Apple', 'Instagram'], vaultCreating: false, onboardingComplete: false, globalSearch: '', notificationSearch: '', notificationFilter: 'All', rememberMe: true, notificationsRead: [], notifications: [], activityFeed: [], recoveryContacts: [], securityScores: [], adminVisible: false, organizations: demoOrganizations, selectedOrgRole: 'Member', inviteEmail: '', productTourStep: 0, commandPaletteOpen: false, selectedAccountId: '', accountDetailTab: 'Overview', auditRan: false, auditReport: '', upgradeModal: '', route: (location.hash || '#dashboard').replace('#', '') || 'dashboard', reportType: 'Recovery Report', waitlistStatus: '', waitlistReferral: '', importSource: 'CSV', isOffline: typeof navigator !== 'undefined' ? !navigator.onLine : false, securityEvents: [], auditEvents: [], devices: [], subscriptionPlan: 'free', backupStatus: 'Automatic encrypted backups ready', toast: 'Ready' };
 const h = (...args) => React.createElement(...args);
+function EmptyState({ icon = '◌', title, description, action, onAction }) { return h('div', { className: 'empty-state premium-empty-state' }, h('span', { className: 'empty-illustration' }, icon), h('strong', null, title), h('p', null, description), action && h('button', { className: 'primary', onClick: onAction }, action)); }
 
 function hasFirebaseConfig() { return Object.values(firebaseConfig).every(Boolean); }
 function setState(patch) { Object.assign(state, patch); render(); }
@@ -470,7 +471,7 @@ function globalSearchResults() {
     ...state.trustedContacts.map((contact) => ({ type: 'Member', label: contact.name || 'Trusted contact', detail: contact.status || 'Trusted recovery contact', href: '#recovery-center' })),
     ...state.organizations.map((org) => ({ type: 'Organization', label: org.name, detail: `${org.role || 'Member'} · ${org.members || 1} members`, href: '#team-vaults' })),
     ...notificationItems().map((note) => ({ type: 'Notification', label: note.title, detail: note.detail, href: '#notifications' })),
-    ...['Settings', 'Reports', 'Vault', 'Commands', 'Weekly Report', 'Security Center', 'Recovery Center', 'AI Recovery Coach'].map((label) => ({ type: label === 'Commands' ? 'Command' : 'Page', label, detail: 'SecureSwitch workspace', href: label === 'Reports' ? '#report-generator' : `#${label.toLowerCase().replaceAll(' ', '-')}` }))
+    ...['Settings', 'Reports', 'Vault', 'Commands', 'Devices', 'Recovery Center', 'Security Audit', 'Family', 'Organization', 'Dark Web', 'Premium', 'Emergency Kit', 'AI Recovery Coach'].map((label) => ({ type: label === 'Commands' ? 'Command' : 'Page', label, detail: 'SecureSwitch workspace', href: label === 'Reports' ? '#report-generator' : label === 'Vault' ? '#secure-vault' : label === 'Devices' ? '#devices' : label === 'Family' ? '#family-protection' : label === 'Dark Web' ? '#dark-web' : label === 'Emergency Kit' ? '#kit' : `#${label.toLowerCase().replaceAll(' ', '-')}` }))
   ];
   return entries.filter((entry) => `${entry.type} ${entry.label} ${entry.detail}`.toLowerCase().includes(query)).slice(0, 10);
 }
@@ -613,6 +614,34 @@ function exportSecurityAudit() {
   downloadTextFile('secureswitch-security-audit.txt', 'text/plain', state.auditReport || 'Security audit generated.');
 }
 function openUpgrade(feature) { setState({ upgradeModal: feature }); }
+function securityGrade(score = averageScore()) {
+  if (score >= 97) return 'A+';
+  if (score >= 90) return 'A';
+  if (score >= 80) return 'B';
+  if (score >= 67) return 'C';
+  return 'D';
+}
+function protectionStatus(score = liveProtectionScore()) {
+  if (score >= 90) return 'Excellent';
+  if (score >= 75) return 'Strong';
+  if (score >= 60) return 'Needs Review';
+  if (score >= 40) return 'At Risk';
+  return 'Critical';
+}
+function topSecurityRecommendation() {
+  const finding = riskFindings()[0];
+  if (finding) return { text: finding.detail, time: finding.severity === 'Critical' ? '2 minutes' : '4 minutes', severity: finding.severity };
+  return { text: 'All connected accounts are recovery ready.', time: '1 minute', severity: 'Low' };
+}
+function aiSecurityRecommendations() {
+  const duplicateEmails = Object.entries(state.accounts.reduce((map, account) => { const email = account.recoveryEmail || account.email; if (email) map[email] = (map[email] || 0) + 1; return map; }, {})).filter(([, count]) => count > 1);
+  const recs = riskFindings().slice(0, 5).map((item) => ({ severity: item.severity, text: item.detail, time: item.severity === 'Critical' ? '2 min' : '4 min', action: 'Fix Now' }));
+  if (duplicateEmails.length) recs.unshift({ severity: 'High', text: `You have ${duplicateEmails[0][1]} accounts using the same recovery email.`, time: '3 min', action: 'Review Email' });
+  return recs.length ? recs : [{ severity: 'Low', text: 'No urgent account recovery risks detected.', time: '1 min', action: 'Review' }];
+}
+function vaultItems() {
+  return ['Recovery Codes', 'Passkeys', 'Passport', 'Driver License', 'Insurance', 'Emergency Contacts', 'Wallet Recovery', 'Crypto Recovery Notes', 'Medical Information', 'Important Documents'];
+}
 
 function commandPaletteItems() {
   return [
@@ -637,7 +666,7 @@ function generateProductionReport(format) {
 }
 function filteredAccounts() {
   const query = state.accountSearch.toLowerCase();
-  return state.accounts.filter((account) => (state.accountCategory === 'All' || account.category === state.accountCategory) && [account.name, account.handle, account.recoveryEmail, account.category].join(' ').toLowerCase().includes(query));
+  return state.accounts.filter((account) => (state.accountCategory === 'All' || account.category === state.accountCategory) && [account.name, account.handle, account.recoveryEmail, account.category].join(' ').toLowerCase().includes(query)).sort((a, b) => scoreFor(a) - scoreFor(b));
 }
 
 function scoreFor(account) { return scoreAccount(account); }
@@ -736,25 +765,23 @@ function Sidebar() {
   const links = [
     ['▦', 'Dashboard', 'dashboard'],
     ['♙', 'Accounts', 'accounts'],
-    ['⇄', 'Switch Mode', 'switch'],
-    ['⌾', 'Blackout Mode', 'blackout'],
-    ['▣', 'Emergency Kit', 'kit'],
-    ['⌕', 'Recovery Lookup', 'lookup'],
-    ['◉', 'Devices', 'devices'],
     ['▤', 'Recovery Center', 'recovery-center'],
     ['⚑', 'Security Audit', 'security-audit'],
-    ['◇', 'AI Coach', 'ai-recovery-coach'],
-    ['⬟', 'Security Center', 'security-center'],
+    ['◉', 'Devices', 'devices'],
+    ['☷', 'Vault', 'secure-vault'],
+    ['▣', 'Emergency Kit', 'kit'],
+    ['👪', 'Family', 'family-protection'],
+    ['◫', 'Organization', 'organization'],
+    ['◍', 'Dark Web', 'dark-web'],
     ['◆', 'Premium', 'premium'],
-    ['💳', 'Billing', 'billing'],
     ['⚙', 'Settings', 'settings']
   ];
   const route = currentRoute();
   return h('aside', { className: 'sidebar', 'aria-label': 'SecureSwitch navigation' },
     h('a', { className: 'brand', href: '#dashboard' }, h('span', { className: 'logo', 'aria-hidden': true }, '0'), h('span', { className: 'brand-wordmark' }, 'SecureSwitch'), h('b', null, 'PRO')),
     h('nav', null, links.map(([icon, label, id]) => h('a', { key: id, href: `#${id}`, className: route === id ? 'active' : '' }, h('span', { className: 'nav-glyph', 'aria-hidden': true }, icon), h('span', null, label)))),
-    h('article', { className: 'go-pro' }, h('p', { className: 'eyebrow' }, '✦ Go Pro'), h('p', null, 'Unlock unlimited accounts, advanced monitoring, and priority recovery.'), h('button', { className: 'primary', onClick: () => toast('Go Pro coming soon') }, 'Upgrade Now')),
-    h('footer', { className: 'profile' }, h('span', null, 'KH'), h('div', null, h('strong', null, 'Keith Harrison'), h('small', null, 'keith@secureswitch.app')), h('i', null, '⌄'))
+    h('article', { className: 'go-pro' }, h('p', { className: 'eyebrow' }, '✦ Premium'), h('p', null, 'Advanced monitoring, family protection, and priority recovery.'), h('button', { className: 'primary', onClick: () => location.hash = 'premium' }, 'View Plans')),
+    h('footer', { className: 'profile' }, h('span', null, 'KH'), h('div', null, h('strong', null, 'Keith Harrison'), h('small', null, 'Protected workspace')), h('i', null, '⌄'))
   );
 }
 
@@ -813,10 +840,12 @@ function Hero() {
 }
 
 function ProtectionScore() {
-  return h('aside', { className: 'floating-score glass', 'aria-label': 'Live Protection Score' },
-    h('div', null, h('p', { className: 'eyebrow score-title' }, 'Live Protection Score'), h('strong', null, `${liveProtectionScore()}%`), h('span', null, 'Excellent')),
-    h('div', { className: 'mini-score-ring', style: { '--score': `${liveProtectionScore() * 3.6}deg` } }),
-    h('dl', null, h('div', null, h('dt', null, 'Accounts'), h('dd', null, state.accounts.length)), h('div', null, h('dt', null, 'Review'), h('dd', null, reviewCount())), h('div', null, h('dt', null, 'Health Check'), h('dd', null, state.scanComplete ? 'Ready' : 'Ready')))
+  const score = liveProtectionScore();
+  const status = protectionStatus(score);
+  return h('aside', { className: 'floating-score glass protection-panel-card', 'aria-label': 'Protection Score' },
+    h('div', null, h('p', { className: 'eyebrow score-title' }, 'Protection Score'), h('strong', null, `${score}%`), h('span', { className: status.toLowerCase().replaceAll(' ', '-') }, status)),
+    h('div', { className: 'mini-score-ring', style: { '--score': `${score * 3.6}deg` } }),
+    h('dl', null, h('div', null, h('dt', null, 'Protected'), h('dd', null, state.accounts.filter((account) => scoreFor(account) >= 75).length)), h('div', null, h('dt', null, 'At Risk'), h('dd', null, reviewCount())), h('div', null, h('dt', null, 'Actions'), h('dd', null, riskFindings().length)))
   );
 }
 
@@ -839,12 +868,12 @@ function AccountCard({ account }) {
   const passwordAge = Date.parse(account.lastReviewed || '') < Date.now() - 180 * 86400000 ? 'Old password' : 'Current';
   const health = score >= 85 ? 'Excellent' : score >= 67 ? 'Watch' : 'At risk';
   const openDetail = () => { setState({ selectedAccountId: account.id, route: 'account-detail' }); location.hash = 'account-detail'; };
-  return h('article', { className: 'account-row monitored-account', tabIndex: 0, role: 'button', onClick: openDetail, onKeyDown: (event) => { if (event.key === 'Enter') openDetail(); } }, h('span', { className: 'app-icon', style: { background: account.color } }, providerMeta(account.name)[1] || account.name[0]), h('div', null, h('strong', null, account.name), h('small', null, `${account.handle || account.recoveryEmail} · ${account.category} · Reviewed ${account.lastReviewed}`), h('div', { className: 'monitoring-grid' }, [['Risk', riskLevel(account)], ['Health', health], ['Recovery Score', `${score}%`], ['Last Updated', account.lastReviewed], ['MFA Status', account.authenticator || account.passkeyStatus || 'Missing'], ['Password Age', passwordAge], ['Backup Status', account.backupCodes ? 'Saved' : 'Missing'], ['Recovery Contact', account.trustedContacts || 'Missing'], ['Timeline', state.recoveryTimeline.length]].map(([label, value]) => h('span', { key: label }, h('b', null, label), value)))), h('b', { className: score < 80 ? 'review' : 'secure' }, `${score}% · ${riskLevel(account)} risk`), h('small', { className: 'score-reason' }, recommendationsFor(account)[0] || 'Recovery setup complete'), h('div', { className: 'account-actions' }, h('button', { onClick: (event) => { event.stopPropagation(); editAccount(account); location.hash = 'accounts'; } }, 'Edit'), h('button', { onClick: (event) => { event.stopPropagation(); deleteAccount(account.id); } }, 'Delete')));
+  return h('article', { className: 'account-row monitored-account', tabIndex: 0, role: 'button', onClick: openDetail, onKeyDown: (event) => { if (event.key === 'Enter') openDetail(); } }, h('span', { className: 'app-icon', style: { background: account.color } }, providerMeta(account.name)[1] || account.name[0]), h('div', null, h('div', { className: 'account-title-row' }, h('strong', null, account.name), h('span', { className: score >= 80 ? 'status-pill protected' : 'status-pill review-required' }, score >= 80 ? 'Protected' : 'Review Required')), h('small', null, `${account.handle || account.recoveryEmail} · ${account.category} · Last reviewed ${account.lastReviewed}`), h('div', { className: 'monitoring-grid' }, [['Risk', riskLevel(account)], ['Health', health], ['Recovery Score', `${score}%`], ['Last Updated', account.lastReviewed], ['MFA Status', account.authenticator || account.passkeyStatus || 'Missing'], ['Password Age', passwordAge], ['Backup Status', account.backupCodes ? 'Saved' : 'Missing'], ['Recovery Contact', account.trustedContacts || 'Missing'], ['Timeline', state.recoveryTimeline.length]].map(([label, value]) => h('span', { key: label }, h('b', null, label), value)))), h('b', { className: score < 80 ? 'review' : 'secure' }, `${score}% · ${riskLevel(account)} risk`), h('small', { className: 'score-reason' }, recommendationsFor(account)[0] || 'Recovery setup complete'), h('div', { className: 'account-actions' }, h('button', { onClick: (event) => { event.stopPropagation(); editAccount(account); location.hash = 'accounts'; } }, 'Edit'), h('button', { onClick: (event) => { event.stopPropagation(); deleteAccount(account.id); } }, 'Delete')));
 }
 
 function Accounts() {
   const accounts = filteredAccounts();
-  return h('section', { className: 'panel glass', id: 'accounts' }, h('div', { className: 'panel-head' }, h('div', null, h('p', { className: 'eyebrow' }, 'Your Accounts'), h('h2', null, 'Production account registry')), h('span', null, `${accounts.length}/${state.accounts.length} shown`)), state.loading && h('div', { className: 'loading-state' }, h('span'), h('span'), h('span')), state.dataError && h('p', { className: 'error-state' }, state.dataError), h('div', { className: 'account-toolbar' }, h('input', { value: state.accountSearch, onChange: (event) => setState({ accountSearch: event.target.value }), placeholder: 'Search accounts, usernames, recovery emails…', 'aria-label': 'Search accounts' }), h('select', { value: state.accountCategory, onChange: (event) => setState({ accountCategory: event.target.value }), 'aria-label': 'Filter accounts by category' }, ['All', ...appCategories].map((category) => h('option', { key: category }, category))), h('button', { onClick: () => toast('Sorted by security score') }, 'Sort by score'), h('button', { onClick: () => toast(`${accounts.length} accounts selected for bulk review`) }, 'Bulk actions')), accounts.length ? accounts.map((account) => h(AccountCard, { key: account.id, account })) : h('div', { className: 'empty-state' }, h('strong', null, 'No accounts match this view'), h('p', null, 'Clear the search or add your first account to start calculating recovery health.')));
+  return h('section', { className: 'panel glass', id: 'accounts' }, h('div', { className: 'panel-head' }, h('div', null, h('p', { className: 'eyebrow' }, 'Your Accounts'), h('h2', null, 'Production account registry')), h('span', null, `${accounts.length}/${state.accounts.length} shown`)), state.loading && h('div', { className: 'loading-state' }, h('span'), h('span'), h('span')), state.dataError && h('p', { className: 'error-state' }, state.dataError), h('div', { className: 'account-toolbar' }, h('input', { value: state.accountSearch, onChange: (event) => setState({ accountSearch: event.target.value }), placeholder: 'Search accounts, usernames, recovery emails…', 'aria-label': 'Search accounts' }), h('select', { value: state.accountCategory, onChange: (event) => setState({ accountCategory: event.target.value }), 'aria-label': 'Filter accounts by category' }, ['All', ...appCategories].map((category) => h('option', { key: category }, category))), h('button', { onClick: () => toast('Sorted by security score') }, 'Sort by score'), h('button', { onClick: () => toast(`${accounts.length} accounts selected for bulk review`) }, 'Bulk actions')), accounts.length ? accounts.map((account) => h(AccountCard, { key: account.id, account })) : h(EmptyState, { icon: '◌', title: 'No accounts match this view', description: 'Adjust filters or connect your first protected account to start improving recovery readiness.', action: 'Reset filters', onAction: () => setState({ accountSearch: '', accountCategory: 'All' }) }));
 }
 
 function AccountForm() {
@@ -981,7 +1010,7 @@ function AccountDetailPage() {
   const rows = [['Security score', `${score}%`], ['Recovery Email', account.recoveryEmail || 'Missing'], ['Recovery Phone', account.recoveryPhone || account.phone || 'Missing'], ['Backup Codes', account.backupCodes || 'Missing'], ['2FA', account.authenticator || 'Missing'], ['Passkeys', account.passkeyStatus || 'Not configured'], ['Devices', account.deviceVerification || 'Needs review'], ['Recovery Contacts', account.trustedContacts || 'Missing']];
   const tab = state.accountDetailTab;
   return h('section', { className: 'panel glass account-detail-page dedicated-page', id: 'account-detail' },
-    h('div', { className: 'panel-head' }, h('div', null, h('p', { className: 'eyebrow' }, 'Account Detail'), h('h2', null, account.name)), h('div', { className: 'portability-actions' }, h('button', { onClick: () => { editAccount(account); location.hash = 'accounts'; } }, 'Edit fields'), h('button', { onClick: () => exportReport('security') }, 'Export options'))),
+    h('div', { className: 'panel-head' }, h('div', null, h('p', { className: 'eyebrow' }, 'Account Detail'), h('h2', null, account.name)), h('div', { className: 'portability-actions' }, h('button', { onClick: () => { editAccount(account); location.hash = 'accounts'; } }, 'Edit fields'), h('button', { className: 'primary', onClick: () => { setState({ accountDetailTab: 'Recommendations' }); toast('Fix recommendations opened'); } }, 'Fix Now'), h('button', { onClick: () => exportReport('security') }, 'Export options'))),
     h('div', { className: 'detail-tab-list', role: 'tablist' }, tabs.map((item) => h('button', { key: item, className: tab === item ? 'active-filter' : '', onClick: () => setState({ accountDetailTab: item }) }, item))),
     tab === 'Overview' && h('div', { className: 'detail-grid' }, rows.map(([label, value]) => h('article', { key: label }, h('span', null, label), h('strong', null, value)))),
     tab === 'Security' && h('div', { className: 'security-alert-stack' }, accountTimeline(account).filter((item) => /Password|2FA|Passkey|Unknown|Security/.test(item.title)).map((item) => h('article', { key: item.id }, h('b', null, item.status), h('span', null, item.title), h('small', null, item.detail)))),
@@ -1057,15 +1086,21 @@ function AIRecoveryCoachPage() {
     ['Missing methods', prioritizedRecommendations().slice(0, 3).map((item) => item.title).join(' · ') || 'No urgent recovery methods missing.'],
     ['Weak setup warning', weakAccounts().length ? `${weakAccounts().length} accounts are weak or marked for review.` : 'No weak account setup detected.']
   ];
-  return h('section', { className: 'panel glass premium-page ai-recovery-coach-page', id: 'ai-recovery-coach' }, h('p', { className: 'eyebrow' }, 'AI Recovery Coach'), h('h2', null, 'Conversational recovery intelligence'), h('div', { className: 'ai-card-stack' }, cards.map(([title, copy]) => h('article', { key: title, className: 'ai-chat-card' }, h('b', null, title), h('p', null, copy), title !== 'Analysis' && h('button', { onClick: () => { location.hash = title === 'Missing methods' ? 'accounts' : 'kit'; toast('Action opened from AI Coach'); } }, 'Take action')))));
+  return h('section', { className: 'panel glass premium-page ai-recovery-coach-page', id: 'ai-recovery-coach' }, h('p', { className: 'eyebrow' }, 'AI Recovery Coach'), h('h2', null, 'Conversational recovery intelligence'), h('div', { className: 'recommendation-stack' }, aiSecurityRecommendations().map((item) => h('article', { key: item.text, className: `priority-${item.severity.toLowerCase()}` }, h('b', null, item.severity), h('strong', null, item.text), h('small', null, `Reason: ${item.text.replace(/^[^.]+: /, '')} · Estimated Fix Time: ${item.time}`), h('button', { className: 'primary', onClick: () => toast('AI Fix Now opened') }, 'Fix Now')))), h('div', { className: 'ai-card-stack' }, cards.map(([title, copy]) => h('article', { key: title, className: 'ai-chat-card' }, h('b', null, title), h('p', null, copy), title !== 'Analysis' && h('button', { onClick: () => { location.hash = title === 'Missing methods' ? 'accounts' : 'kit'; toast('Action opened from AI Coach'); } }, 'Take action')))));
 }
 function PricingPage() {
   const plans = [['FREE', '$0', ['Demo dashboard', 'Basic score', 'Manual exports']], ['PRO', '$9.99/month', ['Encrypted cloud sync', 'AI Recovery Coach', 'Advanced reports']], ['FAMILY', '$19.99/month', ['Family recovery center', 'Trusted contacts', 'Emergency kits']], ['BUSINESS', '$49.99/month', ['Admin analytics', 'Team recovery stats', 'Priority workflows']]];
   return h('section', { className: 'panel glass premium-page pricing-page', id: 'pricing' }, h('p', { className: 'eyebrow' }, 'Premium Subscriptions'), h('h2', null, 'Plans built for recovery readiness'), h('div', { className: 'pricing-grid' }, plans.map(([name, price, features]) => h('article', { key: name, className: name === 'PRO' ? 'featured-plan' : '' }, h('h3', null, name), h('strong', null, price), h('ul', null, features.map((feature) => h('li', { key: feature }, feature))), h('button', { className: 'primary', onClick: () => toast('Stripe is isolated and not connected yet') }, name === 'FREE' ? 'Current demo' : 'Upgrade')))));
 }
 function NotificationCenterPage() {
-  const items = notificationItems();
-  return h('section', { className: 'panel glass premium-page notification-center-page', id: 'notifications' }, h('div', { className: 'panel-head' }, h('div', null, h('p', { className: 'eyebrow' }, 'Notification Center'), h('h2', null, 'Signals that keep recovery moving')), h('button', { onClick: () => setState({ notificationsRead: items.map((item) => item.id) }) }, 'Mark all read')), h('div', { className: 'notification-list' }, items.map((item) => h('article', { key: item.id, className: state.notificationsRead.includes(item.id) ? 'read' : '' }, h('div', null, h('strong', null, item.title), h('small', null, item.detail)), h('button', { onClick: () => setState({ notificationsRead: Array.from(new Set(state.notificationsRead.concat(item.id))) }) }, state.notificationsRead.includes(item.id) ? 'Read' : 'Mark read')))));
+  const allItems = notificationItems().map((item, index) => ({ ...item, severity: item.detail?.match(/old|missing|alert|review/i) ? 'High' : index % 3 === 0 ? 'Medium' : 'Low', timestamp: index === 0 ? 'Just now' : `${index + 1}h ago`, icon: index % 3 === 0 ? '⚠' : index % 3 === 1 ? '✓' : '↻' }));
+  const query = state.notificationSearch.toLowerCase();
+  const items = allItems.filter((item) => (state.notificationFilter === 'All' || item.severity === state.notificationFilter) && `${item.title} ${item.detail}`.toLowerCase().includes(query));
+  return h('section', { className: 'panel glass premium-page notification-center-page', id: 'notifications' },
+    h('div', { className: 'panel-head' }, h('div', null, h('p', { className: 'eyebrow' }, 'Notification Center'), h('h2', null, 'Security signals that need attention')), h('button', { onClick: () => setState({ notificationsRead: allItems.map((item) => item.id) }) }, 'Mark all read')),
+    h('div', { className: 'account-toolbar' }, h('input', { value: state.notificationSearch, onChange: (event) => setState({ notificationSearch: event.target.value }), placeholder: 'Search notifications…', 'aria-label': 'Search notifications' }), h('select', { value: state.notificationFilter, onChange: (event) => setState({ notificationFilter: event.target.value }) }, ['All', 'High', 'Medium', 'Low'].map((filter) => h('option', { key: filter }, filter)))),
+    items.length ? h('div', { className: 'notification-list polished-notifications' }, items.map((item) => h('article', { key: item.id, className: `${state.notificationsRead.includes(item.id) ? 'read' : ''} severity-${item.severity.toLowerCase()}` }, h('span', { className: 'notification-icon' }, item.icon), h('div', null, h('strong', null, item.title), h('small', null, `${item.detail} · ${item.timestamp}`)), h('b', null, item.severity), h('button', { onClick: () => setState({ notificationsRead: Array.from(new Set(state.notificationsRead.concat(item.id))) }) }, state.notificationsRead.includes(item.id) ? 'Read' : 'Mark read'), h('button', { onClick: () => toast('Notification archived') }, 'Archive')))) : h(EmptyState, { icon: '✓', title: 'No notifications found', description: 'Your filters are clear. SecureSwitch will surface important account recovery events here.', action: 'Clear filters', onAction: () => setState({ notificationSearch: '', notificationFilter: 'All' }) })
+  );
 }
 function SmartRecommendationsPanel() {
   const recs = prioritizedRecommendations();
@@ -1128,8 +1163,8 @@ function RecoveryCenterPage() {
   );
 }
 function DeviceCenterPage() {
-  const devices = state.devices.length ? state.devices : [currentDeviceSnapshot(), { id: 'backup-browser', browser: 'Safari', os: 'iOS', location: 'San Francisco, CA', ip: '192.0.2.24', lastActive: '2h ago', trusted: true }, { id: 'unknown-login', browser: 'Chrome', os: 'Windows', location: 'Unknown', ip: '198.51.100.7', lastActive: 'Review now', trusted: false }];
-  return h('section', { className: 'panel glass dedicated-page device-center-page', id: 'devices' }, h('p', { className: 'eyebrow' }, 'Device Center'), h('h2', null, 'Trusted devices'), h('div', { className: 'device-grid animated-devices' }, devices.map((device) => h('article', { key: device.id, className: device.trusted ? 'trusted-device' : 'unknown-device' }, h('strong', null, device.name || device.browser), h('span', null, device.browser), h('small', null, `${device.os} · ${device.location} · ${device.ip || 'IP unavailable'}`), h('div', { className: 'status-grid mini' }, [['Trusted', device.trusted ? 'Yes' : 'No'], ['Current Device', device.id === 'current-browser' ? 'Yes' : 'No'], ['Last Active', device.lastActive || 'Now']].map(([label, value]) => h('span', { key: label }, h('b', null, label), value))), h('button', { className: 'danger', onClick: () => { recordAudit('device_change', { action: 'remove', device: device.id }); toast(`${device.browser} removal queued`); } }, 'Remove device')))));
+  const devices = state.devices;
+  return h('section', { className: 'panel glass dedicated-page device-center-page', id: 'devices' }, h('p', { className: 'eyebrow' }, 'Device Center'), h('h2', null, 'Trusted devices'), devices.length ? h('div', { className: 'device-grid animated-devices' }, devices.map((device) => h('article', { key: device.id, className: device.trusted ? 'trusted-device' : 'unknown-device' }, h('strong', null, device.name || device.browser), h('span', null, device.browser), h('small', null, `${device.os} · ${device.location} · ${device.ip || 'IP unavailable'}`), h('div', { className: 'status-grid mini' }, [['Trusted', device.trusted ? 'Yes' : 'No'], ['Current Device', device.id === 'current-browser' ? 'Yes' : 'No'], ['Last Active', device.lastActive || 'Now']].map(([label, value]) => h('span', { key: label }, h('b', null, label), value))), h('button', { className: 'danger', onClick: () => { recordAudit('device_change', { action: 'remove', device: device.id }); toast(`${device.browser} removal queued`); } }, 'Remove device')))) : h(EmptyState, { icon: '◉', title: 'No devices connected.', description: 'Connect your first trusted device to monitor browser, OS, location, and recovery access.', action: 'Add Device', onAction: () => toast('Device enrollment opens after Firebase device sync') }));
 }
 function SecurityAuditPage() {
   const risk = liveRiskScore();
@@ -1138,7 +1173,8 @@ function SecurityAuditPage() {
 }
 function PremiumFeaturesPage() {
   const features = ['Advanced Monitoring', 'Dark Web Monitoring', 'Identity Monitoring', 'Priority Recovery', 'Family Plan', 'Business Plan'];
-  return h('section', { className: 'panel glass dedicated-page premium-locks-page', id: 'premium' }, h('p', { className: 'eyebrow' }, 'Premium'), h('h2', null, 'Locked premium protection'), h('div', { className: 'pricing-grid compact' }, features.map((feature) => h('article', { key: feature, className: 'locked-feature' }, h('strong', null, feature), h('small', null, 'Upgrade to unlock production-grade recovery protection.'), h('button', { className: 'primary', onClick: () => openUpgrade(feature) }, 'Upgrade')))));
+  const plans = [['FREE', '10 Accounts · Basic Monitoring · Security Score'], ['PRO', 'Unlimited Accounts · AI Assistant · Recovery Center · Device Monitoring · Audit Reports · Dark Web Monitoring'], ['FAMILY', 'Up to 6 Users · Shared Dashboard · Recovery Alerts'], ['BUSINESS', 'Employee Monitoring · Admin Dashboard · Compliance Reports · Advanced Analytics']];
+  return h('section', { className: 'panel glass dedicated-page premium-locks-page', id: 'premium' }, h('p', { className: 'eyebrow' }, 'Premium Subscriptions'), h('h2', null, 'Plans built for account recovery'), h('div', { className: 'pricing-grid compact' }, plans.map(([plan, detail]) => h('article', { key: plan, className: plan === 'PRO' ? 'featured-plan' : '' }, h('h3', null, plan), h('p', null, detail), h('button', { className: 'primary', onClick: () => plan === 'FREE' ? toast('Free plan selected') : openUpgrade(`${plan} Plan`) }, plan === 'FREE' ? 'Current' : 'Upgrade')))), h('h3', null, 'Premium locks throughout SecureSwitch'), h('div', { className: 'pricing-grid compact' }, features.map((feature) => h('article', { key: feature, className: 'locked-feature' }, h('strong', null, feature), h('small', null, 'Upgrade to unlock production-grade recovery protection.'), h('button', { className: 'primary', onClick: () => openUpgrade(feature) }, 'Upgrade')))));
 }
 function UpgradeModal() {
   if (!state.upgradeModal) return null;
@@ -1246,15 +1282,29 @@ function PwaReadinessPanel() {
   );
 }
 function Settings() {
-  const options = [['language', 'Language'], ['theme', 'Theme'], ['darkMode', 'Dark Mode'], ['notifications', 'Notifications'], ['accessibility', 'Accessibility'], ['biometricLogin', 'Biometric Login'], ['faceId', 'Face ID'], ['touchId', 'Touch ID'], ['autoLock', 'Auto Lock'], ['sessionTimeout', 'Session Timeout'], ['trustedDevices', 'Trusted Devices'], ['privacy', 'Privacy'], ['security', 'Security'], ['billing', 'Billing'], ['api', 'API'], ['developerMode', 'Developer Mode'], ['vault', 'Vault'], ['exportVault', 'Export Data'], ['deleteAccount', 'Delete Account'], ['connectedDevices', 'Connected Devices'], ['about', 'About'], ['version', `Version ${buildVersion()}`]];
-  return h('section', { className: 'panel glass settings-panel', id: 'settings' },
+  const groups = [
+    ['Profile', [['language', 'Language'], ['connectedDevices', 'Connected Devices'], ['version', `Version ${buildVersion()}`]]],
+    ['Security', [['security', 'Security'], ['autoLock', 'Auto Lock'], ['sessionTimeout', 'Session Timeout'], ['trustedDevices', 'Trusted Devices']]],
+    ['Appearance', [['theme', 'Theme'], ['darkMode', 'Dark Mode'], ['accessibility', 'Accessibility']]],
+    ['Notifications', [['notifications', 'Notifications'], ['privacy', 'Privacy']]],
+    ['Recovery', [['biometricLogin', 'Biometric Login'], ['faceId', 'Face ID'], ['touchId', 'Touch ID']]],
+    ['Vault', [['vault', 'Vault'], ['autoLock', 'Vault Auto Lock']]],
+    ['Billing', [['billing', 'Billing']]],
+    ['API', [['api', 'API'], ['developerMode', 'Developer Mode']]],
+    ['Export', [['exportVault', 'Export Data']]],
+    ['Danger Zone', [['deleteAccount', 'Delete Account']]]
+  ];
+  const toggle = async (key, checked) => { const settings = { ...state.settings, [key]: checked }; setState({ settings }); if (usingLiveAccounts()) { try { await writeUserScopedDoc('settings', 'preferences', settings); } catch (error) { setState({ dataError: safeError(error, 'Settings could not be saved. Please try again.') }); } } };
+  return h('section', { className: 'panel glass settings-panel professional-settings', id: 'settings' },
     h('p', { className: 'eyebrow' }, 'Settings'),
-    h('h2', null, 'Workspace preferences'),
-    h('div', { className: 'settings-options' }, options.map(([key, label]) => h('label', { key }, h('input', { type: 'checkbox', checked: state.settings[key] ?? true, onChange: async (event) => { const settings = { ...state.settings, [key]: event.target.checked }; setState({ settings }); if (usingLiveAccounts()) { try { await writeUserScopedDoc('settings', 'preferences', settings); } catch (error) { setState({ dataError: safeError(error, 'Settings could not be saved. Please try again.') }); } } } }), label))),
+    h('h2', null, 'Workspace controls'),
+    h('div', { className: 'settings-section-grid' }, groups.map(([title, options]) => h('article', { key: title, className: title === 'Danger Zone' ? 'danger-settings' : '' }, h('h3', null, title), options.map(([key, label]) => h('label', { key }, h('span', null, label), h('input', { type: 'checkbox', checked: state.settings[key] ?? true, onChange: (event) => toggle(key, event.target.checked) })))))),
     h(ProductionStatusPanel),
-    h(RecoveryDataPortability)
+    h(RecoveryDataPortability),
+    h(SyncAndAuthPanel)
   );
 }
+
 
 
 function DemoModeBanner() {
@@ -1335,9 +1385,55 @@ function FloatingAICoach() {
   return h('aside', { className: 'floating-ai-coach glass', 'aria-label': 'AI Recovery Assistant' }, h('p', { className: 'eyebrow' }, 'AI Recovery Assistant'), h('strong', null, state.assistantPrompt), h('div', { className: 'prompt-list' }, prompts.map((prompt) => h('button', { key: prompt, className: state.assistantPrompt === prompt ? 'active' : '', onClick: () => setState({ assistantPrompt: prompt, assistantStep: 0 }) }, prompt))), h('div', { className: 'typing-line' }, 'SecureSwitch is preparing your recovery plan', h('span', null, '•••')), h('ol', { className: 'assistant-steps' }, steps.map((step, index) => h('li', { key: step, className: index <= state.assistantStep ? 'done' : '' }, h('span', null, index + 1), step))), h('div', { className: 'assistant-progress' }, h('span', { style: { width: `${((state.assistantStep + 1) / steps.length) * 100}%` } })), h('small', null, `Estimated recovery time: ${steps.length * 2} minutes`), h('button', { className: 'primary', onClick: () => setState({ assistantStep: Math.min(state.assistantStep + 1, steps.length - 1) }) }, 'Next step'));
 }
 
-function DashboardHome() {
+function ExecutiveSecurityScoreCard() {
+  const score = averageScore();
   const summary = dashboardSummary(state.accounts);
-  return [h(Hero), h('section', { className: 'panel glass executive-strip' }, [['Overall Security', `${averageScore()}%`], ['Recovery Readiness', `${averageScore()}%`], ['Critical Accounts', state.accounts.filter((account) => scoreFor(account) < 60).length], ['Recent Events', (state.activityFeed.length || state.recoveryTimeline.length)], ['Pending Actions', riskFindings().length], ['Protected Accounts', state.accounts.filter((account) => scoreFor(account) >= 85).length]].map(([label, value]) => h('article', { key: label }, h('span', null, label), h('strong', null, value)))), h('div', { className: 'lower-grid dashboard-home-grid' }, h(Accounts), h(Activity))];
+  const recommendation = topSecurityRecommendation();
+  const metrics = [['Accounts Protected', summary.total], ['Accounts At Risk', summary.highRiskAccounts], ['Recovery Readiness', `${score}%`], ['Trusted Devices', state.devices.length || state.accounts.filter((account) => account.deviceVerification).length], ['Active Alerts', unreadNotifications().length], ['Pending Actions', riskFindings().length]];
+  return h('section', { className: 'panel glass executive-score-card' },
+    h('div', { className: 'executive-score-hero' }, h('div', { className: 'executive-ring', style: { '--score': `${score * 3.6}deg` } }, h('strong', null, score), h('span', null, securityGrade(score))), h('div', null, h('p', { className: 'eyebrow' }, 'Overall Security Score'), h('h2', null, 'Never Lose Another Account Again.'), h('p', null, 'A live command center for identity recovery, device trust, and account resilience.'))),
+    h('div', { className: 'command-metric-grid' }, metrics.map(([label, value]) => h('article', { key: label }, h('span', null, label), h('strong', null, value)))),
+    h(MiniTrendCharts),
+    h('article', { className: `priority-recommendation ${recommendation.severity.toLowerCase()}` }, h('b', null, recommendation.severity), h('span', null, recommendation.text), h('small', null, `Estimated fix time: ${recommendation.time}`), h('button', { className: 'primary', onClick: () => { location.hash = 'security-audit'; toast('Fix workflow opened'); } }, 'Fix Now'))
+  );
+}
+function MiniTrendCharts() {
+  const values = [averageScore(), passwordHealthScore(), Math.max(35, 100 - riskFindings().length * 6), Math.min(98, 62 + state.accounts.filter((account) => account.backupCodes).length * 8), Math.max(44, averageScore() - reviewCount() * 2)];
+  const labels = ['Security Trend', 'Recovery Progress', 'Risk History', 'Weekly Health', 'Protection Timeline'];
+  return h('div', { className: 'svg-chart-grid', 'aria-label': 'Animated security charts' }, values.map((value, index) => {
+    const points = [22, 38, 34, 56, value].map((point, i) => `${i * 42 + 8},${100 - point}`).join(' ');
+    return h('article', { key: labels[index], className: 'svg-chart-card', style: { '--delay': `${index * 80}ms` } }, h('span', null, labels[index]), h('strong', null, `${value}%`), h('svg', { viewBox: '0 0 180 110', role: 'img', 'aria-label': labels[index] }, h('polyline', { points, fill: 'none', stroke: 'url(#chartGlow)', strokeWidth: '5', strokeLinecap: 'round', strokeLinejoin: 'round' }), h('defs', null, h('linearGradient', { id: 'chartGlow', x1: '0', x2: '1' }, h('stop', { offset: '0%', stopColor: '#38bdf8' }), h('stop', { offset: '100%', stopColor: '#a78bfa' })))));
+  }));
+}
+function AISecurityAssistantPanel() {
+  return h('section', { className: 'panel glass ai-security-assistant-panel' }, h('div', { className: 'panel-head' }, h('div', null, h('p', { className: 'eyebrow' }, 'AI Security Assistant'), h('h2', null, 'Prioritized recovery guidance')), h('span', null, `${aiSecurityRecommendations().length} actions`)), h('div', { className: 'recommendation-stack' }, aiSecurityRecommendations().map((item) => h('article', { key: item.text, className: `priority-${item.severity.toLowerCase()}` }, h('b', null, item.severity), h('strong', null, item.text), h('small', null, `Why it matters: this can prevent lockout during an emergency. Estimated fix: ${item.time}.`), h('button', { onClick: () => { location.hash = 'account-detail'; toast(`${item.action} opened`); } }, item.action)))));
+}
+function WeeklyHealthCheckWidget() {
+  const rows = state.accounts.slice(0, 5).map((account) => [account.name, scoreFor(account) >= 85 ? 'Healthy' : !account.backupCodes ? 'Backup Codes Missing' : !account.recoveryEmail ? 'Needs Recovery Update' : 'Recovery Phone Outdated']);
+  return h('section', { className: 'panel glass weekly-health-check' }, h('div', { className: 'panel-head' }, h('div', null, h('p', { className: 'eyebrow' }, 'Weekly Security Health Check'), h('h2', null, 'What changed this week')), h('button', { className: 'primary', onClick: () => { location.hash = 'security-audit'; runSecurityAudit(); } }, 'Fix Everything')), rows.map(([name, status]) => h('article', { key: name, className: /Healthy/.test(status) ? 'healthy' : 'needs-work' }, h('strong', null, name), h('span', null, status))));
+}
+function DarkWebMonitoringPage() {
+  const monitors = [['Email', 'No Exposure'], ['Phone Numbers', oldPhoneAccounts().length ? 'Possible Exposure' : 'No Exposure'], ['Usernames', 'No Exposure'], ['Passwords', weakAccounts().length ? 'Critical Exposure' : 'No Exposure'], ['Identity Exposure', 'Possible Exposure'], ['Credit Monitoring', 'Premium Placeholder']];
+  return h('section', { className: 'panel glass dedicated-page dark-web-premium-page' }, h('p', { className: 'eyebrow' }, 'Premium Dark Web Monitoring'), h('h2', null, 'Exposure monitoring'), h('div', { className: 'premium-metric-grid' }, monitors.map(([label, status]) => h('article', { key: label, className: status.toLowerCase().replaceAll(' ', '-') }, h('span', null, label), h('strong', null, status), h('button', { onClick: () => openUpgrade('Dark Web Monitoring') }, status === 'No Exposure' ? 'Monitor' : 'Upgrade')))));
+}
+function FamilyProtectionPage() {
+  const members = [['Keith', 95, 4, 0], ['Mom', 62, 2, 3], ['Brother', 81, 3, 1], ['Grandma', 34, 1, 5]];
+  return h('section', { className: 'panel glass dedicated-page family-protection-page' }, h('p', { className: 'eyebrow' }, 'Premium Family Protection'), h('h2', null, 'Shared recovery readiness'), h('div', { className: 'premium-metric-grid' }, members.map(([name, score, devices, alerts]) => h('article', { key: name, className: score < 60 ? 'critical-family' : '' }, h('span', null, name), h('strong', null, `${score}/100`), h('small', null, `Recovery Readiness ${score}% · Devices ${devices} · Critical Alerts ${alerts}`), h('button', { onClick: () => openUpgrade('Family Plan') }, 'Manage')))));
+}
+function EmergencyRecoveryModePage() {
+  const items = ['Recovery Emails', 'Recovery Phones', 'Backup Codes', 'Trusted Devices', 'Identity Documents', 'Recovery Contacts', 'Emergency Checklist'];
+  return h('section', { className: `panel glass dedicated-page emergency-recovery-mode ${state.emergencyRecoveryActive ? 'active' : ''}` }, h('p', { className: 'eyebrow' }, 'Emergency Recovery Mode'), h('h2', null, 'High-stress recovery workspace'), h('button', { className: 'danger emergency-launch', onClick: () => setState({ emergencyRecoveryActive: !state.emergencyRecoveryActive }) }, state.emergencyRecoveryActive ? 'Emergency Mode Active' : 'Activate Emergency Recovery'), state.emergencyRecoveryActive && h('div', { className: 'premium-metric-grid' }, items.map((item) => h('article', { key: item }, h('strong', null, item), h('small', null, item === 'Backup Codes' ? `${state.accounts.filter((account) => account.backupCodes).length} accounts ready` : 'Open verified recovery records'), h('button', { onClick: () => toast(`${item} opened`) }, 'Open')))));
+}
+function SecureVaultPage() {
+  const capacity = Math.min(100, vaultItems().length * 8 + state.accounts.length * 3);
+  return h('section', { className: 'panel glass dedicated-page secure-vault-page' }, h('p', { className: 'eyebrow' }, 'SecureVault'), h('h2', null, 'Encrypted recovery storage'), h('div', { className: 'status-grid' }, [['Encryption Status', state.vaultUnlocked ? 'Unlocked' : 'Locked'], ['Vault Capacity', `${capacity}%`], ['Records', vaultItems().length], ['Backup', state.exportStatus || 'Ready']].map(([label, value]) => h('article', { key: label }, h('span', null, label), h('strong', null, value)))), h('div', { className: 'kit-grid' }, vaultItems().map((item) => h('article', { key: item }, h('strong', null, item), h('small', null, 'Encrypted card ready')))), h('div', { className: 'progress' }, h('span', { style: { width: `${capacity}%` } })));
+}
+function BusinessDashboardPage() {
+  const rows = [['Employee Security Scores', '82% average'], ['Recovery Readiness', `${averageScore()}%`], ['Device Inventory', state.devices.length || 3], ['Audit Reports', state.auditRan ? 'Latest ready' : 'Run audit'], ['Admin Controls', 'Role-ready'], ['Organization Timeline', state.recoveryTimeline.length], ['Compliance Dashboard', 'SOC2-ready'], ['Business Analytics', `${state.accounts.length} protected accounts`]];
+  return h('section', { className: 'panel glass dedicated-page business-dashboard-page' }, h('p', { className: 'eyebrow' }, 'Business Mode'), h('h2', null, 'Organization security dashboard'), h('div', { className: 'premium-metric-grid' }, rows.map(([label, value]) => h('article', { key: label }, h('span', null, label), h('strong', null, value)))), h(TeamFamilyVaults));
+}
+function DashboardHome() {
+  return [h(Hero), h(ExecutiveSecurityScoreCard), h('div', { className: 'lower-grid dashboard-home-grid' }, h(Accounts), h(Activity))];
 }
 
 function PageContent() {
@@ -1354,6 +1450,11 @@ function PageContent() {
     'recovery-center': () => h(RecoveryCenterPage),
     'security-audit': () => h(SecurityAuditPage),
     premium: () => h(PremiumFeaturesPage),
+    'dark-web': () => h(DarkWebMonitoringPage),
+    'family-protection': () => h(FamilyProtectionPage),
+    'emergency-mode': () => h(EmergencyRecoveryModePage),
+    'secure-vault': () => h(SecureVaultPage),
+    organization: () => h(BusinessDashboardPage),
     'ai-recovery-coach': () => h(AIRecoveryCoachPage),
     'security-center': () => h(ProductionSecurityCenter),
     billing: () => h(BillingSubscriptionsPanel),
@@ -1367,7 +1468,7 @@ function PageContent() {
 function Dashboard() {
   return h('main', { className: 'dashboard page-transition', 'data-route': currentRoute() },
     h('div', { className: 'main-column app-page-shell' }, h(TopActions), h(PageContent), h(DemoModeBanner)),
-    h('aside', { className: 'dashboard-side' }, h(ProtectionScore), h(ProtectedStatus), h(QuickActions), h(Readiness), h(FloatingAICoach), h(LiveThreatFeed), h(SuggestedFixes))
+    h('aside', { className: 'dashboard-side' }, h('section', { className: 'right-protection-panel glass' }, h(ProtectionScore), h(QuickActions), h(SuggestedFixes)))
   );
 }
 
@@ -1390,7 +1491,6 @@ function App() {
       h(CommandPalette),
       h(UpgradeModal),
       h(Dashboard),
-      h(SyncAndAuthPanel),
       h('div', { className: 'toast ' + (state.toast ? 'show' : ''), role: 'status', 'aria-live': 'polite' }, state.toast)
     )
   );
