@@ -32,6 +32,14 @@ for (const required of ['grid-template-columns: var(--reference-sidebar) minmax(
 const rightRailCount = (app.match(/h\(ProtectionScore\)|h\(ProtectedStatus\)|h\(QuickActions\)|h\(Readiness\)|h\(FloatingAICoach\)|h\(LiveThreatFeed\)|h\(SuggestedFixes\)/g) ?? []).length;
 if (rightRailCount !== 7) throw new Error(`Expected 7 right-rail widgets, found ${rightRailCount}`);
 
+for (const declaration of ['demoAccounts', 'activity', 'timelineEvents', 'familyMembers']) {
+  const matches = app.match(new RegExp(`^const ${declaration}\\b`, 'gm')) ?? [];
+  if (matches.length !== 1) throw new Error(`Expected one top-level ${declaration} declaration, found ${matches.length}`);
+}
+for (const marker of ['<'.repeat(7), '='.repeat(7), '>'.repeat(7)]) {
+  if (app.includes(marker) || css.includes(marker)) throw new Error(`Conflict marker remains: ${marker}`);
+}
+
 for (const forbidden of ['writing-mode', 'word-break: break-all']) {
   if (css.includes(forbidden)) throw new Error(`Account cards must not use broken vertical text styling: ${forbidden}`);
 }

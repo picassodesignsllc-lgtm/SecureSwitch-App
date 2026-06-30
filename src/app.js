@@ -41,20 +41,6 @@ function hasFirebaseConfig() { return Object.values(firebaseConfig).every(Boolea
 function setState(patch) { Object.assign(state, patch); render(); }
 function toast(message) { setState({ toast: message }); window.setTimeout(() => setState({ toast: '' }), 2200); }
 
-async function loadFirebase() {
-  if (!hasFirebaseConfig()) return;
-  const [{ initializeApp }, authModule, firestore] = await Promise.all([
-    import('https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js'),
-    import('https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js'),
-    import('https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js')
-  ]);
-  const app = initializeApp(firebaseConfig);
-  state.auth = authModule.getAuth(app);
-  state.db = firestore.getFirestore(app);
-  state.firebase = { ...authModule, ...firestore };
-  authModule.onAuthStateChanged(state.auth, (user) => setState({ user }));
-}
-
 const recoveryPlaybooks = {
   'Phone stolen': ['Lock the lost phone remotely', 'Freeze SIM with your carrier', 'Recover Apple ID and Google', 'Restore authenticator from backup', 'Review banking and crypto sessions'],
   'Email hacked': ['Secure recovery email first', 'Reset primary email password', 'Revoke unknown sessions', 'Rotate backup codes', 'Review linked accounts'],
