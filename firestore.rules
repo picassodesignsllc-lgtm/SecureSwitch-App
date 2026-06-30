@@ -20,6 +20,22 @@ service cloud.firestore {
         allow read, create, update, delete: if ownsUserDoc(userId);
       }
 
+      match /securityScores/{docId} {
+        allow read, create, update, delete: if ownsUserDoc(userId);
+      }
+
+      match /activity/{docId} {
+        allow read, create, update, delete: if ownsUserDoc(userId);
+      }
+
+      match /recoveryContacts/{docId} {
+        allow read, create, update, delete: if ownsUserDoc(userId);
+      }
+
+      match /notifications/{docId} {
+        allow read, create, update, delete: if ownsUserDoc(userId);
+      }
+
       match /trustedContacts/{docId} {
         allow read, create, update, delete: if ownsUserDoc(userId);
       }
@@ -51,6 +67,23 @@ service cloud.firestore {
       }
 
       match /settings/{docId} {
+        allow read, create, update, delete: if ownsUserDoc(userId);
+      }
+
+      match /billing/{docId} {
+        allow read, create, update, delete: if ownsUserDoc(userId);
+      }
+
+      match /auditLogs/{docId} {
+        allow read, create: if ownsUserDoc(userId);
+        allow update, delete: if false;
+      }
+
+      match /backups/{docId} {
+        allow read, create, update, delete: if ownsUserDoc(userId);
+      }
+
+      match /devices/{docId} {
         allow read, create, update, delete: if ownsUserDoc(userId);
       }
     }

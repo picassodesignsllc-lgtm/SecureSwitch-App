@@ -15,9 +15,15 @@ const firebaseConfig = {
 
 await exec(process.execPath, ['--check', 'src/app.js'], { stdio: 'inherit' });
 await exec(process.execPath, ['--check', 'src/firebaseConfig.js'], { stdio: 'inherit' });
+await exec(process.execPath, ['--check', 'src/services/api.js'], { stdio: 'inherit' });
+await exec(process.execPath, ['--check', 'src/services/billing.js'], { stdio: 'inherit' });
+await exec(process.execPath, ['--check', 'src/services/audit.js'], { stdio: 'inherit' });
+await exec(process.execPath, ['--check', 'src/services/backup.js'], { stdio: 'inherit' });
+await exec(process.execPath, ['--check', 'src/services/devices.js'], { stdio: 'inherit' });
 await rm('build', { recursive: true, force: true });
 await mkdir('build/dist', { recursive: true });
 await cp('index.html', 'build/dist/index.html');
+await cp('manifest.webmanifest', 'build/dist/manifest.webmanifest');
 await cp('src', 'build/dist/src', { recursive: true });
 const runtimeConfig = {
   firebase: firebaseConfig,
