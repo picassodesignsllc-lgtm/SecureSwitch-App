@@ -34,16 +34,45 @@ const recoveryPlaybooks = {
   'Social media hacked': ['Start platform recovery', 'Secure recovery email', 'Revoke connected apps', 'Update MFA', 'Capture incident timeline']
 };
 const onboardingSteps = ['Understand SecureSwitch', 'Add first account', 'Add recovery email and phone', 'Add backup codes', 'Add trusted contact', 'Get first recovery score'];
+const productionCollections = ['users', 'accounts', 'recoveryMethods', 'backupCodes', 'trustedContacts', 'alerts', 'timeline', 'simulations', 'reports'];
+const accountTemplates = ['Google', 'Apple', 'Instagram', 'Facebook', 'Coinbase', 'Amazon', 'Discord', 'Slack', 'Microsoft', 'Custom Account'];
+let accountUnsubscribe;
 let React;
 let root;
 
-const state = { user: null, auth: null, db: null, firebase: null, vaultKey: null, mode: 'login', accounts: demoAccounts.map(normalizeAccount), selectedRecovery: '+1 (415) 555-0184', switchOld: '+1 (415) 555-0184', switchNew: '+1 (628) 555-0149', blackoutArmed: false, emergencyActive: false, scanComplete: false, aiStep: 0, timelineFilter: 'All', simulatorScenario: 'My phone was stolen', simulatorRan: false, activeProfile: null, vaultUnlocked: false, selectedVaultCategory: 'Recovery Emails', assistantPrompt: 'My phone was stolen', assistantStep: 0, emergencyScenario: 'Phone Stolen', recoveryWizardScenario: 'Phone stolen', recoveryWizardStep: 0, onboardingStep: 0, accountSearch: '', accountCategory: 'All', editingAccountId: '', loading: false, authError: '', dataError: '', toast: 'Ready' };
+const state = { user: null, auth: null, db: null, firebase: null, vaultKey: null, mode: 'login', userProfile: null, accounts: demoAccounts.map(normalizeAccount), selectedRecovery: '+1 (415) 555-0184', switchOld: '+1 (415) 555-0184', switchNew: '+1 (628) 555-0149', blackoutArmed: false, emergencyActive: false, scanComplete: false, aiStep: 0, timelineFilter: 'All', simulatorScenario: 'My phone was stolen', simulatorRan: false, activeProfile: null, vaultUnlocked: false, selectedVaultCategory: 'Recovery Emails', assistantPrompt: 'My phone was stolen', assistantStep: 0, emergencyScenario: 'Phone Stolen', recoveryWizardScenario: 'Phone stolen', recoveryWizardStep: 0, onboardingStep: 0, accountSearch: '', accountCategory: 'All', editingAccountId: '', loading: false, authError: '', dataError: '', toast: 'Ready' };
 const h = (...args) => React.createElement(...args);
 
 function hasFirebaseConfig() { return Object.values(firebaseConfig).every(Boolean); }
 function setState(patch) { Object.assign(state, patch); render(); }
 function toast(message) { setState({ toast: message }); window.setTimeout(() => setState({ toast: '' }), 2200); }
-
+function firstName() { return state.userProfile?.displayName?.split(' ')[0] || state.user?.displayName?.split(' ')[0] || state.user?.email?.split('@')[0] || 'there'; }
+function usingLiveAccounts() { return Boolean(state.user && state.db); }
+function serializeAccount(record) {
+  const account = normalizeAccount(record);
+  return { ...account, serviceName: account.name, username: account.handle, updatedAt: state.firebase?.serverTimestamp ? state.firebase.serverTimestamp() : new Date().toISOString() };
+}
+async function readAccountDoc(doc) {
+  const data = doc.data();
+  if (data?.ciphertext && data?.iv && state.vaultKey) return normalizeAccount({ id: doc.id, ...(await decryptRecord(state.vaultKey, data)) });
+  return normalizeAccount({ id: doc.id, ...data });
+}
+async function ensureUserDocument(user) {
+  if (!state.db || !state.firebase || !user) return;
+  const profile = { email: user.email || '', displayName: user.displayName || user.email || 'SecureSwitch user', photoURL: user.photoURL || '', emailVerified: Boolean(user.emailVerified), lastLoginAt: state.firebase.serverTimestamp ? state.firebase.serverTimestamp() : new Date().toISOString() };
+  await state.firebase.setDoc(state.firebase.doc(state.db, 'users', user.uid), profile, { merge: true });
+  setState({ userProfile: profile });
+}
+function subscribeToAccounts(user) {
+  if (accountUnsubscribe) accountUnsubscribe();
+  if (!state.db || !state.firebase || !user) { setState({ accounts: demoAccounts.map(normalizeAccount), userProfile: null, dataError: '' }); return; }
+  setState({ accounts: [], loading: true, dataError: '' });
+  accountUnsubscribe = state.firebase.onSnapshot(state.firebase.collection(state.db, 'users', user.uid, 'accounts'), async (snapshot) => {
+    const records = [];
+    for (const doc of snapshot.docs) records.push(await readAccountDoc(doc));
+    setState({ accounts: records, loading: false });
+  }, (error) => setState({ dataError: error.message || 'Could not load accounts from Firestore', loading: false }));
+}
 async function loadFirebase() {
   if (!hasFirebaseConfig()) return;
   const [{ initializeApp }, authModule, firestore] = await Promise.all([
@@ -56,7 +85,13 @@ async function loadFirebase() {
   await authModule.setPersistence(state.auth, authModule.browserLocalPersistence);
   state.db = firestore.getFirestore(app);
   state.firebase = { ...authModule, ...firestore };
-  authModule.onAuthStateChanged(state.auth, (user) => setState({ user }));
+  authModule.onAuthStateChanged(state.auth, async (user) => {
+    setState({ user, authError: '', dataError: '' });
+    if (user) {
+      try { await ensureUserDocument(user); } catch (error) { setState({ dataError: error.message || 'Could not prepare user profile' }); }
+    }
+    subscribeToAccounts(user);
+  });
 }
 
 async function submitAuth(event) {
@@ -69,7 +104,8 @@ async function submitAuth(event) {
     const credential = state.mode === 'signup'
       ? await state.firebase.createUserWithEmailAndPassword(state.auth, email, password)
       : await state.firebase.signInWithEmailAndPassword(state.auth, email, password);
-    if (state.mode === 'signup' && credential.user) await state.firebase.sendEmailVerification(credential.user);
+    if (state.mode === 'signup' && credential.user && !credential.user.emailVerified) await state.firebase.sendEmailVerification(credential.user);
+    await ensureUserDocument(credential.user);
     toast(state.mode === 'signup' ? 'Account created. Verification email sent.' : 'Signed in securely');
   } catch (error) {
     setState({ authError: error.message || 'Authentication failed' });
@@ -77,6 +113,21 @@ async function submitAuth(event) {
   } finally {
     setState({ loading: false });
   }
+}
+
+async function signInWithProvider(providerName) {
+  if (!state.auth) return toast('Add Firebase config to enable real auth');
+  const provider = providerName === 'apple' ? new state.firebase.OAuthProvider('apple.com') : new state.firebase.GoogleAuthProvider();
+  const credential = await state.firebase.signInWithPopup(state.auth, provider);
+  await ensureUserDocument(credential.user);
+  toast(`Signed in with ${providerName === 'apple' ? 'Apple' : 'Google'}`);
+}
+async function signOut() {
+  if (accountUnsubscribe) accountUnsubscribe();
+  accountUnsubscribe = null;
+  if (state.auth) await state.firebase.signOut(state.auth);
+  setState({ user: null, userProfile: null, accounts: demoAccounts.map(normalizeAccount), vaultKey: null });
+  toast('Signed out securely');
 }
 
 async function unlockVault(event) {
@@ -88,11 +139,7 @@ async function unlockVault(event) {
   const derived = await deriveVaultKey(event.currentTarget.passphrase.value, salt);
   if (!salt) await state.firebase.setDoc(profileRef, { vaultSalt: derived.salt, email: state.user.email }, { merge: true });
   state.vaultKey = derived.key;
-  state.firebase.onSnapshot(state.firebase.collection(state.db, 'users', state.user.uid, 'accounts'), async (snapshot) => {
-    const records = [];
-    for (const doc of snapshot.docs) records.push(normalizeAccount({ id: doc.id, ...(await decryptRecord(state.vaultKey, doc.data())) }));
-    if (records.length) setState({ accounts: records });
-  });
+  subscribeToAccounts(state.user);
   toast('Encrypted vault unlocked');
 }
 
@@ -119,12 +166,15 @@ async function saveAccount(event) {
     color: '#2bb8ff'
   });
   try {
-    if (state.vaultKey && state.user && state.db && state.editingAccountId) {
-      await state.firebase.setDoc(state.firebase.doc(state.db, 'users', state.user.uid, 'accounts', record.id), await encryptRecord(state.vaultKey, record));
-      toast(`${record.name} updated encrypted`);
-    } else if (state.vaultKey && state.user && state.db) {
-      await state.firebase.addDoc(state.firebase.collection(state.db, 'users', state.user.uid, 'accounts'), await encryptRecord(state.vaultKey, record));
-      toast(`${record.name} saved encrypted`);
+    if (state.user && state.db) {
+      const payload = state.vaultKey ? await encryptRecord(state.vaultKey, serializeAccount(record)) : serializeAccount(record);
+      if (state.editingAccountId) {
+        await state.firebase.setDoc(state.firebase.doc(state.db, 'users', state.user.uid, 'accounts', record.id), payload, { merge: true });
+        toast(`${record.name} updated in Firestore`);
+      } else {
+        await state.firebase.addDoc(state.firebase.collection(state.db, 'users', state.user.uid, 'accounts'), payload);
+        toast(`${record.name} saved to Firestore`);
+      }
     } else {
       const accounts = state.editingAccountId ? state.accounts.map((account) => account.id === state.editingAccountId ? record : account) : [record, ...state.accounts];
       setState({ accounts, editingAccountId: '' });
@@ -143,7 +193,7 @@ function editAccount(account) { setState({ editingAccountId: account.id }); setT
 async function deleteAccount(accountId) {
   const account = state.accounts.find((item) => item.id === accountId);
   setState({ accounts: state.accounts.filter((item) => item.id !== accountId) });
-  if (state.user && state.db && state.vaultKey) {
+  if (state.user && state.db) {
     try {
       await state.firebase.deleteDoc(state.firebase.doc(state.db, 'users', state.user.uid, 'accounts', accountId));
     } catch (error) {
@@ -207,7 +257,7 @@ function Sidebar() {
 }
 
 function AuthCard() {
-  return h('section', { className: 'auth-card glass' }, h('p', { className: 'eyebrow' }, state.user ? 'Authenticated' : 'Firebase Authentication'), h('h2', null, state.user ? `Signed in as ${state.user.email || 'SecureSwitch user'}` : 'Sign in to sync your encrypted vault'), state.authError && h('p', { className: 'error-state' }, state.authError), state.user && h('button', { className: 'primary full', onClick: () => state.firebase.signOut(state.auth) }, 'Secure Logout'), !state.user && h('form', { onSubmit: submitAuth }, h('input', { name: 'email', type: 'email', placeholder: 'Email', required: true }), h('input', { name: 'password', type: 'password', placeholder: 'Password', minLength: 6, required: true }), h('button', { className: 'primary full', disabled: state.loading }, state.loading ? 'Working…' : state.mode === 'signup' ? 'Create Account' : 'Login')), !state.user && h('div', { className: 'auth-actions' }, h('button', { onClick: () => setState({ mode: state.mode === 'signup' ? 'login' : 'signup' }) }, state.mode === 'signup' ? 'Use login' : 'Create account'), h('button', { onClick: () => state.auth ? state.firebase.sendPasswordResetEmail(state.auth, document.querySelector('[name=email]').value) : toast('Configure Firebase first') }, 'Forgot Password')), !state.user && h('button', { onClick: () => state.auth ? state.firebase.signInWithPopup(state.auth, new state.firebase.GoogleAuthProvider()) : toast('Configure Firebase first') }, 'Continue with Google'), !state.user && h('button', { onClick: () => state.auth ? state.firebase.signInWithPopup(state.auth, new state.firebase.OAuthProvider('apple.com')) : toast('Configure Firebase first') }, 'Continue with Apple'), h('p', { className: 'muted' }, `Firestore-ready collections: ${firestoreCollections.join(', ')}`));
+  return h('section', { className: 'auth-card glass' }, h('p', { className: 'eyebrow' }, state.user ? 'Session Active' : 'Firebase Authentication'), h('h2', null, state.user ? `Hello ${firstName()} 👋` : 'Sign in to sync your recovery platform'), state.authError && h('p', { className: 'error-state' }, state.authError), state.user && h('div', { className: 'dashboard-summary-grid' }, [['Recovery Score', `${averageScore()}%`], ['Accounts', state.accounts.length], ['Health Check', 'Ready']].map(([label, value]) => h('article', { className: 'summary-card', key: label }, h('span', null, label), h('strong', null, value)))), state.user && !state.user.emailVerified && h('button', { onClick: () => state.firebase.sendEmailVerification(state.user).then(() => toast('Verification email sent')) }, 'Resend verification email'), state.user && h('button', { className: 'primary full', onClick: signOut }, 'Sign out'), !state.user && h('form', { onSubmit: submitAuth }, h('input', { name: 'email', type: 'email', placeholder: 'Email', required: true }), h('input', { name: 'password', type: 'password', placeholder: 'Password', minLength: 6, required: true }), h('button', { className: 'primary full', disabled: state.loading }, state.loading ? 'Working…' : state.mode === 'signup' ? 'Create Account' : 'Login')), !state.user && h('div', { className: 'auth-actions' }, h('button', { onClick: () => setState({ mode: state.mode === 'signup' ? 'login' : 'signup' }) }, state.mode === 'signup' ? 'Use login' : 'Create account'), h('button', { onClick: () => state.auth ? state.firebase.sendPasswordResetEmail(state.auth, document.querySelector('[name=email]').value).then(() => toast('Password reset email sent')) : toast('Configure Firebase first') }, 'Forgot Password')), !state.user && h('button', { onClick: () => signInWithProvider('google') }, 'Sign in with Google'), !state.user && h('button', { onClick: () => signInWithProvider('apple') }, 'Sign in with Apple'), h('p', { className: 'muted' }, `Firestore-ready collections: ${productionCollections.join(', ')}`));
 }
 
 function VaultHeroVisual() {
@@ -235,19 +285,19 @@ function VaultHeroVisual() {
 }
 
 function Hero() {
-  return h('section', { className: 'hero glass', id: 'dashboard' }, h('div', { className: 'hero-copy-panel' }, h('p', { className: 'eyebrow' }, '✦ Polished SaaS MVP'), h('h1', null, 'Never lose another account ', h('span', null, 'again.')), h('p', null, 'SecureSwitch protects your logins, recovery options, and digital identity before disaster strikes.'), h('div', { className: 'hero-actions' }, h('button', { className: 'primary', onClick: runHealthScan }, 'Run Health Check'), h('button', { onClick: () => toast('Demo walkthrough coming soon') }, 'Watch Demo'))), h(VaultHeroVisual));
+  return h('section', { className: 'hero glass', id: 'dashboard' }, h('div', { className: 'hero-copy-panel' }, h('p', { className: 'eyebrow' }, '✦ Digital Recovery Platform'), h('h1', null, state.user ? `Hello ${firstName()} 👋` : 'Never lose another account ', !state.user && h('span', null, 'again.')), h('p', null, 'SecureSwitch protects your logins, recovery options, and digital identity before disaster strikes.'), h('div', { className: 'hero-actions' }, h('button', { className: 'primary', onClick: runHealthScan }, 'Run Health Check'), h('button', { onClick: () => toast('Demo walkthrough coming soon') }, 'Watch Demo'))), h(VaultHeroVisual));
 }
 
 function ProtectionScore() {
   return h('aside', { className: 'floating-score glass', 'aria-label': 'Live Protection Score' },
     h('div', null, h('p', { className: 'eyebrow score-title' }, 'Live Protection Score'), h('strong', null, `${liveProtectionScore()}%`), h('span', null, 'Excellent')),
     h('div', { className: 'mini-score-ring', style: { '--score': `${liveProtectionScore() * 3.6}deg` } }),
-    h('dl', null, h('div', null, h('dt', null, 'Accounts'), h('dd', null, '50')), h('div', null, h('dt', null, 'Review'), h('dd', null, '9')), h('div', null, h('dt', null, 'Plan'), h('dd', null, '3m')))
+    h('dl', null, h('div', null, h('dt', null, 'Accounts'), h('dd', null, state.accounts.length)), h('div', null, h('dt', null, 'Review'), h('dd', null, reviewCount())), h('div', null, h('dt', null, 'Health Check'), h('dd', null, state.scanComplete ? 'Ready' : 'Ready')))
   );
 }
 
 function ProtectedStatus() {
-  return h('article', { className: 'protected glass' }, h('span', { className: 'check-orb' }, '▣'), h('div', null, h('h3', null, 'You’re protected'), h('p', null, 'Great job! Keep your recovery methods up to date.')), h('b', null, '›'));
+  return h('article', { className: 'protected glass' }, h('span', { className: 'check-orb' }, '▣'), h('div', null, h('h3', null, state.user ? `Hello ${firstName()} 👋` : 'You’re protected'), h('p', null, state.user ? `Recovery Score ${averageScore()}% · Accounts ${state.accounts.length} · Health Check Ready` : 'Great job! Keep your recovery methods up to date.')), h('b', null, '›'));
 }
 
 function QuickActions() {
@@ -272,7 +322,7 @@ function Accounts() {
 
 function AccountForm() {
   const editing = state.accounts.find((account) => account.id === state.editingAccountId);
-  return h('section', { className: 'panel glass', id: 'account-form' }, h('p', { className: 'eyebrow' }, state.editingAccountId ? 'Edit Account' : 'Import / Add Account'), h('h2', null, state.editingAccountId ? `Editing ${editing?.name || 'account'}` : 'Manual account import'), h('form', { className: 'account-form', onSubmit: saveAccount }, h('input', { name: 'name', placeholder: 'Service name', defaultValue: editing?.name || '', required: true }), h('input', { name: 'handle', placeholder: 'Username', defaultValue: editing?.handle || '' }), h('select', { name: 'category', defaultValue: editing?.category || 'Email' }, accountCategories.map((category) => h('option', { key: category }, category))), h('input', { name: 'email', placeholder: 'Recovery email', defaultValue: editing?.recoveryEmail || '' }), h('input', { name: 'phone', placeholder: 'Recovery phone', defaultValue: editing?.recoveryPhone || '' }), h('input', { name: 'authenticator', placeholder: 'Authenticator status', defaultValue: editing?.authenticator || '' }), h('input', { name: 'passkey', placeholder: 'Passkey status', defaultValue: editing?.passkeyStatus || '' }), h('input', { name: 'codes', placeholder: 'Backup code status', defaultValue: editing?.backupCodes || '' }), h('input', { name: 'contacts', placeholder: 'Trusted contacts', defaultValue: editing?.trustedContacts || '' }), h('input', { name: 'device', placeholder: 'Device verification', defaultValue: editing?.deviceVerification || '' }), h('input', { name: 'reviewed', type: 'date', defaultValue: editing?.lastReviewed || new Date().toISOString().slice(0, 10) }), h('button', { className: 'primary full-span' }, state.editingAccountId ? 'Update Account' : 'Save Account'), state.editingAccountId && h('button', { type: 'button', onClick: () => setState({ editingAccountId: '' }) }, 'Cancel edit')), h('p', { className: 'muted' }, 'CSV import is planned next; manual import creates real editable local records today.'));
+  return h('section', { className: 'panel glass', id: 'account-form' }, h('p', { className: 'eyebrow' }, state.editingAccountId ? 'Edit Account' : 'Import / Add Account'), h('div', { className: 'account-toolbar' }, accountTemplates.map((template) => h('button', { key: template, type: 'button', onClick: () => { setState({ editingAccountId: '' }); setTimeout(() => { const input = document.querySelector('#account-form [name=name]'); if (input) input.value = template === 'Custom Account' ? '' : template; }, 0); } }, `+ Add ${template.replace(' Account', '')}`))), h('h2', null, state.editingAccountId ? `Editing ${editing?.name || 'account'}` : 'Manual account import'), h('form', { className: 'account-form', onSubmit: saveAccount }, h('input', { name: 'name', placeholder: 'Service name', defaultValue: editing?.name || '', required: true }), h('input', { name: 'handle', placeholder: 'Username', defaultValue: editing?.handle || '' }), h('select', { name: 'category', defaultValue: editing?.category || 'Email' }, accountCategories.map((category) => h('option', { key: category }, category))), h('input', { name: 'email', placeholder: 'Recovery email', defaultValue: editing?.recoveryEmail || '' }), h('input', { name: 'phone', placeholder: 'Recovery phone', defaultValue: editing?.recoveryPhone || '' }), h('input', { name: 'authenticator', placeholder: 'Authenticator status', defaultValue: editing?.authenticator || '' }), h('input', { name: 'passkey', placeholder: 'Passkey status', defaultValue: editing?.passkeyStatus || '' }), h('input', { name: 'codes', placeholder: 'Backup code status', defaultValue: editing?.backupCodes || '' }), h('input', { name: 'contacts', placeholder: 'Trusted contacts', defaultValue: editing?.trustedContacts || '' }), h('input', { name: 'device', placeholder: 'Device verification', defaultValue: editing?.deviceVerification || '' }), h('input', { name: 'reviewed', type: 'date', defaultValue: editing?.lastReviewed || new Date().toISOString().slice(0, 10) }), h('button', { className: 'primary full-span' }, state.editingAccountId ? 'Update Account' : 'Save Account'), state.editingAccountId && h('button', { type: 'button', onClick: () => setState({ editingAccountId: '' }) }, 'Cancel edit')), h('p', { className: 'muted' }, state.user ? 'Accounts save to your private Firestore account registry.' : 'Sign in to save accounts to Firestore; local entries stay in this browser until authentication is configured.'));
 }
 
 function SwitchMode() {
@@ -340,7 +390,7 @@ function Settings() { return h('section', { className: 'panel glass', id: 'setti
 
 
 function DemoModeBanner() {
-  return h('section', { className: 'demo-banner glass', 'aria-label': state.user ? 'Live user data mode' : 'Demo mode' }, h('strong', null, state.user ? 'Live encrypted workspace' : 'Demo Mode'), h('span', null, state.user ? 'SecureSwitch is using your authenticated vault data.' : 'You are viewing polished sample data. Sign in to switch to your own encrypted records.'), h('small', null, 'Privacy-first: SecureSwitch stores recovery planning data. Never store raw passwords.'));
+  return h('section', { className: 'demo-banner glass', 'aria-label': state.user ? 'Live Firestore data mode' : 'Demo mode' }, h('strong', null, state.user ? 'Live Digital Recovery Platform' : 'Demo Mode'), h('span', null, state.user ? 'SecureSwitch is reading and writing your private Firestore recovery records.' : 'You are viewing polished sample data. Sign in to switch to your own encrypted records.'), h('small', null, 'Privacy-first: SecureSwitch stores recovery planning data. Never store raw passwords.'));
 }
 
 function OnboardingPanel() {
