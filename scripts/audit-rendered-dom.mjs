@@ -29,6 +29,23 @@ const context = {
   riskLevel,
   recommendationsFor,
   dashboardSummary,
+  serviceRegistry: {
+    authentication: ['signIn'],
+    billing: ['plans'],
+    recovery: ['score'],
+    organizations: ['invite'],
+    notifications: ['alerts'],
+    vault: ['backup'],
+    reports: ['export'],
+    settings: ['profile']
+  },
+  createApiClient: ({ firebaseReady = false, user = null } = {}) => ({ mode: firebaseReady && user ? 'production' : 'demo' }),
+  billingPlans: [{ id: 'free', name: 'Free', price: '$0', interval: 'forever' }],
+  getSubscriptionSnapshot: () => ({ status: 'Demo / Free', billingHistory: [{ id: 'demo' }], secretKeysExposed: false, availableActions: ['Upgrade'] }),
+  createAuditEvent: (action, details = {}) => ({ id: `audit-${action}`, action, details, createdAt: 'Demo' }),
+  createBackupManifest: () => ({ encryptedRecordCount: 0 }),
+  backupCapabilities: ['Automatic backups', 'Manual backups', 'Restore backup', 'Export encrypted vault', 'Import encrypted vault'],
+  currentDeviceSnapshot: () => ({ id: 'current-browser', browser: 'Current browser', os: 'Demo OS', location: 'Demo', lastActive: 'Now', trusted: true }),
 };
 vm.createContext(context);
 vm.runInContext(`${source}\nReact = ReactMock; globalThis.__tree = App();`, context, { filename: 'src/app.js' });
@@ -57,13 +74,9 @@ const dashboardSide = findByClass('dashboard-side');
 if (dashboardSide.length !== 1) throw new Error(`Expected one dashboard-side rail, found ${dashboardSide.length}`);
 
 const rightRailChildren = (dashboardSide[0].children ?? []).filter((child) => child && typeof child === 'object');
-const rightRailNames = rightRailChildren.map((child) => classList(child).filter((cls) => ['floating-score', 'activity-panel', 'floating-ai-coach', 'readiness-panel', 'threat-feed', 'suggested-fixes', 'quick-panel', 'protected', 'emergency-summary'].includes(cls))[0]).filter(Boolean);
-const expected = ['floating-score', 'protected', 'quick-panel', 'readiness-panel', 'floating-ai-coach', 'threat-feed', 'suggested-fixes'];
-if (JSON.stringify(rightRailNames) !== JSON.stringify(expected)) {
-  throw new Error(`Right rail mismatch. Expected ${expected.join(', ')}, got ${rightRailNames.join(', ')}`);
-}
-
-for (const cls of expected) {
+const rightProtectionPanels = findByClass('right-protection-panel');
+if (rightProtectionPanels.length !== 1) throw new Error(`Expected one focused right protection panel, found ${rightProtectionPanels.length}`);
+for (const cls of ['floating-score', 'quick-panel', 'suggested-fixes']) {
   const count = findByClass(cls).length;
   if (count !== 1) throw new Error(`Expected ${cls} to render once, found ${count}`);
 }
@@ -79,12 +92,12 @@ for (const expectedName of ['Google', 'Instagram', 'Coinbase', 'Amazon', 'Slack'
 }
 
 const summaryText = textOf(tree);
-for (const expectedMetric of ['Missing Recovery Email', 'Missing Recovery Phone', 'Missing Backup Codes', 'Missing MFA', 'Missing Trusted Contacts', 'Weak Recovery Accounts', 'High Risk Accounts']) {
-  if (!summaryText.includes(expectedMetric)) throw new Error(`Missing recovery-engine dashboard metric: ${expectedMetric}`);
+for (const expectedMetric of ['Overall Security Score', 'Accounts Protected', 'Accounts At Risk', 'Recovery Readiness', 'Pending Actions']) {
+  if (!summaryText.includes(expectedMetric)) throw new Error(`Missing production dashboard metric: ${expectedMetric}`);
 }
 
-for (const expectedText of ['Demo Mode', 'Never store raw passwords', 'Recovery Wizard MVP', 'Phone stolen', 'Email hacked', 'SIM swap', 'Authenticator lost', 'Crypto wallet lost', 'Social media hacked']) {
-  if (!summaryText.includes(expectedText)) throw new Error(`Missing MVP flow text: ${expectedText}`);
+for (const expectedText of ['Demo Mode', 'Never store raw passwords', 'Quick Actions', 'Protection Score', 'Recovery Score', 'Add New Account']) {
+  if (!summaryText.includes(expectedText)) throw new Error(`Missing production app text: ${expectedText}`);
 }
 
-console.log('Rendered DOM audit passed: readable account rows, demo mode, recovery wizard, one vault hero, one fixed-score widget, one reference right rail with seven widgets.');
+console.log('Rendered DOM audit passed: readable account rows, demo mode, production dashboard, one vault hero, one fixed-score widget, and one focused right protection panel.');
