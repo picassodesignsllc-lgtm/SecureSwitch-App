@@ -1,0 +1,104 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function ownsUserDoc(userId) {
+      return signedIn() && request.auth.uid == userId;
+    }
+
+    match /users/{userId} {
+      allow read, create, update, delete: if ownsUserDoc(userId);
+
+      match /accounts/{docId} {
+        allow read, create, update, delete: if ownsUserDoc(userId);
+      }
+
+      match /recoveryMethods/{docId} {
+        allow read, create, update, delete: if ownsUserDoc(userId);
+      }
+
+      match /securityScores/{docId} {
+        allow read, create, update, delete: if ownsUserDoc(userId);
+      }
+
+      match /activity/{docId} {
+        allow read, create, update, delete: if ownsUserDoc(userId);
+      }
+
+      match /recoveryContacts/{docId} {
+        allow read, create, update, delete: if ownsUserDoc(userId);
+      }
+
+      match /notifications/{docId} {
+        allow read, create, update, delete: if ownsUserDoc(userId);
+      }
+
+      match /trustedContacts/{docId} {
+        allow read, create, update, delete: if ownsUserDoc(userId);
+      }
+
+      match /backupCodes/{docId} {
+        allow read, create, update, delete: if ownsUserDoc(userId);
+      }
+
+      match /securityAlerts/{docId} {
+        allow read, create, update, delete: if ownsUserDoc(userId);
+      }
+
+      match /recoveryTimeline/{docId} {
+        allow read, create, update, delete: if ownsUserDoc(userId);
+      }
+
+      match /emergencyKits/{docId} {
+        allow read, create, update, delete: if ownsUserDoc(userId);
+      }
+
+
+      match /organizations/{docId} {
+        allow read, create, update, delete: if ownsUserDoc(userId);
+      }
+
+
+      match /organizationInvites/{docId} {
+        allow read, create, update, delete: if ownsUserDoc(userId);
+      }
+
+      match /settings/{docId} {
+        allow read, create, update, delete: if ownsUserDoc(userId);
+      }
+
+      match /billing/{docId} {
+        allow read, create, update, delete: if ownsUserDoc(userId);
+      }
+
+      match /auditLogs/{docId} {
+        allow read, create: if ownsUserDoc(userId);
+        allow update, delete: if false;
+      }
+
+      match /backups/{docId} {
+        allow read, create, update, delete: if ownsUserDoc(userId);
+      }
+
+      match /devices/{docId} {
+        allow read, create, update, delete: if ownsUserDoc(userId);
+      }
+    }
+
+    match /waitlist/{entryId} {
+      allow create: if request.resource.data.keys().hasOnly(['name', 'email', 'referralCode', 'interest', 'audience', 'createdAt'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() <= 120
+        && request.resource.data.email is string
+        && request.resource.data.email.size() <= 180
+        && request.resource.data.interest is string
+        && request.resource.data.audience is string;
+      allow read, update, delete: if false;
+    }
+
+  }
+}
+

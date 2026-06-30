@@ -29,6 +29,23 @@ const context = {
   riskLevel,
   recommendationsFor,
   dashboardSummary,
+  serviceRegistry: {
+    authentication: ['signIn'],
+    billing: ['plans'],
+    recovery: ['score'],
+    organizations: ['invite'],
+    notifications: ['alerts'],
+    vault: ['backup'],
+    reports: ['export'],
+    settings: ['profile']
+  },
+  createApiClient: ({ firebaseReady = false, user = null } = {}) => ({ mode: firebaseReady && user ? 'production' : 'demo' }),
+  billingPlans: [{ id: 'free', name: 'Free', price: '$0', interval: 'forever' }],
+  getSubscriptionSnapshot: () => ({ status: 'Demo / Free', billingHistory: [{ id: 'demo' }], secretKeysExposed: false, availableActions: ['Upgrade'] }),
+  createAuditEvent: (action, details = {}) => ({ id: `audit-${action}`, action, details, createdAt: 'Demo' }),
+  createBackupManifest: () => ({ encryptedRecordCount: 0 }),
+  backupCapabilities: ['Automatic backups', 'Manual backups', 'Restore backup', 'Export encrypted vault', 'Import encrypted vault'],
+  currentDeviceSnapshot: () => ({ id: 'current-browser', browser: 'Current browser', os: 'Demo OS', location: 'Demo', lastActive: 'Now', trusted: true }),
 };
 vm.createContext(context);
 vm.runInContext(`${source}\nReact = ReactMock; globalThis.__tree = App();`, context, { filename: 'src/app.js' });
@@ -79,12 +96,12 @@ for (const expectedName of ['Google', 'Instagram', 'Coinbase', 'Amazon', 'Slack'
 }
 
 const summaryText = textOf(tree);
-for (const expectedMetric of ['Missing Recovery Email', 'Missing Recovery Phone', 'Missing Backup Codes', 'Missing MFA', 'Missing Trusted Contacts', 'Weak Recovery Accounts', 'High Risk Accounts']) {
-  if (!summaryText.includes(expectedMetric)) throw new Error(`Missing recovery-engine dashboard metric: ${expectedMetric}`);
+for (const expectedMetric of ['Overall Security', 'Recovery Readiness', 'Critical Accounts', 'Pending Actions', 'Protected Accounts']) {
+  if (!summaryText.includes(expectedMetric)) throw new Error(`Missing production dashboard metric: ${expectedMetric}`);
 }
 
-for (const expectedText of ['Demo Mode', 'Never store raw passwords', 'Recovery Wizard MVP', 'Phone stolen', 'Email hacked', 'SIM swap', 'Authenticator lost', 'Crypto wallet lost', 'Social media hacked']) {
-  if (!summaryText.includes(expectedText)) throw new Error(`Missing MVP flow text: ${expectedText}`);
+for (const expectedText of ['Demo Mode', 'Never store raw passwords', 'Quick Actions', 'AI Recovery Assistant', 'Recovery Score', 'Add New Account']) {
+  if (!summaryText.includes(expectedText)) throw new Error(`Missing production app text: ${expectedText}`);
 }
 
-console.log('Rendered DOM audit passed: readable account rows, demo mode, recovery wizard, one vault hero, one fixed-score widget, one reference right rail with seven widgets.');
+console.log('Rendered DOM audit passed: readable account rows, demo mode, production dashboard, one vault hero, one fixed-score widget, and one reference right rail with seven widgets.');
