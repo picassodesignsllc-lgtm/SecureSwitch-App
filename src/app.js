@@ -25,6 +25,21 @@ const familyMembers = [
   { name: 'Brother', score: 68, note: 'Missing trusted contact' },
   { name: 'Grandma', score: 34, note: '⚠ No recovery phone' }
 ];
+const familyMembers = [
+  { name: 'Dad', score: 92, note: 'Recovery plan verified' },
+  { name: 'Mom', score: 81, note: 'Needs backup code refresh' },
+  { name: 'Brother', score: 68, note: 'Missing trusted contact' },
+  { name: 'Grandma', score: 34, note: '⚠ No recovery phone' }
+];
+let React;
+let root;
+
+const state = { user: null, auth: null, db: null, firebase: null, vaultKey: null, mode: 'login', accounts: demoAccounts, selectedRecovery: '+1 (415) 555-0184', switchOld: '+1 (415) 555-0184', switchNew: '+1 (628) 555-0149', blackoutArmed: false, emergencyActive: false, scanComplete: false, aiStep: 0, timelineFilter: 'All', simulatorScenario: 'My phone was stolen', simulatorRan: false, activeProfile: null, vaultUnlocked: false, toast: 'Ready' };
+const h = (...args) => React.createElement(...args);
+
+function hasFirebaseConfig() { return Object.values(firebaseConfig).every(Boolean); }
+function setState(patch) { Object.assign(state, patch); render(); }
+function toast(message) { setState({ toast: message }); window.setTimeout(() => setState({ toast: '' }), 2200); }
 
 const recoveryPlaybooks = {
   'Phone stolen': ['Lock the lost phone remotely', 'Freeze SIM with your carrier', 'Recover Apple ID and Google', 'Restore authenticator from backup', 'Review banking and crypto sessions'],
