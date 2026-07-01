@@ -17,7 +17,7 @@ for (const width of ['1260px', '1024px', '768px', '480px', '414px', '390px', '37
   if (!css.includes(`max-width: ${width}`)) throw new Error(`Missing responsive overlap check breakpoint: ${width}`);
 }
 
-for (const component of ['h(ProtectionScore)', 'h(QuickActions)', 'h(Activity)', 'h(SuggestedFixes)']) {
+for (const component of ['h(ProtectionScore)', 'h(ProtectedStatus)', 'h(QuickActions)', 'h(Activity)', 'h(FeatureShortcuts)', 'h(DashboardAccountsPreview)']) {
   if (!app.includes(component)) throw new Error(`Missing command-center component: ${component}`);
 }
 
@@ -29,8 +29,8 @@ for (const required of ['grid-template-columns: var(--reference-sidebar) minmax(
   if (!css.includes(required)) throw new Error(`Missing responsive command-center layout rule: ${required}`);
 }
 
-const rightRailCount = (app.match(/h\(ProtectionScore\)|h\(QuickActions\)|h\(SuggestedFixes\)/g) ?? []).length;
-if (rightRailCount !== 3) throw new Error(`Expected 3 focused right-rail widgets, found ${rightRailCount}`);
+const rightRailCount = (app.match(/h\(ProtectionScore\)|h\(ProtectedStatus\)|h\(QuickActions\)|readiness-card/g) ?? []).length;
+if (rightRailCount < 4) throw new Error(`Expected focused target right-rail widgets, found ${rightRailCount}`);
 
 
 
@@ -50,6 +50,14 @@ for (const marker of ['<'.repeat(7), '='.repeat(7), '>'.repeat(7)]) {
   if (app.includes(marker) || css.includes(marker)) throw new Error(`Conflict marker remains: ${marker}`);
 }
 
+
+for (const requiredTargetGuard of ['grid-template-columns: minmax(680px, 1fr) 360px', 'grid-template-columns: 260px minmax(0, 1fr)', 'min-width: 280px', 'minmax(80px, 1fr)', 'overflow-x: clip', 'word-break: normal !important', 'hyphens: none !important']) {
+  if (!css.includes(requiredTargetGuard)) throw new Error(`Missing Phase 33 dashboard breakage guard: ${requiredTargetGuard}`);
+}
+if (!css.includes('.dashboard[data-route="dashboard"] .quick-fix-center') || !css.includes('.dashboard[data-route="dashboard"] .demo-banner')) {
+  throw new Error('Dashboard must hide quick-fix and demo-mode clutter.');
+}
+
 for (const forbidden of ['writing-mode', 'word-break: break-all']) {
   if (css.includes(forbidden)) throw new Error(`Account cards must not use broken vertical text styling: ${forbidden}`);
 }
@@ -60,4 +68,4 @@ for (const requiredFlow of ['DemoModeBanner', 'OnboardingPanel', 'RecoveryWizard
   if (!app.includes(requiredFlow)) throw new Error(`Missing MVP flow: ${requiredFlow}`);
 }
 
-console.log('Layout verification passed: concise dashboard, focused right rail, readable account cards, and product states are guarded.');
+console.log('Layout verification passed: target dashboard, focused right rail, readable account cards, and product states are guarded.');

@@ -1041,15 +1041,14 @@ function Hero() {
 }
 
 function ProtectionScore() {
-  const score = liveProtectionScore();
+  const score = usingLiveAccounts() ? liveProtectionScore() : 86;
   const status = protectionStatus(score);
-  return h('aside', { className: 'floating-score glass protection-panel-card', 'aria-label': 'Protection Score' },
-    h('div', null, h('p', { className: 'eyebrow score-title' }, 'Protection Score'), h('strong', null, `${score}%`), h('span', { className: status.toLowerCase().replaceAll(' ', '-') }, status)),
-    h('div', { className: 'mini-score-ring', style: { '--score': `${score * 3.6}deg` } }),
-    h('dl', null, h('div', null, h('dt', null, 'Protected'), h('dd', null, state.accounts.filter((account) => scoreFor(account) >= 75).length)), h('div', null, h('dt', null, 'At Risk'), h('dd', null, reviewCount())), h('div', null, h('dt', null, 'Actions'), h('dd', null, riskFindings().length)))
+  return h('aside', { className: 'floating-score glass protection-panel-card', 'aria-label': 'Live Protection Score' },
+    h('p', { className: 'eyebrow score-title' }, 'Live Protection Score ⓘ'),
+    h('div', { className: 'target-score-ring', style: { '--score': `${score * 3.6}deg` } }, h('strong', null, `${score}%`), h('span', { className: status.toLowerCase().replaceAll(' ', '-') }, `◆ ${status}`)),
+    h('div', { className: 'target-score-stats' }, [['Accounts', state.accounts.length], ['Need Review', reviewCount()], ['Switch Plan', `${Math.max(1, switchAccounts().length)}m`]].map(([label, value]) => h('article', { key: label }, h('strong', null, value), h('span', null, label))))
   );
 }
-
 function ProtectedStatus() {
   return h('article', { className: 'protected glass' }, h('span', { className: 'check-orb' }, '▣'), h('div', null, h('h3', null, state.user ? `Hello ${firstName()} 👋` : 'You’re protected'), h('p', null, state.user ? `Recovery Score ${averageScore()}% · Accounts ${state.accounts.length} · Health Check Ready` : 'Great job! Keep your recovery methods up to date.')), h('b', null, '›'));
 }
@@ -1695,8 +1694,22 @@ function BusinessDashboardPage() {
 function DashboardWidgetControls() {
   return h('section', { className: 'panel glass widget-order-panel' }, h('div', { className: 'panel-head compact' }, h('div', null, h('p', { className: 'eyebrow' }, 'Dashboard widgets'), h('h3', null, 'Remembered layout order')), h('small', null, 'Drag-free controls')), h('div', { className: 'widget-order-list' }, state.dashboardWidgetOrder.map((widget) => h('article', { key: widget }, h('strong', null, widget), h('div', null, h('button', { onClick: () => updateDashboardWidget(widget, 'up') }, '↑'), h('button', { onClick: () => updateDashboardWidget(widget, 'down') }, '↓'))))));
 }
+function FeatureShortcuts() {
+  const cards = [
+    ['Accounts', 'Manage and secure all your accounts', '#accounts', '👤'],
+    ['Switch Mode', 'Change access in seconds', '#switch', '↔'],
+    ['Blackout Mode', 'Lock down and hide your data', '#blackout', '🛡'],
+    ['Emergency Kit', 'Access critical info anywhere', '#kit', '▣']
+  ];
+  return h('section', { className: 'target-shortcuts' }, cards.map(([title, detail, href, icon]) => h('a', { key: title, href, className: 'target-shortcut-card glass' }, h('span', null, icon), h('div', null, h('strong', null, title), h('small', null, detail)), h('b', null, '›'))));
+}
+function DashboardAccountsPreview() {
+  const names = ['Google', 'Instagram', 'Coinbase', 'Amazon', 'Slack'];
+  const accounts = names.map((name) => state.accounts.find((account) => account.name === name)).filter(Boolean);
+  return h('section', { className: 'panel glass target-accounts-card', id: 'accounts' }, h('div', { className: 'panel-head target-card-head' }, h('p', { className: 'eyebrow' }, 'Your Accounts'), h('a', { href: '#accounts' }, 'View all')), accounts.map((account) => { const review = scoreFor(account) < 80; return h('a', { key: account.id || account.name, href: '#account-detail', className: 'target-account-row', onClick: () => setState({ selectedAccountId: account.id }) }, h('span', { className: 'app-icon', style: { background: account.color } }, providerMeta(account.name)[1] || account.name[0]), h('strong', null, account.name), h('small', null, account.handle || account.recoveryEmail), h('b', { className: review ? 'review' : 'secure' }, review ? 'Review' : 'Secure'), h('i', null, '›')); }));
+}
 function DashboardHome() {
-  return [h(Hero), h(ExecutiveSecurityScoreCard), h(DashboardWidgetControls), h('div', { className: 'lower-grid dashboard-home-grid' }, h(Accounts), h(Activity))];
+  return [h(Hero), h(FeatureShortcuts), h('div', { className: 'lower-grid dashboard-home-grid target-lower-grid' }, h(DashboardAccountsPreview), h(Activity))];
 }
 
 function AppHealthPage() {
@@ -1746,8 +1759,8 @@ function PageContent() {
 
 function Dashboard() {
   return h('main', { className: 'dashboard page-transition', 'data-route': currentRoute() },
-    h('div', { className: 'main-column app-page-shell' }, h(TopActions), h(PageContent), h(DemoModeBanner)),
-    h('aside', { className: 'dashboard-side' }, h('section', { className: 'right-protection-panel glass' }, h(ProtectionScore), h(QuickActions), h(SuggestedFixes)))
+    h('div', { className: 'main-column app-page-shell' }, h(TopActions), h(PageContent), currentRoute() !== 'dashboard' && h(DemoModeBanner)),
+    h('aside', { className: 'dashboard-side' }, h('section', { className: 'right-protection-panel glass' }, h(ProtectionScore), h(ProtectedStatus), h(QuickActions), h('section', { className: 'readiness-card glass' }, h('p', { className: 'eyebrow' }, 'Recovery Readiness'), h('div', { className: 'readiness-line' }, h('span', { style: { width: `${averageScore()}%` } })), h('strong', null, `${averageScore()}%`), h('small', null, averageScore() >= 80 ? 'You’re ready for the unexpected. Keep it up!' : 'Review required before your next emergency.'))))
   );
 }
 

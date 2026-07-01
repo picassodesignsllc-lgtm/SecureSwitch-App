@@ -99,7 +99,7 @@ if (dashboardSide.length !== 1) throw new Error(`Expected one dashboard-side rai
 const rightRailChildren = (dashboardSide[0].children ?? []).filter((child) => child && typeof child === 'object');
 const rightProtectionPanels = findByClass('right-protection-panel');
 if (rightProtectionPanels.length !== 1) throw new Error(`Expected one focused right protection panel, found ${rightProtectionPanels.length}`);
-for (const cls of ['floating-score', 'quick-panel', 'suggested-fixes']) {
+for (const cls of ['floating-score', 'protected', 'quick-panel', 'readiness-card']) {
   const count = findByClass(cls).length;
   if (count !== 1) throw new Error(`Expected ${cls} to render once, found ${count}`);
 }
@@ -108,19 +108,19 @@ if (findByClass('hero').length !== 1) throw new Error('Hero must render exactly 
 if (findByClass('floating-score').length !== 1) throw new Error('Live Protection Score must render exactly once.');
 if (findByClass('activity-panel').length !== 1) throw new Error('Recent Activity must render once in the main content area.');
 
-const accountRows = findByClass('account-row');
+const accountRows = findByClass('target-account-row');
 if (accountRows.length < 5) throw new Error(`Expected at least five account rows, found ${accountRows.length}`);
 for (const expectedName of ['Google', 'Instagram', 'Coinbase', 'Amazon', 'Slack']) {
   if (!accountRows.some((row) => textOf(row).includes(expectedName))) throw new Error(`Missing readable account name: ${expectedName}`);
 }
 
 const summaryText = textOf(tree);
-for (const expectedMetric of ['Overall Security Score', 'Accounts Protected', 'Critical Issues', 'Recovery Coverage', 'Average Health Score']) {
-  if (!summaryText.includes(expectedMetric)) throw new Error(`Missing production dashboard metric: ${expectedMetric}`);
+for (const expectedMetric of ['Never lose', 'another account', 'again.', 'Your Accounts', 'Recent Activity']) {
+  if (!summaryText.includes(expectedMetric)) throw new Error(`Missing target dashboard content: ${expectedMetric}`);
 }
 
-for (const expectedText of ['Demo Mode', 'Never store raw passwords', 'Quick Actions', 'Protection Score', 'Recovery Score', 'Add New Account']) {
+for (const expectedText of ['Live Protection Score', 'Quick Actions', 'Recovery Readiness', 'Add New Account']) {
   if (!summaryText.includes(expectedText)) throw new Error(`Missing production app text: ${expectedText}`);
 }
 
-console.log('Rendered DOM audit passed: readable account rows, fallback mode, production dashboard, one vault hero, one fixed-score widget, and one focused right protection panel.');
+console.log('Rendered DOM audit passed: target dashboard, readable account rows, one vault hero, one score widget, and one focused right protection panel.');
