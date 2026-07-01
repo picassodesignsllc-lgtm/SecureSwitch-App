@@ -66,6 +66,17 @@ service cloud.firestore {
         allow read, create, update, delete: if ownsUserDoc(userId);
       }
 
+
+
+      match /approvals/{docId} {
+        allow read, create, update, delete: if ownsUserDoc(userId);
+      }
+
+      match /enterpriseAuditLog/{docId} {
+        allow read, create: if ownsUserDoc(userId);
+        allow update, delete: if false;
+      }
+
       match /settings/{docId} {
         allow read, create, update, delete: if ownsUserDoc(userId);
       }

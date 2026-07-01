@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { applyBulkReview, buildActivityEvent, buildNotification, buildSecurityScoreDocument, recoveryProfileFromForm, userScopedPath } from '../src/services/liveData.js';
 import { analyzeAccountSecurity, answerSecurityQuestion, buildSecurityTimeline, executiveSecurityMetrics, explainableSecurityScore, generateSecurityRecommendations } from '../src/services/aiCopilot.js';
 import { achievementProgress, executiveInsightCards, quickFixActions, securityStreak } from '../src/services/delight.js';
+import { createApproval, createInvitation, createOrganizationRecord, defaultSecurityPolicies, enterpriseAdminMetrics, enterpriseAuditEvent, enterpriseRoles, reportingMetrics, reorderWidget } from '../src/services/enterprise.js';
 
 const firebase = { serverTimestamp: () => 'SERVER_TIME' };
 
@@ -99,4 +100,24 @@ test('delight layer derives executive insights, achievements, streaks, and quick
   assert.ok(achievements.some((item) => item.name === 'Recovery Rookie' && item.unlocked));
   assert.equal(fixes[0].accountName, 'PayPal');
   assert.ok(streak.current >= 1);
+});
+
+
+test('enterprise helpers create organizations, invitations, policies, approvals, and reports', () => {
+  const accounts = [{ name: 'Google', authenticator: 'Passkey', recoveryEmail: 'safe@example.com', recoveryPhone: '+15550100', backupCodes: 'Saved' }];
+  const org = createOrganizationRecord({ name: 'Acme Security', role: 'Admin', ownerId: 'user-1', now: new Date('2026-07-01T00:00:00.000Z') });
+  const invite = createInvitation({ email: 'member@example.com', role: 'Manager', organizationId: org.id, now: new Date('2026-07-01T00:00:00.000Z') });
+  const audit = enterpriseAuditEvent({ action: 'Profile Updated', actor: 'Keith', category: 'Profile', severity: 'Info', now: new Date('2026-07-01T00:00:00.000Z') });
+  const policies = defaultSecurityPolicies({ requirePasskeys: true });
+  const approval = createApproval({ action: 'Export Vault', target: org.name, now: new Date('2026-07-01T00:00:00.000Z') });
+  const metrics = enterpriseAdminMetrics({ users: 3, accounts, devices: [{}], alerts: [{ severity: 'Critical' }], activity: [audit] });
+  const reports = reportingMetrics(accounts, [org], [audit]);
+  assert.ok(enterpriseRoles.includes('Read Only'));
+  assert.equal(org.role, 'Admin');
+  assert.equal(invite.status, 'Pending');
+  assert.equal(policies.requirePasskeys, true);
+  assert.equal(approval.status, 'Pending');
+  assert.equal(metrics.totalUsers, 3);
+  assert.ok(reports.some(([label]) => label === 'Security Score'));
+  assert.deepEqual(reorderWidget(['A', 'B', 'C'], 'B', 'up'), ['B', 'A', 'C']);
 });

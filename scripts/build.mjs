@@ -24,10 +24,12 @@ await exec(process.execPath, ['--check', 'src/services/devices.js'], { stdio: 'i
 await exec(process.execPath, ['--check', 'src/services/liveData.js'], { stdio: 'inherit' });
 await exec(process.execPath, ['--check', 'src/services/aiCopilot.js'], { stdio: 'inherit' });
 await exec(process.execPath, ['--check', 'src/services/delight.js'], { stdio: 'inherit' });
+await exec(process.execPath, ['--check', 'src/services/enterprise.js'], { stdio: 'inherit' });
 await rm('build', { recursive: true, force: true });
 await mkdir('build/dist', { recursive: true });
 await cp('index.html', 'build/dist/index.html');
 await cp('manifest.webmanifest', 'build/dist/manifest.webmanifest');
+await cp('service-worker.js', 'build/dist/service-worker.js');
 await cp('src', 'build/dist/src', { recursive: true });
 const runtimeConfig = {
   firebase: firebaseConfig,
