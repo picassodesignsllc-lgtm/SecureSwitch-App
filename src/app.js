@@ -84,7 +84,7 @@ function onboardingKey(user = state.user) { return `secureswitch:onboarded:${use
 function onboardingSeen(user = null) { try { return localStorage.getItem(onboardingKey(user)) === 'yes'; } catch { return false; } }
 function rememberOnboarding(user = null) { try { localStorage.setItem(onboardingKey(user || state.user), 'yes'); } catch { /* Ignore private browsing storage failures. */ } }
 
-const state = { user: null, auth: null, db: null, firebase: null, firebaseReady: false, vaultKey: null, mode: 'login', userProfile: null, accounts: demoAccounts.map(normalizeAccount), recoveryMethods: [], trustedContacts: [], backupCodes: [], securityAlerts: [], recoveryTimeline: timelineEvents, emergencyKits: [], settings: {}, selectedRecovery: '+1 (415) 555-0184', switchOld: '+1 (415) 555-0184', switchNew: '+1 (628) 555-0149', blackoutArmed: false, emergencyActive: false, emergencyRecoveryActive: false, scanComplete: false, aiStep: 0, timelineFilter: 'All', simulatorScenario: 'My phone was stolen', simulatorRan: false, activeProfile: null, vaultUnlocked: false, selectedVaultCategory: 'Recovery Emails', assistantPrompt: 'My phone was stolen', assistantStep: 0, emergencyScenario: 'Phone Stolen', recoveryWizardScenario: 'Phone stolen', recoveryWizardStep: 0, accountSearch: '', accountCategory: 'All', editingAccountId: '', loading: false, authError: '', dataError: '', exportStatus: '', importStatus: '', onboardingOpen: !onboardingSeen(), onboardingStep: 0, onboardingProtection: 'Advanced', onboardingAccounts: ['Google', 'Apple', 'Instagram'], vaultCreating: false, onboardingComplete: false, globalSearch: '', notificationSearch: '', notificationFilter: 'All', rememberMe: true, notificationsRead: [], notifications: [], activityFeed: [], recoveryContacts: [], securityScores: [], adminVisible: false, organizations: demoOrganizations, selectedOrgRole: 'Member', inviteEmail: '', productTourStep: 0, commandPaletteOpen: false, selectedAccountId: '', expandedAccountId: '', accountDetailTab: 'Overview', auditRan: false, auditReport: '', upgradeModal: '', route: (location.hash || '#dashboard').replace('#', '') || 'dashboard', reportType: 'Recovery Report', waitlistStatus: '', waitlistReferral: '', importSource: 'CSV', isOffline: typeof navigator !== 'undefined' ? !navigator.onLine : false, securityEvents: [], auditEvents: [], devices: [], subscriptionPlan: 'free', backupStatus: 'Automatic encrypted backups ready', toast: 'Ready', aiCopilotOpen: false, aiCopilotQuestion: 'What should I fix first?', aiCopilotAnswer: '', dismissedFixes: [], expandedTimelineId: '', pageLoading: false, successPulse: '', commandIndex: 0, selectedOrganizationId: 'family', enterpriseInvitations: [], approvalWorkflows: [], enterprisePolicies: defaultSecurityPolicies(), enterpriseAuditLog: [], dashboardWidgetOrder: (() => { try { return JSON.parse(localStorage.getItem('secureswitch:dashboard-widgets')) || ['Executive Score', 'Accounts', 'Activity']; } catch { return ['Executive Score', 'Accounts', 'Activity']; } })(), notificationStatusFilter: 'All', runtimeMode: (() => { try { return localStorage.getItem('secureswitch:runtime-mode') || 'auto'; } catch { return 'auto'; } })() };
+const state = { user: null, auth: null, db: null, firebase: null, firebaseReady: false, vaultKey: null, mode: 'login', userProfile: null, accounts: demoAccounts.map(normalizeAccount), recoveryMethods: [], trustedContacts: [], backupCodes: [], securityAlerts: [], recoveryTimeline: timelineEvents, emergencyKits: [], settings: {}, selectedRecovery: '+1 (415) 555-0184', switchOld: '+1 (415) 555-0184', switchNew: '+1 (628) 555-0149', blackoutArmed: false, emergencyActive: false, emergencyRecoveryActive: false, scanComplete: false, aiStep: 0, timelineFilter: 'All', simulatorScenario: 'My phone was stolen', simulatorRan: false, activeProfile: null, vaultUnlocked: false, selectedVaultCategory: 'Recovery Emails', assistantPrompt: 'My phone was stolen', assistantStep: 0, emergencyScenario: 'Phone Stolen', recoveryWizardScenario: 'Phone stolen', recoveryWizardStep: 0, accountSearch: '', accountCategory: 'All', accountRiskFilter: 'All', accountStatusFilter: 'All', accountSort: 'Risk', accountDensity: 'compact', deviceSearch: '', devicePlatformFilter: 'All', deviceRiskFilter: 'All', deviceTrustFilter: 'All', deviceStatusFilter: 'All', deviceSort: 'Last seen', deviceDensity: 'compact', recoverySearch: '', recoveryStatusFilter: 'All', recoveryRiskFilter: 'All', recoveryPasskeyFilter: 'All', recoveryMfaFilter: 'All', recoveryCategoryFilter: 'All', recoverySort: 'Readiness', recoveryDensity: 'compact', editingAccountId: '', loading: false, authError: '', dataError: '', exportStatus: '', importStatus: '', onboardingOpen: !onboardingSeen(), onboardingStep: 0, onboardingProtection: 'Advanced', onboardingAccounts: ['Google', 'Apple', 'Instagram'], vaultCreating: false, onboardingComplete: false, globalSearch: '', settingsSearch: '', notificationSearch: '', notificationFilter: 'All', rememberMe: true, notificationsRead: [], notifications: [], activityFeed: [], recoveryContacts: [], securityScores: [], adminVisible: false, organizations: demoOrganizations, selectedOrgRole: 'Member', inviteEmail: '', productTourStep: 0, commandPaletteOpen: false, selectedAccountId: '', expandedAccountId: '', accountDetailTab: 'Overview', auditRan: false, auditReport: '', upgradeModal: '', route: (location.hash || '#dashboard').replace('#', '') || 'dashboard', reportType: 'Recovery Report', waitlistStatus: '', waitlistReferral: '', importSource: 'CSV', isOffline: typeof navigator !== 'undefined' ? !navigator.onLine : false, securityEvents: [], auditEvents: [], devices: [], subscriptionPlan: 'free', backupStatus: 'Automatic encrypted backups ready', toast: 'Ready', aiCopilotOpen: false, aiCopilotQuestion: 'What should I fix first?', aiCopilotAnswer: '', dismissedFixes: [], expandedTimelineId: '', pageLoading: false, successPulse: '', commandIndex: 0, selectedOrganizationId: 'family', enterpriseInvitations: [], approvalWorkflows: [], enterprisePolicies: defaultSecurityPolicies(), enterpriseAuditLog: [], dashboardWidgetOrder: (() => { try { return JSON.parse(localStorage.getItem('secureswitch:dashboard-widgets')) || ['Executive Score', 'Accounts', 'Activity']; } catch { return ['Executive Score', 'Accounts', 'Activity']; } })(), notificationStatusFilter: 'All', runtimeMode: (() => { try { return localStorage.getItem('secureswitch:runtime-mode') || 'auto'; } catch { return 'auto'; } })() };
 const h = (...args) => React.createElement(...args);
 function EmptyState({ icon = '◌', title, description, action, onAction, secondaryAction, onSecondaryAction }) { return h('div', { className: 'empty-state premium-empty-state' }, h('span', { className: 'empty-illustration' }, icon), h('strong', null, title), h('p', null, description), h('div', { className: 'empty-actions' }, action && h('button', { className: 'primary', onClick: onAction }, action), secondaryAction && h('button', { className: 'ghost', onClick: onSecondaryAction }, secondaryAction))); }
 
@@ -726,23 +726,88 @@ function vaultItems() {
   return ['Recovery Codes', 'Passkeys', 'Passport', 'Driver License', 'Insurance', 'Emergency Contacts', 'Wallet Recovery', 'Crypto Recovery Notes', 'Medical Information', 'Important Documents'];
 }
 
+function localJsonList(key, fallback = []) { try { const value = JSON.parse(localStorage.getItem(key) || 'null'); return Array.isArray(value) ? value : fallback; } catch { return fallback; } }
+function saveLocalJsonList(key, value) { try { localStorage.setItem(key, JSON.stringify(value.slice(0, 8))); } catch { /* Ignore private browsing storage failures. */ } }
+function rememberPaletteItem(key, label) {
+  const existing = localJsonList(key).filter((item) => item !== label);
+  saveLocalJsonList(key, [label].concat(existing));
+}
+function favoritePaletteItem(label) {
+  const favorites = localJsonList('secureswitch:command-favorites');
+  const next = favorites.includes(label) ? favorites.filter((item) => item !== label) : [label].concat(favorites);
+  saveLocalJsonList('secureswitch:command-favorites', next);
+  setState({ toast: favorites.includes(label) ? 'Favorite removed' : 'Favorite saved' });
+}
 function commandPaletteItems() {
   return [
-    ['Add Account', 'Add a protected account', () => { location.hash = 'accounts'; toast('Account form ready'); }],
+    ['Go to Dashboard', 'Return to command center', () => { location.hash = 'dashboard'; }],
+    ['Go to Accounts', 'Open account manager', () => { location.hash = 'accounts'; }],
+    ['Go to Devices', 'Open device intelligence center', () => { location.hash = 'devices'; }],
+    ['Open Recovery Vault', 'Open recovery methods and contacts', () => { location.hash = 'recovery-center'; }],
+    ['Open Security Center', 'Open protection command center', () => { location.hash = 'security-center'; }],
+    ['Open AI Copilot', 'Open AI Copilot workspace', () => { location.hash = 'ai-recovery-coach'; setState({ aiCopilotOpen: false }); }],
+    ['Open Notifications', 'Open notification center', () => { location.hash = 'notifications'; }],
+    ['Open Settings', 'Workspace preferences', () => { location.hash = 'settings'; }],
+    ['View Security Score', `${liveProtectionScore()}% protection score`, () => { location.hash = 'security-center'; }],
+    ['Show Risky Accounts', `${weakAccounts().length} accounts need attention`, () => { setState({ accountRiskFilter: 'High' }); location.hash = 'accounts'; }],
+    ['Show Missing MFA', `${state.accounts.filter((account) => !account.authenticator || /sms only/i.test(account.authenticator)).length} accounts`, () => { setState({ accountSearch: 'SMS' }); location.hash = 'accounts'; }],
+    ['Show Weak Passwords', `${riskFindings().length} security findings`, () => { location.hash = 'security-audit'; }],
+    ['Show Recovery Ready', `${state.accounts.filter((account) => account.ready).length} ready accounts`, () => { setState({ recoveryStatusFilter: 'Ready' }); location.hash = 'recovery-center'; }],
+    ['Show Devices', `${state.devices.length || 1} device records`, () => { location.hash = 'devices'; }],
+    ['Show Audit Events', `${buildSecurityTimeline({ accounts: state.accounts, activity: state.activityFeed, notifications: notificationItems(), auditEvents: state.auditEvents, devices: state.devices }).length} events`, () => { location.hash = 'security-center'; }],
+    ['Add Account', 'Open existing account form', () => { location.hash = 'accounts'; toast('Account form ready'); }],
     ['Backup Codes', 'Open recovery center backup code workflow', () => { location.hash = 'recovery-center'; toast('Backup code workflow ready'); }],
-    ['Recovery Center', 'Open recovery methods and contacts', () => { location.hash = 'recovery-center'; }],
-    ['Settings', 'Workspace preferences', () => { location.hash = 'settings'; }],
-    ['Dashboard', 'Return to command center', () => { location.hash = 'dashboard'; }],
-    ['Notifications', 'Open notification center', () => { location.hash = 'notifications'; }],
-    ['AI Copilot', 'Ask the AI Security Copilot', () => setState({ aiCopilotOpen: true })],
-    ['Export', 'Open export center', () => { location.hash = 'import-export'; }],
+    ['Export', 'Open import/export center', () => { location.hash = 'import-export'; }],
     ['Theme', 'Theme controls', () => toast('Dark mode is already enabled')],
-    ['Search', 'Focus global search', () => document.querySelector('.global-search input')?.focus()],
     ['Diagnostics', 'Open hidden app health diagnostics', () => { location.hash = 'app-health'; }],
     ['Run Scan', 'Start health scan', runHealthScan]
   ];
 }
-function executeCommand(command) { setState({ commandPaletteOpen: false, globalSearch: '' }); command[2](); }
+function palettePageItems() {
+  return [
+    ['Dashboard', '#dashboard', 'Home command center'], ['Accounts', '#accounts', 'Account manager'], ['Devices', '#devices', 'Device intelligence'], ['Recovery Vault', '#recovery-center', 'Recovery methods'], ['Security Center', '#security-center', 'Security command center'], ['AI Copilot', '#ai-recovery-coach', 'Copilot workspace'], ['Notifications', '#notifications', 'Notification center'], ['Settings', '#settings', 'Workspace settings'], ['Premium', '#premium', 'Plans'], ['Vault', '#secure-vault', 'Secure vault'], ['Emergency Kit', '#kit', 'Emergency access'], ['Family', '#family-protection', 'Family protection'], ['Organization', '#organization', 'Organization workspace'], ['Dark Web', '#dark-web', 'Dark web monitoring']
+  ].map(([label, href, detail]) => ({ group: 'Pages', icon: '⌘', label, detail, href, action: () => { location.hash = href.replace('#', ''); } }));
+}
+function paletteDataItems() {
+  const timeline = buildSecurityTimeline({ accounts: state.accounts, activity: state.activityFeed, notifications: notificationItems(), auditEvents: state.auditEvents, devices: state.devices });
+  const recommendations = generateSecurityRecommendations(state.accounts, state.devices);
+  return [
+    ...state.accounts.map((account) => ({ group: 'Accounts', icon: brandMark(account.name), label: account.name, detail: [account.handle, account.category, riskLevel(account), `${scoreFor(account)}%`].filter(Boolean).join(' · '), action: () => { setState({ selectedAccountId: account.id }); location.hash = 'account-detail'; } })),
+    ...state.devices.map((device) => ({ group: 'Devices', icon: '◈', label: device.name || device.browser || 'Device', detail: [device.os, device.location, device.trusted ? 'Trusted' : 'Needs review'].filter(Boolean).join(' · '), action: () => { location.hash = 'devices'; } })),
+    ...state.recoveryMethods.map((method) => ({ group: 'Recovery', icon: '◇', label: method.type || method.name || 'Recovery method', detail: method.status || 'Recovery record', action: () => { location.hash = 'recovery-center'; } })),
+    ...state.recoveryContacts.map((contact) => ({ group: 'Recovery', icon: '◌', label: contact.name || 'Recovery contact', detail: contact.email || contact.status || 'Trusted contact', action: () => { location.hash = 'recovery-center'; } })),
+    ...timeline.slice(0, 10).map((event) => ({ group: 'Audit & Activity', icon: '•', label: event.title, detail: `${event.type} · ${formatDate(event.at)}`, action: () => { location.hash = 'security-center'; } })),
+    ...notificationItems().map((item) => ({ group: 'Notifications', icon: '!', label: item.title, detail: item.detail || item.category || 'Notification', action: () => { location.hash = 'notifications'; } })),
+    ...recommendations.map((item) => ({ group: 'Recommendations', icon: '+', label: item.recommendedAction || item.title, detail: `${item.accountName}: ${item.reason}`, action: () => { location.hash = 'ai-recovery-coach'; setState({ aiCopilotQuestion: 'What should I fix first?' }); } })),
+    ...Object.entries(state.settings || {}).map(([label, value]) => ({ group: 'Settings', icon: '⚙', label, detail: String(value), action: () => { location.hash = 'settings'; } }))
+  ];
+}
+function commandPaletteResults() {
+  const query = state.globalSearch.trim().toLowerCase();
+  const favorites = localJsonList('secureswitch:command-favorites');
+  const recentCommands = localJsonList('secureswitch:command-recents');
+  const recentSearches = localJsonList('secureswitch:search-recents');
+  const commandItems = commandPaletteItems().map(([label, detail, action]) => ({ group: 'Commands', icon: '↵', label, detail, action }));
+  const recentItems = recentCommands.map((label) => commandItems.find((item) => item.label === label)).filter(Boolean).map((item) => ({ ...item, group: 'Recent' }));
+  const searchItems = recentSearches.map((label) => ({ group: 'Recent Searches', icon: '⌕', label, detail: 'Saved local search', action: () => setState({ globalSearch: label, commandIndex: 0 }) }));
+  const favoriteItems = favorites.map((label) => [...commandItems, ...palettePageItems()].find((item) => item.label === label)).filter(Boolean).map((item) => ({ ...item, group: 'Favorites' }));
+  const entries = [...favoriteItems, ...recentItems, ...searchItems, ...commandItems, ...palettePageItems(), ...paletteDataItems()];
+  const filtered = query ? entries.filter((entry) => `${entry.group} ${entry.label} ${entry.detail}`.toLowerCase().includes(query)) : entries.filter((entry) => ['Favorites', 'Recent', 'Recent Searches', 'Commands', 'Pages'].includes(entry.group));
+  const seen = new Set();
+  return filtered.filter((entry) => { const key = `${entry.group}:${entry.label}:${entry.detail}`; if (seen.has(key)) return false; seen.add(key); return true; }).slice(0, 48);
+}
+function groupedPaletteResults(results) {
+  return results.reduce((groups, item) => { (groups[item.group] ||= []).push(item); return groups; }, {});
+}
+function executeCommand(command) {
+  const label = Array.isArray(command) ? command[0] : command.label;
+  const action = Array.isArray(command) ? command[2] : command.action;
+  if (state.globalSearch.trim()) rememberPaletteItem('secureswitch:search-recents', state.globalSearch.trim());
+  rememberPaletteItem('secureswitch:command-recents', label);
+  setState({ commandPaletteOpen: false, globalSearch: '', commandIndex: 0 });
+  action?.();
+}
+
 function generateProductionReport(format) {
   const lines = [`Report: ${state.reportType}`, `Recovery Score: ${averageScore()}%`, `Password Health: ${passwordHealthScore()}%`, `Organizations: ${state.organizations.length}`, `Accounts: ${state.accounts.length}`, `Active Alerts: ${unreadNotifications().length}`, `Generated: ${new Date().toISOString()}`];
   if (format === 'csv') downloadTextFile(`secureswitch-${state.reportType.toLowerCase().replaceAll(' ', '-')}.csv`, 'text/csv', lines.join('\n'));
@@ -753,7 +818,17 @@ function generateProductionReport(format) {
 }
 function filteredAccounts() {
   const query = state.accountSearch.toLowerCase();
-  return state.accounts.filter((account) => (state.accountCategory === 'All' || account.category === state.accountCategory) && [account.name, account.handle, account.recoveryEmail, account.category].join(' ').toLowerCase().includes(query)).sort((a, b) => scoreFor(a) - scoreFor(b));
+  return state.accounts
+    .filter((account) => {
+      const analysis = accountRisk(account);
+      const status = scoreFor(account) >= 80 ? 'Protected' : 'Review';
+      const matchesSearch = [account.name, account.handle, account.recoveryEmail, account.category].join(' ').toLowerCase().includes(query);
+      const matchesCategory = state.accountCategory === 'All' || account.category === state.accountCategory;
+      const matchesRisk = state.accountRiskFilter === 'All' || analysis.risk === state.accountRiskFilter;
+      const matchesStatus = state.accountStatusFilter === 'All' || status === state.accountStatusFilter;
+      return matchesSearch && matchesCategory && matchesRisk && matchesStatus;
+    })
+    .sort((a, b) => state.accountSort === 'Name' ? a.name.localeCompare(b.name) : state.accountSort === 'Last updated' ? String(b.lastReviewed || '').localeCompare(String(a.lastReviewed || '')) : scoreFor(a) - scoreFor(b));
 }
 
 function scoreFor(account) { return analyzeAccountSecurity(account).score; }
@@ -1042,7 +1117,26 @@ function VaultHeroVisual() {
 }
 
 function Hero() {
-  return h('section', { className: 'hero glass', id: 'dashboard' }, h('div', { className: 'hero-copy-panel' }, h('p', { className: 'eyebrow' }, '✦ Digital Recovery Platform'), h('h1', null, state.user ? `Hello ${firstName()} 👋` : 'Never lose another account ', !state.user && h('span', null, 'again.')), h('p', null, 'SecureSwitch protects your logins, recovery options, and digital identity before disaster strikes.'), h('div', { className: 'hero-actions' }, h('button', { className: 'primary', onClick: runHealthScan }, 'Run Health Check'), h('button', { onClick: () => toast('Demo walkthrough coming soon') }, 'Watch Demo'))), h(VaultHeroVisual));
+  const score = usingLiveAccounts() ? liveProtectionScore() : 86;
+  const protectedCount = state.accounts.filter((account) => scoreFor(account) >= 80).length;
+  const lastReviewed = state.accounts.map((account) => account.lastReviewed).filter(Boolean).sort().pop() || 'Today';
+  const heroMetrics = [
+    ['Protection Score', `${score}%`],
+    ['Accounts Protected', protectedCount],
+    ['Last Backup', state.backupStatus?.includes('ready') ? 'Ready' : 'Today'],
+    ['Last Security Scan', state.scanComplete ? 'Complete' : lastReviewed],
+    ['Risk Level', protectionStatus(score)]
+  ];
+  return h('section', { className: 'hero glass', id: 'dashboard' },
+    h('div', { className: 'hero-copy-panel' },
+      h('p', { className: 'eyebrow' }, '✦ Digital Recovery Platform'),
+      h('h1', null, state.user ? `Hello ${firstName()} 👋` : 'Never lose another account ', !state.user && h('span', null, 'again.')),
+      h('p', null, 'SecureSwitch protects your logins, recovery options, and digital identity before disaster strikes.'),
+      h('div', { className: 'hero-metrics-strip' }, heroMetrics.map(([label, value]) => h('article', { key: label }, h('span', null, label), h('strong', null, value)))),
+      h('div', { className: 'hero-actions' }, h('button', { className: 'primary', onClick: runHealthScan }, 'Run Health Check'), h('button', { onClick: () => toast('Demo walkthrough coming soon') }, 'Watch Demo'))
+    ),
+    h(VaultHeroVisual)
+  );
 }
 
 function ProtectionScore() {
@@ -1078,9 +1172,52 @@ function AccountCard({ account }) {
   return h('article', { className: `account-row monitored-account ${expanded ? 'expanded' : 'collapsed'}`, tabIndex: 0, role: 'button', onClick: openDetail, onKeyDown: (event) => { if (event.key === 'Enter') openDetail(); } }, h('span', { className: `app-icon brand-icon brand-${brandSlug(account.name)}`, style: { '--brand-color': account.color } }, brandMark(account.name)), h('div', null, h('div', { className: 'account-title-row' }, h('strong', null, account.name), h('span', { className: score >= 80 ? 'status-pill protected' : 'status-pill review-required' }, score >= 80 ? 'Protected' : 'Review Required')), h('small', null, `${account.handle || account.recoveryEmail} · ${account.category} · Last reviewed ${account.lastReviewed}`), h('div', { className: 'monitoring-grid' }, [['Risk', analysis.risk], ['Health', health], ['Recovery Score', `${score}%`], ['Last Updated', account.lastReviewed], ['MFA Status', account.authenticator || account.passkeyStatus || 'Missing'], ['Password Age', passwordAge], ['Backup Status', account.backupCodes ? 'Saved' : 'Missing'], ['Recovery Contact', account.trustedContacts || 'Missing'], ['Timeline', state.recoveryTimeline.length]].map(([label, value]) => h('span', { key: label }, h('b', null, label), value)))), h('b', { className: score < 80 ? 'review' : 'secure' }, `${score}% · ${analysis.risk} risk`), h('small', { className: 'score-reason' }, recommendationsFor(account)[0] || 'Recovery setup complete'), h('div', { className: 'account-actions' }, h('button', { onClick: (event) => { event.stopPropagation(); setState({ expandedAccountId: expanded ? '' : account.id }); } }, expanded ? 'Collapse' : 'Expand'), h('button', { onClick: (event) => { event.stopPropagation(); editAccount(account); location.hash = 'accounts'; } }, 'Edit'), h('button', { onClick: (event) => { event.stopPropagation(); deleteAccount(account.id); } }, 'Delete')));
 }
 
+function AccountManagerRow({ account }) {
+  const score = scoreFor(account);
+  const analysis = accountRisk(account);
+  const riskClass = analysis.risk.toLowerCase().replaceAll(' ', '-');
+  const status = score >= 80 ? 'Protected' : 'Review';
+  const deviceCount = account.deviceVerification === 'Trusted' ? 2 : account.deviceVerification ? 1 : 0;
+  return h('a', { href: '#account-detail', className: `account-manager-row ${state.accountDensity}`, onClick: () => setState({ selectedAccountId: account.id }) },
+    h('span', { className: `app-icon brand-icon brand-${brandSlug(account.name)}`, style: { '--brand-color': account.color } }, brandMark(account.name)),
+    h('div', { className: 'account-manager-identity' }, h('strong', null, account.name), h('small', null, account.handle || account.recoveryEmail || account.email)),
+    h('span', { className: 'account-manager-cell category' }, account.category || 'Account'),
+    h('b', { className: `risk-badge ${riskClass}` }, analysis.risk),
+    h('span', { className: 'account-manager-cell' }, account.authenticator || 'Missing'),
+    h('span', { className: 'account-manager-cell' }, account.passkeyStatus || 'Missing'),
+    h('span', { className: 'account-manager-cell' }, account.backupCodes ? 'Saved' : 'Missing'),
+    h('span', { className: 'account-manager-cell' }, `${deviceCount} devices`),
+    h('span', { className: 'account-manager-cell' }, account.lastReviewed || 'Today'),
+    h('span', { className: `readiness-pill ${status.toLowerCase()}` }, `${score}%`)
+  );
+}
+
 function Accounts() {
   const accounts = filteredAccounts();
-  return h('section', { className: 'panel glass', id: 'accounts' }, h('div', { className: 'panel-head' }, h('div', null, h('p', { className: 'eyebrow' }, 'Your Accounts'), h('h2', null, 'Production account registry')), h('span', null, `${accounts.length}/${state.accounts.length} shown`)), state.loading && h('div', { className: 'loading-state' }, h('span'), h('span'), h('span')), state.dataError && h('p', { className: 'error-state' }, state.dataError), h('div', { className: 'account-toolbar' }, h('input', { value: state.accountSearch, onChange: (event) => setState({ accountSearch: event.target.value }), placeholder: 'Search accounts, usernames, recovery emails…', 'aria-label': 'Search accounts' }), h('select', { value: state.accountCategory, onChange: (event) => setState({ accountCategory: event.target.value }), 'aria-label': 'Filter accounts by category' }, ['All', ...appCategories].map((category) => h('option', { key: category }, category))), h('button', { onClick: () => toast('Sorted by security score') }, 'Sort by score'), h('button', { onClick: bulkReviewFilteredAccounts }, 'Bulk actions')), accounts.length ? accounts.map((account) => h(AccountCard, { key: account.id, account })) : h(EmptyState, { icon: '◌', title: 'No accounts match this view', description: 'Adjust filters or connect your first protected account to start improving recovery readiness.', action: 'Reset filters', onAction: () => setState({ accountSearch: '', accountCategory: 'All' }) }));
+  return h('section', { className: `panel glass accounts-manager-pro density-${state.accountDensity}`, id: 'accounts' },
+    h('div', { className: 'panel-head accounts-manager-head' }, h('div', null, h('p', { className: 'eyebrow' }, 'Accounts Manager Pro'), h('h2', null, 'Production account registry')), h('span', null, `${accounts.length}/${state.accounts.length} shown`)),
+    state.loading && h('div', { className: 'loading-state' }, h('span'), h('span'), h('span')),
+    state.dataError && h('p', { className: 'error-state' }, state.dataError),
+    h('div', { className: 'account-pro-toolbar' },
+      h('input', { value: state.accountSearch, onChange: (event) => setState({ accountSearch: event.target.value }), placeholder: 'Search accounts, users, recovery emails…', 'aria-label': 'Search accounts' }),
+      h('select', { value: state.accountCategory, onChange: (event) => setState({ accountCategory: event.target.value }), 'aria-label': 'Filter accounts by category' }, ['All', ...appCategories].map((category) => h('option', { key: category }, category))),
+      h('select', { value: state.accountRiskFilter, onChange: (event) => setState({ accountRiskFilter: event.target.value }), 'aria-label': 'Filter accounts by risk' }, ['All', 'Critical', 'High', 'Medium', 'Low', 'Safe'].map((risk) => h('option', { key: risk }, risk))),
+      h('select', { value: state.accountStatusFilter, onChange: (event) => setState({ accountStatusFilter: event.target.value }), 'aria-label': 'Filter accounts by status' }, ['All', 'Protected', 'Review'].map((status) => h('option', { key: status }, status))),
+      h('select', { value: state.accountSort, onChange: (event) => setState({ accountSort: event.target.value }), 'aria-label': 'Sort accounts' }, ['Risk', 'Name', 'Last updated'].map((sort) => h('option', { key: sort }, sort))),
+      h('button', { className: state.accountDensity === 'compact' ? 'active-view' : '', onClick: () => setState({ accountDensity: state.accountDensity === 'compact' ? 'comfortable' : 'compact' }) }, state.accountDensity === 'compact' ? 'Compact' : 'Comfortable')
+    ),
+    h('div', { className: 'account-bulk-toolbar' },
+      h('button', { onClick: () => exportReport('json') }, 'Export'),
+      h('button', { onClick: () => toast('Encrypted backup workflow ready') }, 'Backup'),
+      h('button', { onClick: () => location.hash = 'recovery-center' }, 'Recover'),
+      h('button', { className: 'primary', onClick: runHealthScan }, 'Security Check'),
+      h('select', { onChange: (event) => event.target.value && toast(`${event.target.value} queued`) }, h('option', { value: '' }, 'More…'), ['Bulk review', 'Archive inactive', 'Refresh metadata'].map((item) => h('option', { key: item }, item)))
+    ),
+    accounts.length ? h('div', { className: 'account-manager-table', role: 'table', 'aria-label': 'Account security registry' },
+      h('div', { className: 'account-manager-header', role: 'row' }, ['Account', 'Category', 'Risk', 'MFA', 'Passkey', 'Backup', 'Devices', 'Updated', 'Ready'].map((label) => h('span', { key: label, role: 'columnheader' }, label))),
+      accounts.map((account) => h(AccountManagerRow, { key: account.id, account }))
+    ) : h(EmptyState, { icon: '◌', title: 'No accounts match this view', description: 'Adjust filters or connect your first protected account to start improving recovery readiness.', action: 'Reset filters', onAction: () => setState({ accountSearch: '', accountCategory: 'All', accountRiskFilter: 'All', accountStatusFilter: 'All' }) })
+  );
 }
 
 function AccountForm() {
@@ -1229,15 +1366,47 @@ function AccountDetailPage() {
 }
 function CommandPalette() {
   if (!state.commandPaletteOpen) return null;
-  const commands = commandPaletteItems().filter(([label, detail]) => `${label} ${detail}`.toLowerCase().includes(state.globalSearch.toLowerCase()));
-  const activeIndex = Math.min(state.commandIndex, Math.max(0, commands.length - 1));
+  const results = commandPaletteResults();
+  const activeIndex = Math.min(state.commandIndex, Math.max(0, results.length - 1));
+  const active = results[activeIndex];
+  const groups = groupedPaletteResults(results);
+  const favorites = localJsonList('secureswitch:command-favorites');
+  const empty = results.length === 0;
   const onKeyDown = (event) => {
-    if (event.key === 'ArrowDown') { event.preventDefault(); setState({ commandIndex: Math.min(activeIndex + 1, commands.length - 1) }); }
+    if (event.key === 'ArrowDown') { event.preventDefault(); setState({ commandIndex: Math.min(activeIndex + 1, results.length - 1) }); }
     if (event.key === 'ArrowUp') { event.preventDefault(); setState({ commandIndex: Math.max(activeIndex - 1, 0) }); }
-    if (event.key === 'Enter' && commands[activeIndex]) { event.preventDefault(); executeCommand(commands[activeIndex]); }
+    if (event.key === 'Enter' && active) { event.preventDefault(); executeCommand(active); }
+    if (event.key === 'Escape') { event.preventDefault(); setState({ commandPaletteOpen: false, commandIndex: 0 }); }
   };
-  return h('section', { className: 'command-palette-backdrop', role: 'dialog', 'aria-label': 'Command palette', onKeyDown }, h('div', { className: 'command-palette glass' }, h('div', { className: 'panel-head' }, h('div', null, h('p', { className: 'eyebrow' }, 'CMD + K'), h('h2', null, 'Command Palette')), h('button', { onClick: () => setState({ commandPaletteOpen: false }) }, 'Close')), h('input', { autoFocus: true, value: state.globalSearch, onChange: (event) => setState({ globalSearch: event.target.value, commandIndex: 0 }), placeholder: 'Search commands, accounts, settings, reports…', 'aria-label': 'Search commands' }), h('div', { className: 'command-list', role: 'listbox' }, commands.map((command, index) => h('button', { key: command[0], className: index === activeIndex ? 'active-command' : '', role: 'option', 'aria-selected': index === activeIndex, onClick: () => executeCommand(command) }, h('strong', null, command[0]), h('small', null, command[1]))))));
+  return h('section', { className: 'command-palette-backdrop global-command-backdrop', role: 'dialog', 'aria-label': 'Global search and command palette', onKeyDown },
+    h('div', { className: 'command-palette glass global-command-palette' },
+      h('header', { className: 'command-palette-header' },
+        h('div', { className: 'command-search-shell' }, h('span', null, '⌕'), h('input', { autoFocus: true, value: state.globalSearch, onChange: (event) => setState({ globalSearch: event.target.value, commandIndex: 0 }), placeholder: 'Search accounts, devices, recovery, commands…', 'aria-label': 'Search SecureSwitch' }), h('kbd', null, navigator.platform?.includes('Mac') ? '⌘K' : 'Ctrl K')),
+        h('button', { className: 'ghost', onClick: () => setState({ commandPaletteOpen: false, commandIndex: 0 }) }, 'Esc')
+      ),
+      h('div', { className: 'command-filter-chips', 'aria-label': 'Search categories' }, ['All', 'Accounts', 'Devices', 'Recovery', 'Pages', 'Commands', 'Notifications', 'Settings'].map((chip) => h('button', { key: chip, onClick: () => setState({ globalSearch: chip === 'All' ? '' : chip, commandIndex: 0 }) }, chip))),
+      empty ? h('div', { className: 'command-empty-state' }, h('span', null, '⌘'), h('strong', null, 'Search SecureSwitch instantly'), h('p', null, 'Try accounts, devices, recovery, risky accounts, missing MFA, notifications, settings, or AI Copilot.'), h('div', null, ['Go to Accounts', 'Open Recovery Vault', 'Open AI Copilot', 'View Security Score'].map((label) => h('button', { key: label, onClick: () => setState({ globalSearch: label, commandIndex: 0 }) }, label)))) :
+        h('div', { className: 'command-results-shell', role: 'listbox', 'aria-label': 'Command palette results' }, Object.entries(groups).map(([group, items]) =>
+          h('section', { key: group, className: 'command-result-group' },
+            h('div', { className: 'command-group-label' }, h('span', null, group), h('small', null, items.length)),
+            items.map((item) => {
+              const index = results.indexOf(item);
+              const isActive = index === activeIndex;
+              const isFavorite = favorites.includes(item.label);
+              return h('button', { key: `${group}-${item.label}-${item.detail}`, className: `command-result-row ${isActive ? 'active-command' : ''}`, role: 'option', 'aria-selected': isActive, onMouseEnter: () => setState({ commandIndex: index }), onClick: () => executeCommand(item) },
+                h('span', { className: 'command-result-icon' }, item.icon || '⌘'),
+                h('span', { className: 'command-result-copy' }, h('strong', null, highlightMatch(item.label)), h('small', null, highlightMatch(item.detail || item.group))),
+                h('span', { className: 'command-result-meta' }, item.group),
+                h('span', { className: 'command-favorite', role: 'button', tabIndex: 0, onClick: (event) => { event.preventDefault(); event.stopPropagation(); favoritePaletteItem(item.label); }, 'aria-label': isFavorite ? `Remove ${item.label} from favorites` : `Favorite ${item.label}` }, isFavorite ? '★' : '☆')
+              );
+            })
+          )
+        )),
+      h('footer', { className: 'command-palette-footer' }, h('span', null, '↑↓ Navigate'), h('span', null, 'Enter Open'), h('span', null, 'Esc Close'), h('span', null, '★ Favorite'))
+    )
+  );
 }
+
 function ReportGenerator() {
   const reports = ['Recovery Report', 'Organization Report', 'Security Audit', 'Recovery Readiness', 'Password Health', 'Executive Summary'];
   return h('section', { className: 'panel glass report-generator', id: 'report-generator' }, h('p', { className: 'eyebrow' }, 'Report Generator'), h('h2', null, 'Beautiful production reports'), h('div', { className: 'report-controls' }, h('select', { value: state.reportType, onChange: (event) => setState({ reportType: event.target.value }) }, reports.map((report) => h('option', { key: report }, report))), ['pdf', 'csv', 'json'].map((format) => h('button', { key: format, className: format === 'pdf' ? 'primary' : '', onClick: () => generateProductionReport(format) }, `Export ${format.toUpperCase()}`))), h('div', { className: 'report-preview' }, h('strong', null, state.reportType), h('p', null, `Includes Recovery Score ${averageScore()}%, Password Health ${passwordHealthScore()}%, ${state.organizations.length} organizations, ${state.accounts.length} accounts, and executive-ready recommendations.`)));
@@ -1297,19 +1466,77 @@ function ProductTourPanel() {
   const steps = ['Start with Recovery Score', 'Open AI Coach', 'Create a shared vault', 'Check password health', 'Export an emergency kit'];
   return h('section', { className: 'panel glass enterprise-panel product-tour', id: 'product-tour' }, h('p', { className: 'eyebrow' }, 'Onboarding Improvements'), h('h2', null, 'Interactive tour, tooltips, discovery, and shortcuts'), h('div', { className: 'tour-card' }, h('strong', null, steps[state.productTourStep]), h('p', null, 'Tip: press / to search everything, then jump directly to accounts, settings, reports, and recovery workflows.')), h('button', { className: 'primary', onClick: () => setState({ productTourStep: (state.productTourStep + 1) % steps.length }) }, 'Next tour step'));
 }
+function copilotWorkspaceContext() {
+  const score = explainableSecurityScore(state.accounts);
+  const timeline = buildSecurityTimeline({ accounts: state.accounts, activity: state.activityFeed, notifications: notificationItems(), auditEvents: state.auditEvents, devices: state.devices });
+  const recommendations = generateSecurityRecommendations(state.accounts, state.devices);
+  const metrics = executiveSecurityMetrics(state.accounts, state.devices);
+  const insights = dailySecurityInsights(state.accounts, state.devices);
+  const riskyAccounts = score.analyses.slice().sort((a, b) => a.score - b.score).slice(0, 5);
+  const riskyDevices = state.devices.filter((device) => !device.trusted).slice(0, 5);
+  const criticalNotifications = notificationItems().filter((item) => /critical|warning|review|risk/i.test(`${item.severity || ''} ${item.title || ''} ${item.detail || ''}`)).slice(0, 5);
+  const promptCandidates = [
+    state.accounts.some((account) => scoreFor(account) < 80) && 'Review my weakest accounts',
+    state.accounts.some((account) => !account.authenticator || /sms only/i.test(account.authenticator)) && 'Show missing MFA',
+    state.devices.some((device) => !device.trusted) && 'Find risky devices',
+    state.accounts.some((account) => !account.recoveryEmail || !account.recoveryPhone || !account.backupCodes) && 'Recovery readiness',
+    timeline.length > 0 && 'Latest audit activity',
+    recommendations.length > 0 && 'Accounts needing attention',
+    score.deductions.length > 0 && 'Security score explanation'
+  ].filter(Boolean);
+  return { score, timeline, recommendations, metrics, insights, riskyAccounts, riskyDevices, criticalNotifications, prompts: promptCandidates.length ? promptCandidates : ['Security score explanation'] };
+}
+
 function AIRecoveryCoachPage() {
-  const { factors, score } = recoveryScoreFactors();
-  const topLosses = factors.filter(([, count]) => count > 0).sort((a, b) => (b[1] * b[2]) - (a[1] * a[2])).slice(0, 3);
-  const gain = topLosses.slice(0, 2).reduce((sum, [, count, weight]) => sum + Math.min(18, count * weight), 0);
-  const readiness = score >= 85 ? 'High readiness' : score >= 67 ? 'Recoverable with gaps' : 'At-risk recovery posture';
-  const cards = [
-    ['Analysis', `Your Recovery Score is ${score}%. ${topLosses.length ? `${topLosses[0][0]} is the largest drag on readiness.` : 'No major score losses detected.'}`],
-    ['Fastest improvement', `You could gain ${gain || 8} Recovery Score points by ${topLosses.length ? topLosses.map(([label]) => label.toLowerCase()).join(' and ') : 'exporting a fresh recovery kit'}.`],
-    ['Readiness estimate', `${readiness}. ${reviewCount()} accounts should be reviewed before an emergency.`],
-    ['Missing methods', prioritizedRecommendations().slice(0, 3).map((item) => item.title).join(' · ') || 'No urgent recovery methods missing.'],
-    ['Weak setup warning', weakAccounts().length ? `${weakAccounts().length} accounts are weak or marked for review.` : 'No weak account setup detected.']
+  const context = copilotWorkspaceContext();
+  const answerContext = { accounts: state.accounts, devices: state.devices, activity: state.activityFeed, notifications: notificationItems(), auditEvents: state.auditEvents };
+  const activeQuestion = state.aiCopilotQuestion || context.prompts[0];
+  const answer = state.aiCopilotAnswer || answerSecurityQuestion(activeQuestion, answerContext);
+  const ask = (question = activeQuestion) => setState({ aiCopilotQuestion: question, aiCopilotAnswer: answerSecurityQuestion(question, answerContext) });
+  const citations = [
+    `${state.accounts.length} accounts`,
+    `${context.recommendations.length} recommendations`,
+    `${context.timeline.length} security events`,
+    `${notificationItems().length} notifications`
   ];
-  return h('section', { className: 'panel glass premium-page ai-recovery-coach-page', id: 'ai-recovery-coach' }, h('p', { className: 'eyebrow' }, 'AI Recovery Coach'), h('h2', null, 'Conversational recovery intelligence'), h('div', { className: 'recommendation-stack' }, aiSecurityRecommendations().map((item) => h('article', { key: item.text, className: `priority-${item.severity.toLowerCase()}` }, h('b', null, item.severity), h('strong', null, item.text), h('small', null, `Reason: ${item.text.replace(/^[^.]+: /, '')} · Estimated Fix Time: ${item.time}`), h('button', { className: 'primary', onClick: () => toast('AI Fix Now opened') }, 'Fix Now')))), h('div', { className: 'ai-card-stack' }, cards.map(([title, copy]) => h('article', { key: title, className: 'ai-chat-card' }, h('b', null, title), h('p', null, copy), title !== 'Analysis' && h('button', { onClick: () => { location.hash = title === 'Missing methods' ? 'accounts' : 'kit'; toast('Action opened from AI Coach'); } }, 'Take action')))));
+  return h('section', { className: 'panel glass premium-page ai-recovery-coach-page ai-copilot-workspace', id: 'ai-recovery-coach' },
+    h('header', { className: 'copilot-workspace-header' },
+      h('div', null, h('p', { className: 'eyebrow' }, 'AI Copilot Workspace'), h('h2', null, 'Security intelligence command center'), h('small', null, 'Deterministic guidance generated from your SecureSwitch accounts, recovery posture, devices, audit events, and notifications.')),
+      h('div', { className: 'copilot-header-actions' }, h('input', { value: state.aiCopilotQuestion, onChange: (event) => setState({ aiCopilotQuestion: event.target.value }), placeholder: 'Search or ask SecureSwitch…', 'aria-label': 'Search AI Copilot workspace' }), h('button', { className: 'secondary', onClick: () => ask(activeQuestion) }, 'New Conversation'), h('button', { className: 'ghost' }, state.userProfile?.displayName || state.user?.email || 'Workspace'))
+    ),
+    h('div', { className: 'copilot-workspace-grid' },
+      h('aside', { className: 'copilot-rail copilot-left-rail', 'aria-label': 'AI Copilot navigation' },
+        h('section', null, h('strong', null, 'Conversation History'), h('button', { className: 'active', onClick: () => ask(activeQuestion) }, h('span', null, activeQuestion), h('small', null, `${context.score.score}% score · ${context.recommendations.length} actions`))),
+        h('section', null, h('strong', null, 'Pinned Conversations'), context.prompts.slice(0, 3).map((prompt) => h('button', { key: prompt, onClick: () => ask(prompt) }, h('span', null, prompt), h('small', null, 'SecureSwitch context')))),
+        h('section', null, h('strong', null, 'Suggested Prompts'), context.prompts.map((prompt) => h('button', { key: `suggested-${prompt}`, onClick: () => ask(prompt) }, h('span', null, prompt), h('small', null, 'Generated from current data')))),
+        h('section', null, h('strong', null, 'Saved Workflows'), context.recommendations.slice(0, 3).map((item) => h('button', { key: `${item.accountName}-${item.recommendedAction}`, onClick: () => ask(`What should I fix first?`) }, h('span', null, item.recommendedAction), h('small', null, item.accountName)))),
+        h('section', null, h('strong', null, 'Recent Actions'), context.timeline.slice(0, 4).map((event) => h('button', { key: `${event.type}-${event.title}-${event.at}` }, h('span', null, event.title), h('small', null, event.type)))),
+        h('section', null, h('strong', null, 'Quick Categories'), ['Accounts', 'Recovery', 'Devices', 'Audit', 'Notifications'].map((item) => h('button', { key: item, onClick: () => ask(item === 'Audit' ? 'Latest audit activity' : item === 'Devices' ? 'Find risky devices' : item === 'Recovery' ? 'Recovery readiness' : 'Accounts needing attention') }, h('span', null, item), h('small', null, 'Open context'))))
+      ),
+      h('main', { className: 'copilot-conversation' },
+        h('div', { className: 'copilot-prompt-card' },
+          h('label', null, 'Ask SecureSwitch Copilot'),
+          h('form', { onSubmit: (event) => { event.preventDefault(); ask(activeQuestion); } }, h('input', { value: state.aiCopilotQuestion, onChange: (event) => setState({ aiCopilotQuestion: event.target.value }), placeholder: 'Ask which account to fix first…', 'aria-label': 'Ask SecureSwitch Copilot' }), h('button', { className: 'primary' }, 'Ask')),
+          h('div', { className: 'copilot-action-chips' }, context.prompts.map((prompt) => h('button', { key: prompt, onClick: () => ask(prompt) }, prompt)))
+        ),
+        h('article', { className: 'copilot-message user-message' }, h('span', null, 'You'), h('p', null, activeQuestion)),
+        h('article', { className: 'copilot-message assistant-message' }, h('span', null, 'SecureSwitch Copilot'), h('pre', null, answer), h('div', { className: 'copilot-citations' }, citations.map((item) => h('small', { key: item }, item)))),
+        h('section', { className: 'copilot-recommendation-sections' },
+          h('details', { open: true }, h('summary', null, 'Expandable Recommendations', h('b', null, context.recommendations.length)), h('div', null, context.recommendations.slice(0, 6).map((item) => h('article', { key: `${item.accountName}-${item.reason}`, className: `priority-${item.severity.toLowerCase()}` }, h('b', null, item.severity), h('strong', null, item.accountName), h('p', null, item.reason), h('small', null, `${item.recommendedAction} · +${item.estimatedImprovement} estimated improvement`))))),
+          h('details', null, h('summary', null, 'Conversation Timeline', h('b', null, context.timeline.length)), h('div', null, context.timeline.slice(0, 8).map((event) => h('article', { key: `${event.type}-${event.title}-${event.at}` }, h('b', null, event.type), h('strong', null, event.title), h('small', null, `${event.detail} · ${formatDate(event.at)}`)))))
+        )
+      ),
+      h('aside', { className: 'copilot-rail copilot-right-panel', 'aria-label': 'AI Copilot SecureSwitch context' },
+        h('section', null, h('strong', null, 'Security Summary'), h('div', { className: 'copilot-score-mini' }, h('b', null, `${context.score.score}%`), h('span', null, context.metrics.securityTrend)), h('small', null, `${context.metrics.accountsProtected}/${context.metrics.totalAccounts} accounts protected`)),
+        h('section', null, h('strong', null, 'Highest Risk Accounts'), context.riskyAccounts.map((item) => h('article', { key: item.accountName }, h('span', null, item.accountName), h('b', null, item.risk), h('small', null, `${item.score}% · ${item.recommendedAction}`)))),
+        h('section', null, h('strong', null, 'Recovery Readiness'), h('small', null, `${context.metrics.recoveryCoverage}% recovery coverage · ${context.metrics.passkeyAdoption}% passkey adoption`), h('div', { className: 'copilot-progress' }, h('span', { style: { width: `${context.metrics.recoveryCoverage}%` } }))),
+        h('section', null, h('strong', null, 'Recent Audit Events'), context.timeline.slice(0, 4).map((event) => h('article', { key: `${event.at}-${event.title}` }, h('span', null, event.title), h('small', null, event.type)))),
+        h('section', null, h('strong', null, 'Devices Requiring Review'), context.riskyDevices.length ? context.riskyDevices.map((device) => h('article', { key: device.id || device.name || device.browser }, h('span', null, device.name || device.browser), h('small', null, `${device.os || 'Unknown OS'} · ${device.location || 'Unknown location'}`))) : h('small', null, 'No risky devices are currently flagged.')),
+        h('section', null, h('strong', null, 'Critical Notifications'), context.criticalNotifications.length ? context.criticalNotifications.map((item) => h('article', { key: item.id || item.title }, h('span', null, item.title), h('small', null, item.detail || item.category || 'Notification'))) : h('small', null, 'No critical notifications are currently flagged.')),
+        h('section', null, h('strong', null, 'AI Suggested Next Steps'), context.insights.slice(0, 3).map((insight) => h('small', { key: insight }, insight)))
+      )
+    )
+  );
 }
 function PricingPage() {
   const plans = [['FREE', '$0', ['10 accounts', 'Basic monitoring', 'Security Score']], ['PRO', '$9.99/month', ['Unlimited accounts', 'AI Assistant', 'Recovery Center']], ['FAMILY', '$19.99/month', ['Up to 6 users', 'Shared dashboard', 'Recovery alerts']], ['ENTERPRISE', 'Contact sales', ['Admin dashboard', 'Compliance reports', 'Advanced analytics']]];
@@ -1371,22 +1598,61 @@ function SecurityCenterPage() {
 function RecoveryCenterPage() {
   const summary = dashboardSummary(state.accounts);
   const readiness = averageScore();
-  const rows = [
-    ['Recovery Email', state.accounts.filter((account) => account.recoveryEmail).length],
-    ['Recovery Phone', state.accounts.filter((account) => account.recoveryPhone).length],
-    ['Backup Codes', state.accounts.filter((account) => account.backupCodes).length],
-    ['Passkeys', state.accounts.filter((account) => account.passkeyStatus).length],
-    ['Trusted Devices', state.devices.length || state.accounts.filter((account) => account.deviceVerification).length],
-    ['Recovery Contacts', state.recoveryContacts.length || state.accounts.filter((account) => account.trustedContacts).length],
-    ['Security Questions', state.recoveryMethods.length || 'Not required'],
-    ['Missing Items', summary.missingRecoveryEmail + summary.missingRecoveryPhone + summary.missingBackupCodes + summary.missingTrustedContacts]
+  const query = state.recoverySearch.toLowerCase();
+  const recoveryStatus = (account) => scoreFor(account) >= 80 ? 'Ready' : 'Attention';
+  const recoveryRisk = (account) => accountRisk(account).risk;
+  const accounts = state.accounts
+    .filter((account) => [account.name, account.handle, account.recoveryEmail, account.recoveryPhone, account.category].join(' ').toLowerCase().includes(query))
+    .filter((account) => state.recoveryStatusFilter === 'All' || recoveryStatus(account) === state.recoveryStatusFilter)
+    .filter((account) => state.recoveryRiskFilter === 'All' || recoveryRisk(account) === state.recoveryRiskFilter)
+    .filter((account) => state.recoveryPasskeyFilter === 'All' || (account.passkeyStatus ? 'Enabled' : 'Missing') === state.recoveryPasskeyFilter)
+    .filter((account) => state.recoveryMfaFilter === 'All' || (account.authenticator || account.passkeyStatus ? 'Enabled' : 'Missing') === state.recoveryMfaFilter)
+    .filter((account) => state.recoveryCategoryFilter === 'All' || account.category === state.recoveryCategoryFilter)
+    .sort((a, b) => state.recoverySort === 'Last reviewed' ? String(b.lastReviewed || '').localeCompare(String(a.lastReviewed || '')) : state.recoverySort === 'Name' ? a.name.localeCompare(b.name) : scoreFor(a) - scoreFor(b));
+  const metrics = [
+    ['Recovery Score', `${readiness}%`],
+    ['Recovery Ready Accounts', state.accounts.filter((account) => scoreFor(account) >= 80).length],
+    ['Accounts At Risk', state.accounts.filter((account) => scoreFor(account) < 80).length],
+    ['Passkeys Enabled', state.accounts.filter((account) => account.passkeyStatus).length],
+    ['Last Recovery Review', state.accounts.map((account) => account.lastReviewed).filter(Boolean).sort().pop() || 'No review']
   ];
-  return h('section', { className: 'panel glass premium-page recovery-center-page', id: 'recovery-center' },
-    h('p', { className: 'eyebrow' }, 'Recovery Center'), h('h2', null, 'Recovery dashboard'),
-    h('div', { className: 'recovery-readiness-ring', style: { '--score': `${readiness * 3.6}deg` } }, h('strong', null, `${readiness}%`), h('span', null, 'Recovery Readiness')),
-    h('div', { className: 'premium-metric-grid' }, rows.map(([label, value]) => h('article', { key: label }, h('span', null, label), h('strong', null, value)))),
-    h('div', { className: 'progress' }, h('span', { style: { width: `${readiness}%` } })),
-    h('form', { className: 'account-form recovery-center-form', onSubmit: saveRecoveryCenter },
+  return h('section', { className: `panel glass premium-page recovery-vault-page density-${state.recoveryDensity}`, id: 'recovery-center' },
+    h('div', { className: 'recovery-vault-head' }, h('div', null, h('p', { className: 'eyebrow' }, 'Recovery Vault'), h('h2', null, 'Recovery dashboard')), h('span', null, `${accounts.length}/${state.accounts.length} shown`)),
+    h('div', { className: 'recovery-vault-metrics' }, metrics.map(([label, value]) => h('article', { key: label }, h('span', null, label), h('strong', null, value)))),
+    h('div', { className: 'recovery-vault-toolbar' },
+      h('input', { value: state.recoverySearch, onChange: (event) => setState({ recoverySearch: event.target.value }), placeholder: 'Search recovery methods, accounts, emails…', 'aria-label': 'Search recovery vault' }),
+      h('select', { value: state.recoveryStatusFilter, onChange: (event) => setState({ recoveryStatusFilter: event.target.value }) }, ['All', 'Ready', 'Attention'].map((item) => h('option', { key: item }, item))),
+      h('select', { value: state.recoveryRiskFilter, onChange: (event) => setState({ recoveryRiskFilter: event.target.value }) }, ['All', 'Critical', 'High', 'Medium', 'Low', 'Safe'].map((item) => h('option', { key: item }, item))),
+      h('select', { value: state.recoveryPasskeyFilter, onChange: (event) => setState({ recoveryPasskeyFilter: event.target.value }) }, ['All', 'Enabled', 'Missing'].map((item) => h('option', { key: item }, item))),
+      h('select', { value: state.recoveryMfaFilter, onChange: (event) => setState({ recoveryMfaFilter: event.target.value }) }, ['All', 'Enabled', 'Missing'].map((item) => h('option', { key: item }, item))),
+      h('select', { value: state.recoveryCategoryFilter, onChange: (event) => setState({ recoveryCategoryFilter: event.target.value }) }, ['All', ...appCategories].map((item) => h('option', { key: item }, item))),
+      h('select', { value: state.recoverySort, onChange: (event) => setState({ recoverySort: event.target.value }) }, ['Readiness', 'Last reviewed', 'Name'].map((item) => h('option', { key: item }, item))),
+      h('button', { onClick: () => setState({ recoveryDensity: state.recoveryDensity === 'compact' ? 'comfortable' : 'compact' }) }, state.recoveryDensity === 'compact' ? 'Compact' : 'Comfortable')
+    ),
+    h('div', { className: 'recovery-vault-table', role: 'table', 'aria-label': 'Recovery vault account table' },
+      h('div', { className: 'recovery-vault-header', role: 'row' }, ['Account', 'Recovery Email', 'Recovery Phone', 'Backup', 'Passkey', 'MFA', 'Status', 'Risk', 'Reviewed', 'Score'].map((label) => h('span', { key: label, role: 'columnheader' }, label))),
+      accounts.map((account) => h('article', { key: account.id, className: `recovery-vault-row ${recoveryStatus(account).toLowerCase()}` },
+        h('span', { className: `app-icon brand-icon brand-${brandSlug(account.name)}`, style: { '--brand-color': account.color } }, brandMark(account.name)),
+        h('div', { className: 'recovery-account-identity' }, h('strong', null, account.name), h('small', null, account.handle || account.email || account.category)),
+        h('span', { className: 'recovery-cell' }, account.recoveryEmail || 'Missing'),
+        h('span', { className: 'recovery-cell' }, account.recoveryPhone || 'Missing'),
+        h('span', { className: 'recovery-cell' }, account.backupCodes ? 'Saved' : 'Missing'),
+        h('span', { className: 'recovery-cell' }, account.passkeyStatus || 'Missing'),
+        h('span', { className: 'recovery-cell' }, account.authenticator || account.passkeyStatus || 'Missing'),
+        h('b', { className: `readiness-pill ${recoveryStatus(account).toLowerCase() === 'ready' ? 'protected' : 'review'}` }, recoveryStatus(account)),
+        h('b', { className: `risk-badge ${recoveryRisk(account).toLowerCase()}` }, recoveryRisk(account)),
+        h('span', { className: 'recovery-cell' }, account.lastReviewed || 'No review'),
+        h('strong', { className: 'recovery-score-cell' }, `${scoreFor(account)}%`),
+        h('details', { className: 'recovery-expanded-detail' }, h('summary', null, 'Details'), h('div', null, [['Recovery Contacts', account.trustedContacts || state.recoveryContacts[0]?.name || 'Missing'], ['Backup Codes', account.backupCodes || 'Missing'], ['Trusted Devices', account.deviceVerification || 'Missing'], ['Security Questions', state.recoveryMethods[0]?.status || state.recoveryMethods[0]?.name || 'Not required'], ['Recent Recovery Activity', state.recoveryTimeline[0]?.title || state.activityFeed[0]?.title || 'No recent activity'], ['Last Password Change', account.lastReviewed || 'No review'], ['Audit History', state.auditEvents[0]?.action || 'No audit event']].map(([label, value]) => h('span', { key: label }, h('b', null, label), value))))
+      ))
+    ),
+    h('div', { className: 'recovery-vault-sidecar' },
+      h('article', null, h('span', null, 'Recovery Readiness'), h('strong', null, `${readiness}%`), h('div', { className: 'readiness-line' }, h('span', { style: { width: `${readiness}%` } }))),
+      h('article', null, h('span', null, 'Critical Alerts'), h('strong', null, unreadNotifications().length)),
+      h('article', null, h('span', null, 'Recommended Fixes'), h('strong', null, summary.suggestedNextFixes.length || prioritizedRecommendations().length)),
+      h('article', null, h('span', null, 'AI Copilot Summary'), h('p', null, dailySecurityInsights(state.accounts, state.devices)[0] || 'Recovery coverage is being monitored.'))
+    ),
+    h('form', { className: 'account-form recovery-center-form compact-recovery-form', onSubmit: saveRecoveryCenter },
       h('input', { name: 'recoveryEmail', type: 'email', placeholder: 'Recovery email', defaultValue: state.settings.recoveryEmail || state.accounts.find((account) => account.recoveryEmail)?.recoveryEmail || '' }),
       h('input', { name: 'recoveryPhone', placeholder: 'Recovery phone', defaultValue: state.settings.recoveryPhone || state.accounts.find((account) => account.recoveryPhone)?.recoveryPhone || '' }),
       h('input', { name: 'backupCodes', placeholder: 'Backup code status', defaultValue: state.backupCodes[0]?.status || '' }),
@@ -1396,12 +1662,57 @@ function RecoveryCenterPage() {
       h('input', { name: 'recoveryContact', placeholder: 'Recovery contact', defaultValue: state.recoveryContacts[0]?.name || '' }),
       h('button', { className: 'primary full-span' }, 'Save Recovery Center')
     ),
-    h('div', { className: 'portability-actions' }, h('button', { className: 'primary', onClick: exportEncryptedRecoveryData }, 'Export Encrypted Backup'), h('button', { onClick: () => exportReport('recovery') }, 'Recovery Report'))
+    h('div', { className: 'portability-actions recovery-vault-actions' }, h('button', { className: 'primary', onClick: exportEncryptedRecoveryData }, 'Export Encrypted Backup'), h('button', { onClick: () => exportReport('recovery') }, 'Recovery Report'))
   );
 }
 function DeviceCenterPage() {
-  const devices = state.devices;
-  return h('section', { className: 'panel glass dedicated-page device-center-page', id: 'devices' }, h('p', { className: 'eyebrow' }, 'Device Center'), h('h2', null, 'Trusted devices'), devices.length ? h('div', { className: 'device-grid animated-devices' }, devices.map((device) => h('article', { key: device.id, className: device.trusted ? 'trusted-device' : 'unknown-device' }, h('strong', null, device.name || device.browser), h('span', null, device.browser), h('small', null, `${device.os} · ${device.location} · ${device.ip || 'IP unavailable'}`), h('div', { className: 'status-grid mini' }, [['Trusted', device.trusted ? 'Yes' : 'No'], ['Current Device', device.id === 'current-browser' ? 'Yes' : 'No'], ['Last Active', device.lastActive || 'Now']].map(([label, value]) => h('span', { key: label }, h('b', null, label), value))), h('button', { className: 'danger', onClick: () => removeDevice(device) }, 'Remove device')))) : h(EmptyState, { icon: '◉', title: 'No devices connected.', description: 'Connect your first trusted device to monitor browser, OS, location, and recovery access.', action: 'Add Device', onAction: () => toast('Device enrollment opens after Firebase device sync') }));
+  const query = state.deviceSearch.toLowerCase();
+  const deviceRisk = (device) => device.trusted ? 'Low' : 'High';
+  const deviceStatus = (device) => /year|month|week/i.test(device.lastActive || '') ? 'Inactive' : 'Active';
+  const platforms = ['All', ...Array.from(new Set(state.devices.map((device) => device.os || 'Unknown')))].filter(Boolean);
+  const devices = state.devices
+    .filter((device) => [device.name, device.browser, device.os, device.location, device.ip].join(' ').toLowerCase().includes(query))
+    .filter((device) => state.devicePlatformFilter === 'All' || (device.os || 'Unknown') === state.devicePlatformFilter)
+    .filter((device) => state.deviceRiskFilter === 'All' || deviceRisk(device) === state.deviceRiskFilter)
+    .filter((device) => state.deviceTrustFilter === 'All' || (device.trusted ? 'Trusted' : 'Untrusted') === state.deviceTrustFilter)
+    .filter((device) => state.deviceStatusFilter === 'All' || deviceStatus(device) === state.deviceStatusFilter)
+    .sort((a, b) => state.deviceSort === 'Platform' ? String(a.os || '').localeCompare(String(b.os || '')) : state.deviceSort === 'Risk' ? deviceRisk(b).localeCompare(deviceRisk(a)) : String(b.lastActive || '').localeCompare(String(a.lastActive || '')));
+  const trusted = state.devices.filter((device) => device.trusted).length;
+  const active = state.devices.filter((device) => deviceStatus(device) === 'Active').length;
+  const inactive = state.devices.length - active;
+  const health = state.devices.length ? Math.round((trusted / state.devices.length) * 100) : 0;
+  const lastActivity = state.devices.map((device) => device.lastActive).filter(Boolean).sort().pop() || 'No device activity';
+  const metrics = [['Trusted Devices', trusted], ['Active Devices', active], ['Inactive Devices', inactive], ['Last Device Activity', lastActivity], ['Overall Device Health', `${health}%`]];
+  return h('section', { className: `panel glass dedicated-page device-intelligence-center density-${state.deviceDensity}`, id: 'devices' },
+    h('div', { className: 'device-intel-head' }, h('div', null, h('p', { className: 'eyebrow' }, 'Device Intelligence Center'), h('h2', null, 'Trusted devices')), h('span', null, `${devices.length}/${state.devices.length} shown`)),
+    h('div', { className: 'device-intel-metrics' }, metrics.map(([label, value]) => h('article', { key: label }, h('span', null, label), h('strong', null, value)))),
+    h('div', { className: 'device-filter-toolbar' },
+      h('input', { value: state.deviceSearch, onChange: (event) => setState({ deviceSearch: event.target.value }), placeholder: 'Search devices, browsers, locations…', 'aria-label': 'Search devices' }),
+      h('select', { value: state.devicePlatformFilter, onChange: (event) => setState({ devicePlatformFilter: event.target.value }) }, platforms.map((platform) => h('option', { key: platform }, platform))),
+      h('select', { value: state.deviceRiskFilter, onChange: (event) => setState({ deviceRiskFilter: event.target.value }) }, ['All', 'High', 'Low'].map((risk) => h('option', { key: risk }, risk))),
+      h('select', { value: state.deviceTrustFilter, onChange: (event) => setState({ deviceTrustFilter: event.target.value }) }, ['All', 'Trusted', 'Untrusted'].map((trust) => h('option', { key: trust }, trust))),
+      h('select', { value: state.deviceStatusFilter, onChange: (event) => setState({ deviceStatusFilter: event.target.value }) }, ['All', 'Active', 'Inactive'].map((status) => h('option', { key: status }, status))),
+      h('select', { value: state.deviceSort, onChange: (event) => setState({ deviceSort: event.target.value }) }, ['Last seen', 'Platform', 'Risk'].map((sort) => h('option', { key: sort }, sort))),
+      h('button', { onClick: () => setState({ deviceDensity: state.deviceDensity === 'compact' ? 'comfortable' : 'compact' }) }, state.deviceDensity === 'compact' ? 'Compact' : 'Comfortable')
+    ),
+    devices.length ? h('div', { className: 'device-intel-table', role: 'table', 'aria-label': 'Device intelligence table' },
+      h('div', { className: 'device-intel-header', role: 'row' }, ['Device', 'Platform', 'Browser', 'Location', 'Last Seen', 'Trust', 'Risk', 'Recovery', 'MFA'].map((label) => h('span', { key: label, role: 'columnheader' }, label))),
+      devices.map((device) => h('article', { key: device.id, className: `device-intel-row ${device.trusted ? 'trusted-device' : 'unknown-device'}` },
+        h('span', { className: 'device-icon' }, /mac|ios|iphone|ipad/i.test(device.os || '') ? '⌘' : /windows/i.test(device.os || '') ? '⊞' : /android/i.test(device.os || '') ? '◖' : '◉'),
+        h('div', { className: 'device-identity' }, h('strong', null, device.name || device.browser || 'Device'), h('small', null, device.ip || 'IP unavailable')),
+        h('span', { className: 'device-cell' }, device.os || 'Unknown'),
+        h('span', { className: 'device-cell' }, device.browser || 'Browser'),
+        h('span', { className: 'device-cell' }, device.location || 'Unknown'),
+        h('span', { className: 'device-cell' }, device.lastActive || 'Now'),
+        h('b', { className: device.trusted ? 'trust-pill trusted' : 'trust-pill review' }, device.trusted ? 'Trusted' : 'Review'),
+        h('b', { className: `risk-badge ${deviceRisk(device).toLowerCase()}` }, deviceRisk(device)),
+        h('span', { className: 'device-cell' }, device.trusted ? 'Ready' : 'Review'),
+        h('span', { className: 'device-cell' }, state.accounts.some((account) => account.authenticator || account.passkeyStatus) ? 'Enabled' : 'Missing'),
+        h('details', { className: 'device-expanded-detail' }, h('summary', null, 'Details'), h('div', null, ['Security Events', 'Recovery Status', 'Trusted Sessions', 'Recent Activity', 'Connected Accounts', 'Backup Status'].map((label) => h('span', { key: label }, h('b', null, label), label === 'Connected Accounts' ? state.accounts.filter((account) => account.deviceVerification).length : label === 'Backup Status' ? state.backupStatus : device.trusted ? 'Ready' : 'Review')))),
+        h('button', { className: 'danger', onClick: () => removeDevice(device) }, 'Remove')
+      ))
+    ) : h(EmptyState, { icon: '◉', title: 'No devices connected.', description: 'Device records will appear here after SecureSwitch receives device sync data.', action: 'Open Settings', onAction: () => location.hash = 'settings' })
+  );
 }
 function SecurityAuditPage() {
   const risk = liveRiskScore();
@@ -1504,12 +1815,64 @@ function DeviceManagementPanel() {
   );
 }
 function ProductionSecurityCenter() {
-  const rows = [['Password Health', `${passwordHealthScore()}%`], ['MFA Status', `${state.accounts.filter((account) => account.authenticator || account.passkeyStatus).length}/${state.accounts.length}`], ['Recovery Health', `${averageScore()}%`], ['Dark Web Monitor', 'Demo safe'], ['Device Security', `${(state.devices.length || 1)} active`], ['Recent Alerts', unreadNotifications().length], ['Risk Level', riskScore()], ['Recommendations', prioritizedRecommendations().length]];
-  return h('section', { className: 'panel glass phase10-panel', id: 'production-security-center' },
-    h('p', { className: 'eyebrow' }, 'Centralized Security Center'),
-    h('h2', null, 'Production risk command surface'),
-    h('div', { className: 'premium-metric-grid' }, rows.map(([label, value]) => h('article', { key: label }, h('span', null, label), h('strong', null, value)))),
-    h('div', { className: 'security-alert-stack' }, prioritizedRecommendations().slice(0, 4).map((item) => h('article', { key: item.title }, h('b', null, `+${item.impact}`), h('span', null, item.title), h('small', null, item.detail))))
+  const score = averageScore();
+  const timeline = buildSecurityTimeline({ accounts: state.accounts, activity: state.activityFeed, notifications: notificationItems(), auditEvents: state.auditEvents, devices: state.devices }).slice(0, 6);
+  const threatRows = [
+    ['Missing MFA', state.accounts.filter((account) => !account.authenticator && !account.passkeyStatus).length],
+    ['Weak Passwords', weakAccounts().length],
+    ['No Recovery Method', state.accounts.filter((account) => !account.recoveryEmail && !account.recoveryPhone).length],
+    ['Old Passwords', state.accounts.filter((account) => Date.parse(account.lastReviewed || '') < Date.now() - 180 * 86400000).length],
+    ['Compromised Accounts', state.securityAlerts.filter((alert) => /critical|comprom/i.test(`${alert.severity} ${alert.title}`)).length],
+    ['Inactive Accounts', state.accounts.filter((account) => Date.parse(account.lastReviewed || '') < Date.now() - 365 * 86400000).length],
+    ['High Risk Accounts', state.accounts.filter((account) => scoreFor(account) < 60).length]
+  ];
+  const topMetrics = [
+    ['Overall Protection Score', `${score}%`],
+    ['Risk Level', protectionStatus(score)],
+    ['Last Scan', state.scanComplete ? 'Complete' : (state.auditRan ? 'Audit ready' : 'Ready')],
+    ['Last Backup', state.backupStatus?.includes('ready') ? 'Ready' : (state.exportStatus || 'Ready')],
+    ['Accounts Protected', state.accounts.filter((account) => scoreFor(account) >= 80).length]
+  ];
+  const recoveryRows = [['Recovery Readiness', `${score}%`], ['Emergency Readiness', state.emergencyKits.length ? 'Ready' : 'Prepared'], ['Recent Alerts', unreadNotifications().length]];
+  return h('section', { className: 'panel glass security-command-center', id: 'production-security-center' },
+    h('div', { className: 'security-command-head' },
+      h('div', null, h('p', { className: 'eyebrow' }, 'Security Command Center'), h('h2', null, score >= 75 ? 'You are protected.' : 'Review required.')),
+      h('button', { className: 'primary', onClick: runHealthScan }, 'Run Scan')
+    ),
+    h('div', { className: 'security-command-top' }, topMetrics.map(([label, value]) =>
+      h('article', { key: label, className: label.includes('Score') ? 'dominant-score' : '' }, h('span', null, label), h('strong', null, value))
+    )),
+    h('div', { className: 'security-command-grid' },
+      h('section', { className: 'security-command-card security-timeline-card' },
+        h('div', { className: 'compact-card-head' }, h('span', null, 'Security Timeline'), h('a', { href: '#timeline' }, 'View all')),
+        h('div', { className: 'command-timeline' }, timeline.map((event) =>
+          h('article', { key: `${event.type}-${event.title}-${event.at}` }, h('i'), h('div', null, h('strong', null, event.title), h('small', null, `${event.type} · ${new Date(event.at).toLocaleDateString()}`)))
+        ))
+      ),
+      h('section', { className: 'security-command-card threat-summary-card' },
+        h('div', { className: 'compact-card-head' }, h('span', null, 'Threat Summary'), h('b', null, `${threatRows.reduce((sum, [, value]) => sum + Number(value || 0), 0)} issues`)),
+        threatRows.map(([label, value]) => h('article', { key: label, className: Number(value) ? 'needs-review' : 'clear' }, h('span', null, label), h('strong', null, value)))
+      ),
+      h('section', { className: 'security-command-card recovery-status-card' },
+        h('div', { className: 'compact-card-head' }, h('span', null, 'Recovery Status'), h('b', null, `${score}%`)),
+        recoveryRows.map(([label, value]) => h('article', { key: label }, h('span', null, label), h('strong', null, value))),
+        h('div', { className: 'readiness-line' }, h('span', { style: { width: `${score}%` } }))
+      )
+    ),
+    h('div', { className: 'security-command-grid bottom' },
+      h('section', { className: 'security-command-card command-actions-card' },
+        h('div', { className: 'compact-card-head' }, h('span', null, 'Quick Actions'), h('select', { onChange: (event) => event.target.value && toast(`${event.target.value} queued`) }, h('option', { value: '' }, 'More…'), ['Export report', 'Open recovery center', 'Review devices'].map((item) => h('option', { key: item }, item)))),
+        h('div', { className: 'compact-action-row' }, h('button', { className: 'primary', onClick: runHealthScan }, 'Scan'), h('button', { onClick: () => location.hash = 'accounts' }, 'Accounts'), h('button', { onClick: () => location.hash = 'devices' }, 'Devices'))
+      ),
+      h('section', { className: 'security-command-card ai-summary-card' },
+        h('div', { className: 'compact-card-head' }, h('span', null, 'AI Copilot'), h('button', { onClick: () => setState({ aiCopilotOpen: true }) }, 'Ask')),
+        dailySecurityInsights(state.accounts, state.devices).slice(0, 3).map((insight) => h('p', { key: insight }, insight))
+      ),
+      h('section', { className: 'security-command-card recommendations-card' },
+        h('div', { className: 'compact-card-head' }, h('span', null, 'Security Recommendations'), h('b', null, prioritizedRecommendations().length)),
+        prioritizedRecommendations().slice(0, 4).map((item) => h('article', { key: item.title }, h('b', null, `+${item.impact}`), h('span', null, item.title), h('small', null, item.detail)))
+      )
+    )
   );
 }
 function PwaReadinessPanel() {
@@ -1519,36 +1882,65 @@ function PwaReadinessPanel() {
     h('div', { className: 'launch-checklist-grid' }, ['PWA manifest', 'Responsive safe areas', 'Offline mode banner', 'Install prompt ready', 'App icons placeholders', 'Splash screen metadata', 'Android/iPhone layout', 'Caching hooks'].map((item) => h('article', { key: item }, h('strong', null, item), h('small', null, 'Prepared without changing the current UI'))))
   );
 }
-function Settings() {
-  const groups = [
-    ['General', [['language', 'Language'], ['connectedDevices', 'Connected Devices'], ['version', `Version ${buildVersion()}`]]],
-    ['Appearance', [['theme', 'Theme'], ['darkMode', 'Dark Mode'], ['accessibility', 'Accessibility']]],
-    ['Security', [['security', 'Security'], ['autoLock', 'Auto Lock'], ['sessionTimeout', 'Session Timeout'], ['trustedDevices', 'Trusted Devices']]],
-    ['Notifications', [['notifications', 'Notifications'], ['preferredNotifications', 'Preferred Notifications']]],
-    ['Recovery', [['biometricLogin', 'Biometric Login'], ['faceId', 'Face ID'], ['touchId', 'Touch ID'], ['vault', 'Vault Auto Lock']]],
-    ['Privacy', [['privacy', 'Privacy'], ['exportVault', 'Export Data']]],
-    ['Billing', [['billing', 'Billing']]],
-    ['About', [['api', 'API'], ['developerMode', 'Developer Mode']]],
-    ['Danger Zone', [['deleteAccount', 'Delete Account']]]
+function settingsWorkspaceSections() {
+  const profileName = state.userProfile?.displayName || state.user?.displayName || firstName();
+  const language = state.userProfile?.language || state.settings.language || 'English';
+  const timezone = state.userProfile?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+  const country = state.userProfile?.country || 'Not set';
+  const notifications = notificationItems();
+  const riskyDevices = state.devices.filter((device) => !device.trusted).length;
+  const passkeyCount = state.accounts.filter((account) => account.passkeyStatus).length;
+  const mfaCount = state.accounts.filter((account) => account.authenticator && !/sms only/i.test(account.authenticator)).length;
+  const recoveryReady = state.accounts.filter((account) => account.recoveryEmail && account.recoveryPhone && account.backupCodes).length;
+  const aiActions = generateSecurityRecommendations(state.accounts, state.devices).length;
+  return [
+    { id: 'general', title: 'General', description: 'Profile and workspace basics.', rows: [['Profile', profileName], ['Workspace name', state.organizations[0]?.name || 'SecureSwitch Workspace'], ['Language', language], ['Region', country], ['Timezone', timezone], ['Time format', state.settings.timeFormat || 'System default']] },
+    { id: 'appearance', title: 'Appearance', description: 'Existing interface preferences.', rows: [['Theme', state.userProfile?.theme || state.settings.theme || 'Dark'], ['Accent', state.settings.accent || 'Blue / Purple'], ['Density', state.accountDensity || 'Compact'], ['Animations', state.settings.reducedMotion ? 'Reduced' : 'Enabled'], ['Compact mode', state.accountDensity === 'compact' ? 'On' : 'Off'], ['Glass mode', state.settings.glassMode === false ? 'Off' : 'On']] },
+    { id: 'accounts', title: 'Accounts', description: 'Current account workspace.', rows: [['Total accounts', state.accounts.length], ['Protected accounts', state.accounts.filter((account) => scoreFor(account) >= 80).length], ['Accounts at risk', reviewCount()], ['Categories', new Set(state.accounts.map((account) => account.category).filter(Boolean)).size], ['Selected account', selectedAccount().name]] },
+    { id: 'security', title: 'Security', description: 'Session, device, MFA, and audit posture.', rows: [['Session timeout', state.settings.sessionTimeout ? 'Enabled' : 'System default'], ['Passkey status', `${passkeyCount}/${state.accounts.length} accounts`], ['MFA status', `${mfaCount}/${state.accounts.length} accounts`], ['Recovery readiness', `${averageScore()}%`], ['Trusted devices', `${Math.max(0, state.devices.length - riskyDevices)}/${state.devices.length || 1}`], ['Audit events', buildSecurityTimeline({ accounts: state.accounts, activity: state.activityFeed, notifications, auditEvents: state.auditEvents, devices: state.devices }).length]] },
+    { id: 'recovery', title: 'Recovery', description: 'Recovery Vault information.', rows: [['Recovery score', `${averageScore()}%`], ['Recovery contacts', state.recoveryContacts.length || state.accounts.filter((account) => account.trustedContacts).length], ['Backup codes', state.accounts.filter((account) => account.backupCodes).length], ['Recovery reminders', state.settings.recoveryReminders === false ? 'Off' : 'On'], ['Recovery-ready accounts', `${recoveryReady}/${state.accounts.length}`], ['Last review', state.accounts.map((account) => account.lastReviewed).filter(Boolean).sort().at(-1) || 'Not recorded']] },
+    { id: 'notifications', title: 'Notifications', description: 'Current notification preferences.', rows: [['Security alerts', state.settings.notifications === false ? 'Off' : 'On'], ['Weekly reports', state.settings.weeklyReports === false ? 'Off' : 'On'], ['Critical alerts', unreadNotifications().length], ['Push', state.settings.pushNotifications ? 'On' : 'Browser default'], ['Email', state.userProfile?.preferredNotifications || state.settings.preferredNotifications || 'Security only'], ['Unread notifications', unreadNotifications().length]] },
+    { id: 'privacy', title: 'Privacy', description: 'Local privacy and data controls.', rows: [['Runtime mode', runtimeModeLabel()], ['Vault unlocked', state.vaultUnlocked ? 'Yes' : 'No'], ['Export data', state.settings.exportVault === false ? 'Disabled' : 'Available'], ['Cloud sync', usingLiveAccounts() ? 'Live Firestore' : 'Local demo state'], ['Encrypted backups', state.backupStatus || 'Ready']] },
+    { id: 'ai', title: 'AI Copilot', description: 'Existing local copilot behavior.', rows: [['Suggestion level', aiActions ? 'Prioritized' : 'Quiet'], ['Explanation detail', state.aiCopilotAnswer ? 'Expanded' : 'Summary'], ['Workspace summaries', dailySecurityInsights(state.accounts, state.devices).length], ['Recommendations', aiActions], ['Current prompt', state.aiCopilotQuestion || 'Not set']] },
+    { id: 'workspace', title: 'Workspace', description: 'Organization and app context.', rows: [['Mode', runtimeModeLabel()], ['Organization', state.organizations[0]?.name || 'Personal workspace'], ['Role', state.organizations[0]?.role || 'Owner'], ['Plan', state.subscriptionPlan || 'free'], ['Version', buildVersion()], ['Firebase', state.firebaseReady ? 'Ready' : 'Fallback']] },
+    { id: 'about', title: 'About', description: 'Application metadata.', rows: [['App', 'SecureSwitch'], ['Build', buildVersion()], ['Deploy mode', deployMode()], ['PWA', 'Manifest available'], ['Service worker', 'Registered when hosted'], ['Privacy', 'No raw passwords stored']]} 
   ];
+}
+function Settings() {
+  const query = state.settingsSearch.trim().toLowerCase();
+  const sections = settingsWorkspaceSections().map((section) => ({ ...section, rows: section.rows.filter(([label, value]) => !query || `${section.title} ${section.description} ${label} ${value}`.toLowerCase().includes(query)) })).filter((section) => !query || section.rows.length);
+  const activeSection = sections[0] || settingsWorkspaceSections()[0];
   const toggle = async (key, checked) => { const settings = { ...state.settings, [key]: checked }; setState({ settings }); if (usingLiveAccounts()) { try { await writeUserScopedDoc('settings', 'preferences', settings); } catch (error) { setState({ dataError: safeError(error, 'Settings could not be saved. Please try again.') }); } } };
-  return h('section', { className: 'panel glass settings-panel professional-settings', id: 'settings' },
-    h('p', { className: 'eyebrow' }, 'Settings'),
-    h('h2', null, 'Workspace controls'),
-    h('form', { className: 'account-form profile-settings-form', onSubmit: saveUserProfile, 'aria-label': 'User profile settings' },
-      h('input', { name: 'displayName', placeholder: 'Name', defaultValue: state.userProfile?.displayName || state.user?.displayName || '' }),
-      h('input', { name: 'photoURL', placeholder: 'Profile photo URL', defaultValue: state.userProfile?.photoURL || state.user?.photoURL || '' }),
-      h('input', { name: 'timezone', placeholder: 'Timezone', defaultValue: state.userProfile?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC' }),
-      h('input', { name: 'country', placeholder: 'Country', defaultValue: state.userProfile?.country || '' }),
-      h('select', { name: 'preferredNotifications', defaultValue: state.userProfile?.preferredNotifications || state.settings.preferredNotifications || 'Security only' }, ['Security only', 'Security and recovery', 'All product updates'].map((item) => h('option', { key: item }, item))),
-      h('select', { name: 'theme', defaultValue: state.userProfile?.theme || state.settings.theme || 'Dark' }, ['Dark', 'System'].map((item) => h('option', { key: item }, item))),
-      h('select', { name: 'language', defaultValue: state.userProfile?.language || state.settings.language || 'English' }, ['English', 'Spanish', 'French'].map((item) => h('option', { key: item }, item))),
-      h('button', { className: 'primary full-span' }, 'Save Profile')
+  const preferenceToggles = [['notifications', 'Security alerts'], ['weeklyReports', 'Weekly reports'], ['recoveryReminders', 'Recovery reminders'], ['exportVault', 'Export data'], ['glassMode', 'Glass mode'], ['reducedMotion', 'Reduced motion']];
+  return h('section', { className: 'panel glass settings-panel professional-settings workspace-settings-page', id: 'settings' },
+    h('header', { className: 'workspace-settings-hero' },
+      h('div', null, h('p', { className: 'eyebrow' }, 'Workspace Settings'), h('h2', null, 'Control center for SecureSwitch'), h('small', null, 'Preferences, security posture, recovery readiness, notifications, AI Copilot, and workspace metadata in one compact settings workspace.')),
+      h('label', { className: 'settings-search' }, h('span', null, '⌕'), h('input', { value: state.settingsSearch, onChange: (event) => setState({ settingsSearch: event.target.value }), placeholder: 'Search settings…', 'aria-label': 'Search settings' }), h('kbd', null, '/'))
     ),
-    h('div', { className: 'settings-section-grid collapsible-settings' }, groups.map(([title, options]) => h('details', { key: title, className: title === 'Danger Zone' ? 'danger-settings' : '', open: ['General', 'Security', 'Notifications'].includes(title) }, h('summary', null, h('h3', null, title), h('span', null, '⌄')), options.map(([key, label]) => h('label', { key }, h('span', null, label), h('input', { type: 'checkbox', checked: state.settings[key] ?? true, onChange: (event) => toggle(key, event.target.checked) })))))),
-    h(ProductionStatusPanel),
-    h(RecoveryDataPortability),
-    h(SyncAndAuthPanel)
+    h('div', { className: 'workspace-settings-layout' },
+      h('nav', { className: 'settings-workspace-sidebar', 'aria-label': 'Settings sections' }, settingsWorkspaceSections().map((section) => h('a', { key: section.id, href: `#settings-${section.id}` }, h('span', null, section.title), h('small', null, section.rows.length)))),
+      h('main', { className: 'settings-workspace-main' },
+        h('form', { className: 'settings-profile-card', onSubmit: saveUserProfile, 'aria-label': 'User profile settings' },
+          h('div', null, h('strong', null, 'Profile'), h('small', null, 'Existing account profile fields.')),
+          h('input', { name: 'displayName', placeholder: 'Name', defaultValue: state.userProfile?.displayName || state.user?.displayName || '' }),
+          h('input', { name: 'photoURL', placeholder: 'Profile photo URL', defaultValue: state.userProfile?.photoURL || state.user?.photoURL || '' }),
+          h('input', { name: 'timezone', placeholder: 'Timezone', defaultValue: state.userProfile?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC' }),
+          h('input', { name: 'country', placeholder: 'Country', defaultValue: state.userProfile?.country || '' }),
+          h('select', { name: 'preferredNotifications', defaultValue: state.userProfile?.preferredNotifications || state.settings.preferredNotifications || 'Security only' }, ['Security only', 'Security and recovery', 'All product updates'].map((item) => h('option', { key: item }, item))),
+          h('select', { name: 'theme', defaultValue: state.userProfile?.theme || state.settings.theme || 'Dark' }, ['Dark', 'System'].map((item) => h('option', { key: item }, item))),
+          h('select', { name: 'language', defaultValue: state.userProfile?.language || state.settings.language || 'English' }, ['English', 'Spanish', 'French'].map((item) => h('option', { key: item }, item))),
+          h('button', { className: 'primary' }, 'Save Profile')
+        ),
+        h('div', { className: 'settings-preference-strip' }, preferenceToggles.map(([key, label]) => h('label', { key }, h('span', null, label), h('input', { type: 'checkbox', checked: state.settings[key] ?? key !== 'reducedMotion', onChange: (event) => toggle(key, event.target.checked) })))),
+        sections.length ? sections.map((section) => h('section', { key: section.id, id: `settings-${section.id}`, className: 'settings-workspace-section' }, h('div', { className: 'settings-section-title' }, h('div', null, h('h3', null, highlightMatch(section.title, query)), h('p', null, highlightMatch(section.description, query))), h('span', null, section.rows.length)), h('div', { className: 'settings-row-list' }, section.rows.map(([label, value]) => h('article', { key: `${section.id}-${label}` }, h('span', null, highlightMatch(label, query)), h('strong', null, highlightMatch(value, query))))))) : h(EmptyState, { icon: '⌕', title: 'No settings found', description: 'Try searching profile, recovery, notifications, AI Copilot, devices, or security.', action: 'Clear search', onAction: () => setState({ settingsSearch: '' }) })
+      ),
+      h('aside', { className: 'settings-context-panel' },
+        h('section', null, h('strong', null, 'Contextual Help'), h('p', null, activeSection.description), h('small', null, `${activeSection.rows.length} related settings`)),
+        h('section', null, h('strong', null, 'Related Settings'), activeSection.rows.slice(0, 5).map(([label, value]) => h('article', { key: label }, h('span', null, label), h('small', null, String(value))))),
+        h('section', null, h('strong', null, 'Workspace Health'), h('div', { className: 'settings-health-meter' }, h('span', { style: { width: `${averageScore()}%` } })), h('small', null, `${averageScore()}% recovery readiness · ${unreadNotifications().length} unread alerts`))
+      )
+    ),
+    h('div', { className: 'settings-support-grid' }, h(ProductionStatusPanel), h(RecoveryDataPortability), h(SyncAndAuthPanel))
   );
 }
 
@@ -1711,10 +2103,34 @@ function FeatureShortcuts() {
 function DashboardAccountsPreview() {
   const names = ['Google', 'Instagram', 'Coinbase', 'Amazon', 'Slack'];
   const accounts = names.map((name) => state.accounts.find((account) => account.name === name)).filter(Boolean);
-  return h('section', { className: 'panel glass target-accounts-card', id: 'accounts' }, h('div', { className: 'panel-head target-card-head' }, h('p', { className: 'eyebrow' }, 'Your Accounts'), h('a', { href: '#accounts' }, 'View all')), accounts.map((account) => { const review = scoreFor(account) < 80; return h('a', { key: account.id || account.name, href: '#account-detail', className: 'target-account-row', onClick: () => setState({ selectedAccountId: account.id }) }, h('span', { className: `app-icon brand-icon brand-${brandSlug(account.name)}`, style: { '--brand-color': account.color } }, brandMark(account.name)), h('strong', null, account.name), h('small', null, account.handle || account.recoveryEmail), h('b', { className: review ? 'review' : 'secure' }, review ? 'Review' : 'Secure'), h('i', null, '›')); }));
+  return h('section', { className: 'panel glass target-accounts-card', id: 'accounts' }, h('div', { className: 'panel-head target-card-head' }, h('p', { className: 'eyebrow' }, 'Your Accounts'), h('a', { href: '#accounts' }, 'View all')), accounts.map((account) => {
+    const review = scoreFor(account) < 80;
+    const deviceCount = account.deviceVerification === 'Trusted' ? 2 : account.deviceVerification ? 1 : 0;
+    const mfa = account.passkeyStatus || account.authenticator || 'Missing';
+    return h('a', { key: account.id || account.name, href: '#account-detail', className: 'target-account-row', onClick: () => setState({ selectedAccountId: account.id }) },
+      h('span', { className: `app-icon brand-icon brand-${brandSlug(account.name)}`, style: { '--brand-color': account.color } }, brandMark(account.name)),
+      h('div', { className: 'account-primary' }, h('strong', null, account.name), h('small', null, account.handle || account.recoveryEmail)),
+      h('b', { className: review ? 'review' : 'secure' }, review ? 'Review' : 'Secure'),
+      h('span', { className: 'account-meta-chip' }, `Updated ${account.lastReviewed || 'Today'}`),
+      h('span', { className: 'account-meta-chip' }, `${deviceCount} devices`),
+      h('span', { className: 'account-meta-chip' }, mfa),
+      h('i', null, '›')
+    );
+  }));
+}
+function DashboardUtilities() {
+  const status = state.isOffline ? 'Offline' : state.firebaseReady ? 'Production ready' : 'Demo ready';
+  const utilities = [
+    ['Devices', `${state.devices.length || 1} trusted`, 'Device inventory', '#devices'],
+    ['Recovery', `${averageScore()}% ready`, 'Recovery center', '#recovery-center'],
+    ['Alerts', `${unreadNotifications().length} unread`, 'Security status', '#notifications'],
+    ['AI Copilot', 'Ask what to fix', 'Integrated assistant', '#ai-recovery-coach'],
+    ['Live Metrics', `${state.accounts.length} accounts`, status, '#security-center']
+  ];
+  return h('section', { className: 'desktop-utility-grid' }, utilities.map(([title, value, detail, href]) => h('a', { key: title, href, className: 'utility-card glass' }, h('span', null, title), h('strong', null, value), h('small', null, detail))));
 }
 function DashboardHome() {
-  return [h(Hero), h(FeatureShortcuts), h('div', { className: 'lower-grid dashboard-home-grid target-lower-grid' }, h(DashboardAccountsPreview), h(Activity))];
+  return [h('div', { className: 'desktop-top-grid' }, h(Hero)), h(FeatureShortcuts), h('div', { className: 'lower-grid dashboard-home-grid target-lower-grid' }, h(DashboardAccountsPreview), h(Activity)), h(DashboardUtilities)];
 }
 
 function AppHealthPage() {

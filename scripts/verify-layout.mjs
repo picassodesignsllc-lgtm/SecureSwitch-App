@@ -51,6 +51,14 @@ for (const marker of ['<'.repeat(7), '='.repeat(7), '>'.repeat(7)]) {
 }
 
 
+
+for (const densityGuard of ['height: calc(100vh - 32px)', 'grid-template-rows: auto auto minmax(0, 1fr) auto', 'overflow-y: auto', 'overscroll-behavior: contain', 'desktop-utility-grid']) {
+  if (!css.includes(densityGuard) && !app.includes(densityGuard)) throw new Error(`Missing Phase 36 density guard: ${densityGuard}`);
+}
+for (const desktopComponent of ['h(DashboardUtilities)', 'desktop-utility-grid']) {
+  if (!app.includes(desktopComponent) && !css.includes(desktopComponent)) throw new Error(`Missing Phase 36 desktop component: ${desktopComponent}`);
+}
+
 for (const requiredTargetGuard of ['grid-template-columns: minmax(680px, 1fr) 360px', 'grid-template-columns: 260px minmax(0, 1fr)', 'min-width: 280px', 'minmax(80px, 1fr)', 'overflow-x: clip', 'word-break: normal !important', 'hyphens: none !important']) {
   if (!css.includes(requiredTargetGuard)) throw new Error(`Missing Phase 33 dashboard breakage guard: ${requiredTargetGuard}`);
 }
