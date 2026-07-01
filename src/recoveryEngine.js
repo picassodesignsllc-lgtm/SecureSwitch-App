@@ -1,5 +1,5 @@
 export const accountCategories = ['Email', 'Banking', 'Crypto', 'Social', 'Cloud', 'Government', 'Healthcare', 'Business', 'Utilities', 'Custom'];
-export const firestoreCollections = ['users', 'accounts', 'vault', 'recoveryHistory', 'notifications', 'emergencyContacts', 'devices'];
+export const firestoreCollections = ['users', 'accounts', 'securityScores', 'devices', 'activity', 'backupCodes', 'recoveryContacts', 'notifications', 'settings', 'billing'];
 export const accountSchemaFields = ['serviceName', 'username', 'category', 'recoveryEmail', 'recoveryPhone', 'authenticatorStatus', 'passkeyStatus', 'backupCodeStatus', 'trustedContacts', 'deviceVerification', 'lastReviewed', 'recoveryScore'];
 
 export function normalizeAccount(record = {}) {
