@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 import { accountCategories, firestoreCollections, normalizeAccount, scoreAccount, riskLevel, recommendationsFor, dashboardSummary } from '../src/recoveryEngine.js';
+import { analyzeAccountSecurity, answerSecurityQuestion, buildSecurityTimeline, dailySecurityInsights, executiveSecurityMetrics, explainableSecurityScore, generateSecurityRecommendations } from '../src/services/aiCopilot.js';
 
 let source = await readFile('src/app.js', 'utf8');
 source = source
@@ -29,6 +30,13 @@ const context = {
   riskLevel,
   recommendationsFor,
   dashboardSummary,
+  analyzeAccountSecurity,
+  answerSecurityQuestion,
+  buildSecurityTimeline,
+  dailySecurityInsights,
+  executiveSecurityMetrics,
+  explainableSecurityScore,
+  generateSecurityRecommendations,
   serviceRegistry: {
     authentication: ['signIn'],
     billing: ['plans'],
@@ -41,11 +49,11 @@ const context = {
   },
   createApiClient: ({ firebaseReady = false, user = null } = {}) => ({ mode: firebaseReady && user ? 'production' : 'demo' }),
   billingPlans: [{ id: 'free', name: 'Free', price: '$0', interval: 'forever' }],
-  getSubscriptionSnapshot: () => ({ status: 'Demo / Free', billingHistory: [{ id: 'demo' }], secretKeysExposed: false, availableActions: ['Upgrade'] }),
-  createAuditEvent: (action, details = {}) => ({ id: `audit-${action}`, action, details, createdAt: 'Demo' }),
+  getSubscriptionSnapshot: () => ({ status: 'Free / beta', billingHistory: [{ id: 'beta' }], secretKeysExposed: false, availableActions: ['Upgrade'] }),
+  createAuditEvent: (action, details = {}) => ({ id: `audit-${action}`, action, details, createdAt: 'Beta' }),
   createBackupManifest: () => ({ encryptedRecordCount: 0 }),
   backupCapabilities: ['Automatic backups', 'Manual backups', 'Restore backup', 'Export encrypted vault', 'Import encrypted vault'],
-  currentDeviceSnapshot: () => ({ id: 'current-browser', browser: 'Current browser', os: 'Demo OS', location: 'Demo', lastActive: 'Now', trusted: true }),
+  currentDeviceSnapshot: () => ({ id: 'current-browser', browser: 'Current browser', os: 'Beta OS', location: 'Beta', lastActive: 'Now', trusted: true }),
 };
 vm.createContext(context);
 vm.runInContext(`${source}\nReact = ReactMock; globalThis.__tree = App();`, context, { filename: 'src/app.js' });
@@ -92,7 +100,7 @@ for (const expectedName of ['Google', 'Instagram', 'Coinbase', 'Amazon', 'Slack'
 }
 
 const summaryText = textOf(tree);
-for (const expectedMetric of ['Overall Security Score', 'Accounts Protected', 'Accounts At Risk', 'Recovery Readiness', 'Pending Actions']) {
+for (const expectedMetric of ['Overall Security Score', 'Accounts Protected', 'Critical Issues', 'Recovery Coverage', 'Average Health Score']) {
   if (!summaryText.includes(expectedMetric)) throw new Error(`Missing production dashboard metric: ${expectedMetric}`);
 }
 
@@ -100,4 +108,4 @@ for (const expectedText of ['Demo Mode', 'Never store raw passwords', 'Quick Act
   if (!summaryText.includes(expectedText)) throw new Error(`Missing production app text: ${expectedText}`);
 }
 
-console.log('Rendered DOM audit passed: readable account rows, demo mode, production dashboard, one vault hero, one fixed-score widget, and one focused right protection panel.');
+console.log('Rendered DOM audit passed: readable account rows, fallback mode, production dashboard, one vault hero, one fixed-score widget, and one focused right protection panel.');

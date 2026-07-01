@@ -20,6 +20,8 @@ await exec(process.execPath, ['--check', 'src/services/billing.js'], { stdio: 'i
 await exec(process.execPath, ['--check', 'src/services/audit.js'], { stdio: 'inherit' });
 await exec(process.execPath, ['--check', 'src/services/backup.js'], { stdio: 'inherit' });
 await exec(process.execPath, ['--check', 'src/services/devices.js'], { stdio: 'inherit' });
+await exec(process.execPath, ['--check', 'src/services/liveData.js'], { stdio: 'inherit' });
+await exec(process.execPath, ['--check', 'src/services/aiCopilot.js'], { stdio: 'inherit' });
 await rm('build', { recursive: true, force: true });
 await mkdir('build/dist', { recursive: true });
 await cp('index.html', 'build/dist/index.html');

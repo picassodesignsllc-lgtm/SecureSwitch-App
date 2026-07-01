@@ -1,6 +1,6 @@
 // Firebase configuration is intentionally environment-driven for production.
 // In static deployments, provide values through window.SECURESWITCH_CONFIG.firebase
-// or replace these placeholders during CI. Demo mode remains active when config is incomplete.
+// or replace these values during CI. Demo mode remains active when config is incomplete.
 const runtimeConfig = globalThis.SECURESWITCH_CONFIG?.firebase || {};
 const viteConfig = import.meta.env || {};
 const nodeConfig = typeof process !== 'undefined' ? process.env || {} : {};
