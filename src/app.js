@@ -8,6 +8,7 @@ import { createBackupManifest, backupCapabilities } from './services/backup.js';
 import { currentDeviceSnapshot } from './services/devices.js';
 import { applyBulkReview, buildActivityEvent, buildNotification, buildSecurityScoreDocument, recoveryProfileFromForm, userScopedPath } from './services/liveData.js';
 import { analyzeAccountSecurity, answerSecurityQuestion, buildSecurityTimeline, dailySecurityInsights, executiveSecurityMetrics, explainableSecurityScore, generateSecurityRecommendations } from './services/aiCopilot.js';
+import { achievementProgress, executiveInsightCards, quickFixActions, securityStreak } from './services/delight.js';
 
 const demoAccounts = [
   { name: 'Google', handle: 'keith.harrison@gmail.com', status: 'Secure', color: '#4285f4', category: 'Email', phone: '+1 (415) 555-0184', email: 'keith.harrison@gmail.com', recoveryEmail: 'backup@secureswitch.app', recoveryPhone: '+1 (415) 555-0184', backupCodes: '8 encrypted codes', trustedContacts: 'Alicia Harrison', authenticator: '1Password', ready: true },
@@ -68,13 +69,14 @@ function onboardingKey(user = state.user) { return `secureswitch:onboarded:${use
 function onboardingSeen(user = null) { try { return localStorage.getItem(onboardingKey(user)) === 'yes'; } catch { return false; } }
 function rememberOnboarding(user = null) { try { localStorage.setItem(onboardingKey(user || state.user), 'yes'); } catch { /* Ignore private browsing storage failures. */ } }
 
-const state = { user: null, auth: null, db: null, firebase: null, firebaseReady: false, vaultKey: null, mode: 'login', userProfile: null, accounts: demoAccounts.map(normalizeAccount), recoveryMethods: [], trustedContacts: [], backupCodes: [], securityAlerts: [], recoveryTimeline: timelineEvents, emergencyKits: [], settings: {}, selectedRecovery: '+1 (415) 555-0184', switchOld: '+1 (415) 555-0184', switchNew: '+1 (628) 555-0149', blackoutArmed: false, emergencyActive: false, emergencyRecoveryActive: false, scanComplete: false, aiStep: 0, timelineFilter: 'All', simulatorScenario: 'My phone was stolen', simulatorRan: false, activeProfile: null, vaultUnlocked: false, selectedVaultCategory: 'Recovery Emails', assistantPrompt: 'My phone was stolen', assistantStep: 0, emergencyScenario: 'Phone Stolen', recoveryWizardScenario: 'Phone stolen', recoveryWizardStep: 0, accountSearch: '', accountCategory: 'All', editingAccountId: '', loading: false, authError: '', dataError: '', exportStatus: '', importStatus: '', onboardingOpen: !onboardingSeen(), onboardingStep: 0, onboardingProtection: 'Advanced', onboardingAccounts: ['Google', 'Apple', 'Instagram'], vaultCreating: false, onboardingComplete: false, globalSearch: '', notificationSearch: '', notificationFilter: 'All', rememberMe: true, notificationsRead: [], notifications: [], activityFeed: [], recoveryContacts: [], securityScores: [], adminVisible: false, organizations: demoOrganizations, selectedOrgRole: 'Member', inviteEmail: '', productTourStep: 0, commandPaletteOpen: false, selectedAccountId: '', expandedAccountId: '', accountDetailTab: 'Overview', auditRan: false, auditReport: '', upgradeModal: '', route: (location.hash || '#dashboard').replace('#', '') || 'dashboard', reportType: 'Recovery Report', waitlistStatus: '', waitlistReferral: '', importSource: 'CSV', isOffline: typeof navigator !== 'undefined' ? !navigator.onLine : false, securityEvents: [], auditEvents: [], devices: [], subscriptionPlan: 'free', backupStatus: 'Automatic encrypted backups ready', toast: 'Ready', aiCopilotOpen: false, aiCopilotQuestion: 'What should I fix first?', aiCopilotAnswer: '' };
+const state = { user: null, auth: null, db: null, firebase: null, firebaseReady: false, vaultKey: null, mode: 'login', userProfile: null, accounts: demoAccounts.map(normalizeAccount), recoveryMethods: [], trustedContacts: [], backupCodes: [], securityAlerts: [], recoveryTimeline: timelineEvents, emergencyKits: [], settings: {}, selectedRecovery: '+1 (415) 555-0184', switchOld: '+1 (415) 555-0184', switchNew: '+1 (628) 555-0149', blackoutArmed: false, emergencyActive: false, emergencyRecoveryActive: false, scanComplete: false, aiStep: 0, timelineFilter: 'All', simulatorScenario: 'My phone was stolen', simulatorRan: false, activeProfile: null, vaultUnlocked: false, selectedVaultCategory: 'Recovery Emails', assistantPrompt: 'My phone was stolen', assistantStep: 0, emergencyScenario: 'Phone Stolen', recoveryWizardScenario: 'Phone stolen', recoveryWizardStep: 0, accountSearch: '', accountCategory: 'All', editingAccountId: '', loading: false, authError: '', dataError: '', exportStatus: '', importStatus: '', onboardingOpen: !onboardingSeen(), onboardingStep: 0, onboardingProtection: 'Advanced', onboardingAccounts: ['Google', 'Apple', 'Instagram'], vaultCreating: false, onboardingComplete: false, globalSearch: '', notificationSearch: '', notificationFilter: 'All', rememberMe: true, notificationsRead: [], notifications: [], activityFeed: [], recoveryContacts: [], securityScores: [], adminVisible: false, organizations: demoOrganizations, selectedOrgRole: 'Member', inviteEmail: '', productTourStep: 0, commandPaletteOpen: false, selectedAccountId: '', expandedAccountId: '', accountDetailTab: 'Overview', auditRan: false, auditReport: '', upgradeModal: '', route: (location.hash || '#dashboard').replace('#', '') || 'dashboard', reportType: 'Recovery Report', waitlistStatus: '', waitlistReferral: '', importSource: 'CSV', isOffline: typeof navigator !== 'undefined' ? !navigator.onLine : false, securityEvents: [], auditEvents: [], devices: [], subscriptionPlan: 'free', backupStatus: 'Automatic encrypted backups ready', toast: 'Ready', aiCopilotOpen: false, aiCopilotQuestion: 'What should I fix first?', aiCopilotAnswer: '', dismissedFixes: [], expandedTimelineId: '', pageLoading: false, successPulse: '', commandIndex: 0 };
 const h = (...args) => React.createElement(...args);
 function EmptyState({ icon = '◌', title, description, action, onAction }) { return h('div', { className: 'empty-state premium-empty-state' }, h('span', { className: 'empty-illustration' }, icon), h('strong', null, title), h('p', null, description), action && h('button', { className: 'primary', onClick: onAction }, action)); }
 
 function hasFirebaseConfig() { return Object.values(firebaseConfig).every(Boolean); }
 function setState(patch) { Object.assign(state, patch); render(); }
 function toast(message) { setState({ toast: message }); window.setTimeout(() => setState({ toast: '' }), 2200); }
+function successToast(message) { setState({ successPulse: message, toast: `✓ ${message}` }); window.setTimeout(() => setState({ successPulse: '' }), 900); window.setTimeout(() => setState({ toast: '' }), 2400); }
 function firstName() { return state.userProfile?.displayName?.split(' ')[0] || state.user?.displayName?.split(' ')[0] || state.user?.email?.split('@')[0] || 'there'; }
 function usingLiveAccounts() { return Boolean(state.user && state.db && state.firebaseReady); }
 function apiClient() { return createApiClient({ firebaseReady: state.firebaseReady, user: state.user }); }
@@ -174,62 +176,6 @@ async function ensureUserScopedCollections(user) {
     ['emergencyKits', 'default', { title: 'Default emergency kit', status: 'Ready to build', items: ['Trusted contacts', 'Recovery letter', 'Insurance notes'], createdAt: serverTime }],
     ['organizations', 'family-demo', { name: 'Family Vault', role: 'Owner', members: 1, vaults: 1, permission: 'Full access', activity: 'Organization created', createdAt: serverTime }],
     ['billing', 'subscription', { plan: 'free', status: 'Free / beta', stripeConnected: false, paymentsEnabled: false, trialEligible: true, createdAt: serverTime }],
-    ['devices', 'current-browser', { ...currentDeviceSnapshot(), createdAt: serverTime }],
-    ['backups', 'latest', { ...createBackupManifest([]), status: 'Ready', createdAt: serverTime }]
-  ];
-  await Promise.all(defaults.map(([collectionName, docId, data]) => state.firebase.setDoc(base(collectionName, docId), data, { merge: true })));
-}
-function resetLiveCollections() {
-  collectionUnsubscribes.forEach((unsubscribe) => unsubscribe());
-  collectionUnsubscribes = [];
-  setState({ recoveryMethods: [], trustedContacts: [], recoveryContacts: [], backupCodes: [], securityAlerts: [], notifications: [], activityFeed: [], securityScores: [], recoveryTimeline: timelineEvents, emergencyKits: [], organizations: demoOrganizations, settings: {} });
-}
-function subscribeToUserCollection(name, stateKey, transform = (doc) => ({ id: doc.id, ...doc.data() })) {
-  const unsubscribe = state.firebase.onSnapshot(userCollection(name), (snapshot) => {
-    const records = snapshot.docs.map(transform);
-    setState({ [stateKey]: records });
-  }, (error) => setState({ dataError: safeError(error, `Could not load ${name}`) }));
-  collectionUnsubscribes.push(unsubscribe);
-}
-function subscribeToSupportCollections(user) {
-  resetLiveCollections();
-  if (!state.db || !state.firebase || !user) return;
-  subscribeToUserCollection('recoveryMethods', 'recoveryMethods');
-  subscribeToUserCollection('trustedContacts', 'trustedContacts');
-  subscribeToUserCollection('recoveryContacts', 'recoveryContacts');
-  subscribeToUserCollection('securityScores', 'securityScores');
-  subscribeToUserCollection('activity', 'activityFeed');
-  subscribeToUserCollection('notifications', 'notifications');
-  subscribeToUserCollection('backupCodes', 'backupCodes');
-  subscribeToUserCollection('securityAlerts', 'securityAlerts');
-  subscribeToUserCollection('recoveryTimeline', 'recoveryTimeline', (doc) => ({ id: doc.id, ...doc.data(), date: doc.data().date || 'Today', title: doc.data().title || 'Recovery event', status: doc.data().status || 'Done' }));
-  subscribeToUserCollection('emergencyKits', 'emergencyKits');
-  subscribeToUserCollection('organizations', 'organizations');
-  subscribeToUserCollection('auditLogs', 'auditEvents');
-  subscribeToUserCollection('devices', 'devices');
-  const settingsUnsubscribe = state.firebase.onSnapshot(userCollection('settings'), (snapshot) => {
-    const settings = Object.assign({}, ...snapshot.docs.map((doc) => doc.data()));
-    setState({ settings });
-  }, (error) => setState({ dataError: safeError(error, 'Could not load settings') }));
-  collectionUnsubscribes.push(settingsUnsubscribe);
-}
-async function ensureUserScopedCollections(user) {
-  if (!state.db || !state.firebase || !user) return;
-  const serverTime = state.firebase.serverTimestamp ? state.firebase.serverTimestamp() : new Date().toISOString();
-  const base = (...parts) => state.firebase.doc(state.db, 'users', user.uid, ...parts);
-  const defaults = [
-    ['settings', 'preferences', { darkMode: true, notifications: true, cloudSync: true, exportVault: true, importVault: true, emergencyPin: false, biometricLock: false, createdAt: serverTime }],
-    ['securityScores', 'current', { score: averageScore(), reasons: recoveryScoreFactors().factors.map(([label, count]) => ({ label, count })), createdAt: serverTime }],
-    ['activity', 'welcome', { title: 'SecureSwitch workspace created', type: 'login', createdAt: serverTime }],
-    ['recoveryContacts', 'primary', { name: 'Trusted contact placeholder', status: 'Add a real contact', createdAt: serverTime }],
-    ['recoveryMethods', 'primary', { type: 'Recovery method inventory', status: 'Ready to populate', createdAt: serverTime }],
-    ['trustedContacts', 'primary', { name: 'Trusted contact placeholder', status: 'Add a real contact', createdAt: serverTime }],
-    ['backupCodes', 'inventory', { status: 'Encrypted backup code inventory ready', count: 0, createdAt: serverTime }],
-    ['securityAlerts', 'welcome', { title: 'SecureSwitch live sync enabled', severity: 'Info', status: 'Open', createdAt: serverTime }],
-    ['recoveryTimeline', 'welcome', { date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' }), title: 'SecureSwitch account connected', status: 'Done', category: 'Security', createdAt: serverTime }],
-    ['emergencyKits', 'default', { title: 'Default emergency kit', status: 'Ready to build', items: ['Trusted contacts', 'Recovery letter', 'Insurance notes'], createdAt: serverTime }],
-    ['organizations', 'family-demo', { name: 'Family Vault', role: 'Owner', members: 1, vaults: 1, permission: 'Full access', activity: 'Organization created', createdAt: serverTime }],
-    ['billing', 'subscription', { plan: 'free', status: 'Demo / Free', stripeConnected: false, trialEligible: true, createdAt: serverTime }],
     ['devices', 'current-browser', { ...currentDeviceSnapshot(), createdAt: serverTime }],
     ['backups', 'latest', { ...createBackupManifest([]), status: 'Ready', createdAt: serverTime }]
   ];
@@ -424,10 +370,10 @@ async function saveAccount(event) {
       const payload = await encryptRecord(state.vaultKey, serializeAccount(record));
       if (state.editingAccountId) {
         await state.firebase.setDoc(userDoc('accounts', record.id), payload, { merge: true });
-        toast(`${record.name} updated in encrypted Firestore`);
+        successToast(`${record.name} updated`);
       } else {
         await state.firebase.addDoc(userCollection('accounts'), payload);
-        toast(`${record.name} saved encrypted to Firestore`);
+        successToast(`${record.name} added`);
       }
       const nextAccounts = state.editingAccountId ? state.accounts.map((account) => account.id === record.id ? record : account) : [record, ...state.accounts];
       await refreshLiveSecurityScore(nextAccounts);
@@ -438,7 +384,7 @@ async function saveAccount(event) {
     } else {
       const accounts = state.editingAccountId ? state.accounts.map((account) => account.id === state.editingAccountId ? record : account) : [record, ...state.accounts];
       setState({ accounts, editingAccountId: '', activityFeed: [{ id: `local-${Date.now()}`, title: `${record.name} recovery record saved`, type: 'recovery_update', createdAt: new Date().toISOString() }].concat(state.activityFeed).slice(0, 20), notifications: [{ id: `local-note-${Date.now()}`, title: `${record.name} needs review`, detail: recommendationsFor(record)[0] || 'Account health updated', unread: true }].concat(state.notifications).slice(0, 20) });
-      toast(`${record.name} ${state.editingAccountId ? 'updated' : 'added locally'}`);
+      successToast(`${record.name} ${state.editingAccountId ? 'updated' : 'added locally'}`);
     }
     form.reset();
   } catch (error) {
@@ -494,7 +440,7 @@ async function exportEncryptedRecoveryData() {
     downloadJson(`secureswitch-encrypted-export-${new Date().toISOString().slice(0, 10)}.json`, bundle);
     setState({ exportStatus: `${records.length} encrypted recovery records exported.` });
     await recordAudit('export', { type: 'encrypted_recovery_data', records: records.length });
-    toast('Encrypted export ready');
+    successToast('Encrypted export ready');
   } catch (error) {
     setState({ exportStatus: safeError(error, 'Encrypted export failed') });
     toast('Encrypted export needs attention');
@@ -727,14 +673,18 @@ function vaultItems() {
 
 function commandPaletteItems() {
   return [
-    ['Create Account', 'Add a protected account', () => { location.hash = 'accounts'; toast('Account form ready'); }],
-    ['Run Scan', 'Start health scan', runHealthScan],
-    ['Export Vault', 'Download encrypted vault export', exportEncryptedRecoveryData],
-    ['Invite Member', 'Open team vault invites', () => { location.hash = 'team-vaults'; toast('Invite panel ready'); }],
-    ['Generate Report', 'Open production report generator', () => { location.hash = 'report-generator'; toast('Report generator ready'); }],
-    ['Dark Mode', 'Theme controls', () => toast('Dark mode is already enabled')],
+    ['Add Account', 'Add a protected account', () => { location.hash = 'accounts'; toast('Account form ready'); }],
+    ['Backup Codes', 'Open recovery center backup code workflow', () => { location.hash = 'recovery-center'; toast('Backup code workflow ready'); }],
+    ['Recovery Center', 'Open recovery methods and contacts', () => { location.hash = 'recovery-center'; }],
+    ['Settings', 'Workspace preferences', () => { location.hash = 'settings'; }],
+    ['Dashboard', 'Return to command center', () => { location.hash = 'dashboard'; }],
     ['Notifications', 'Open notification center', () => { location.hash = 'notifications'; }],
-    ['Open Settings', 'Workspace preferences', () => { location.hash = 'settings'; }]
+    ['AI Copilot', 'Ask the AI Security Copilot', () => setState({ aiCopilotOpen: true })],
+    ['Export', 'Open export center', () => { location.hash = 'import-export'; }],
+    ['Theme', 'Theme controls', () => toast('Dark mode is already enabled')],
+    ['Search', 'Focus global search', () => document.querySelector('.global-search input')?.focus()],
+    ['Diagnostics', 'Open hidden app health diagnostics', () => { location.hash = 'app-health'; }],
+    ['Run Scan', 'Start health scan', runHealthScan]
   ];
 }
 function executeCommand(command) { setState({ commandPaletteOpen: false, globalSearch: '' }); command[2](); }
@@ -744,7 +694,7 @@ function generateProductionReport(format) {
   else if (format === 'json') downloadTextFile(`secureswitch-${state.reportType.toLowerCase().replaceAll(' ', '-')}.json`, 'application/json', JSON.stringify({ reportType: state.reportType, recoveryScore: averageScore(), passwordHealth: passwordHealthScore(), organizations: state.organizations.length, accounts: state.accounts.length, alerts: unreadNotifications().length }, null, 2));
   else downloadTextFile(`secureswitch-${state.reportType.toLowerCase().replaceAll(' ', '-')}.pdf`, 'application/pdf', generatePdf(state.reportType, lines));
   logSecurityEvent(`${state.reportType} ${format.toUpperCase()} generated`);
-  toast(`${state.reportType} ${format.toUpperCase()} ready`);
+  successToast(`${state.reportType} ${format.toUpperCase()} ready`);
 }
 function filteredAccounts() {
   const query = state.accountSearch.toLowerCase();
@@ -853,7 +803,7 @@ async function saveRecoveryCenter(event) {
     } else {
       setState({ recoveryContacts: [{ id: 'local-primary', name: profile.recoveryContact || 'Primary contact', status: profile.recoveryContact ? 'Ready' : 'Missing', email: profile.recoveryEmail }], backupCodes: [{ id: 'local-codes', status: profile.backupCodes || 'Missing', count: profile.backupCodes ? 1 : 0 }], devices: [{ ...currentDeviceSnapshot(), trusted: Boolean(profile.trustedDevice), name: profile.trustedDevice || currentDeviceSnapshot().name }] });
     }
-    toast('Recovery center saved');
+    successToast('Recovery center saved');
   } catch (error) {
     setState({ dataError: safeError(error, 'Recovery center could not be saved.') });
     toast('Recovery save needs attention');
@@ -893,7 +843,7 @@ async function saveUserProfile(event) {
       await writeUserScopedDoc('settings', 'profile', profile);
       await recordAudit('settings_update', { section: 'profile' });
     }
-    toast('Profile saved');
+    successToast('Profile saved');
   } catch (error) {
     setState({ dataError: safeError(error, 'Profile could not be saved.') });
     toast('Profile save needs attention');
@@ -909,7 +859,7 @@ async function removeDevice(device) {
       await recordLiveActivity('device_removed', { id: device.id, name: device.name || device.browser || 'Device' });
       await recordAudit('device_change', { action: 'remove', device: device.id });
     }
-    toast(`${device.browser || device.name || 'Device'} removed`);
+    successToast(`${device.browser || device.name || 'Device'} removed`);
   } catch (error) {
     setState({ dataError: safeError(error, 'Device could not be removed.') });
   }
@@ -1111,10 +1061,7 @@ function EmergencyKitSummary() {
   return h('section', { className: 'panel glass emergency-summary' }, h('p', { className: 'eyebrow' }, 'Emergency Kit'), h('h2', null, kit?.status || 'Ready to export'), h('p', null, kit ? `${kit.title}: ${(kit.items || []).join(', ')}` : 'Trusted contacts, offline backup codes, recovery letter, and insurance notes are prepared.'), h('a', { className: 'rail-link', href: '#kit' }, 'Open kit →'));
 }
 
-function SuggestedFixes() {
-  const fixes = dashboardSummary(state.accounts).suggestedNextFixes.length ? dashboardSummary(state.accounts).suggestedNextFixes.slice(0, 3) : ['All accounts are recovery ready'];
-  return h('section', { className: 'panel glass suggested-fixes' }, h('p', { className: 'eyebrow' }, 'Suggested Fixes'), h('h2', null, 'Next 7 minutes'), fixes.map((fix) => h('button', { key: fix, onClick: () => toast(`${fix} workflow started`) }, h('span', null, '✦'), fix)));
-}
+function SuggestedFixes() { return h(QuickFixCenter); }
 
 function ScoreRing({ item }) { return h('article', { className: 'mini-ring-card' }, h('div', { className: 'mini-ring', style: { '--ring': `${item.score * 3.6}deg`, '--ring-color': item.color } }, h('strong', null, item.score)), h('h3', null, item.label), h('p', null, item.explanation), h('small', null, item.recommendation)); }
 function IdentityHealthDashboard() { return h('section', { className: 'panel glass identity-health', id: 'identity-health' }, h('p', { className: 'eyebrow' }, 'Identity Health'), h('h2', null, 'If you lost access today, would you recover?'), h('div', { className: 'identity-grid' }, scoreBreakdown().concat([{ label: 'Family Readiness', score: 73, color: '#60a5fa', explanation: 'Family members with trusted recovery plans.', recommendation: 'Share emergency kits with trusted family members.' }]).map((item) => h(ScoreRing, { key: item.label, item })))); }
@@ -1137,7 +1084,9 @@ function RecoveryCoach() {
   const steps = ['Lock device — Estimated: 30 seconds', 'Recover Gmail', 'Recover Apple ID', 'Recover Banking', 'Rotate Backup Codes'];
   return h('section', { className: 'panel glass ai-panel', id: 'recovery-coach' }, h('p', { className: 'eyebrow' }, 'Recovery Coach'), h('h2', null, '“I lost my phone.”'), h('div', { className: 'coach-step' }, h('b', null, `Step ${state.aiStep + 1}`), h('p', null, steps[state.aiStep])), h('button', { className: 'primary', onClick: () => setState({ aiStep: Math.min(state.aiStep + 1, steps.length - 1) }) }, 'Next →'));
 }
-function RecoveryTimeline() { const filters = ['All', 'Account added', 'Recovery updated', 'Backup generated', 'Security review', 'Device added', 'Device removed', 'Notifications', 'Audit completed']; const events = buildSecurityTimeline({ accounts: state.accounts, activity: state.activityFeed, notifications: notificationItems(), auditEvents: state.auditEvents, devices: state.devices }); const filtered = state.timelineFilter === 'All' ? events : events.filter((event) => event.type === state.timelineFilter); return h('section', { className: 'panel glass timeline-panel', id: 'timeline' }, h('p', { className: 'eyebrow' }, 'Security Timeline'), h('h2', null, 'Chronological security history'), h('div', { className: 'filter-row' }, filters.map((filter) => h('button', { key: filter, className: state.timelineFilter === filter ? 'active-filter' : '', onClick: () => setState({ timelineFilter: filter }) }, filter))), h('div', { className: 'timeline-list' }, filtered.length ? filtered.map((event) => h('article', { key: `${event.type}-${event.title}-${event.at}` }, h('time', null, new Date(event.at).toLocaleDateString()), h('span', null, event.title), h('b', null, event.type), h('small', null, event.detail))) : h(EmptyState, { icon: '⌁', title: 'No timeline events yet', description: 'Account changes, device updates, notifications, backups, and audits will appear here automatically.', action: 'Run audit', onAction: runSecurityAudit }))); }
+function timelineIcon(type) { return type.includes('Device') ? '◉' : type.includes('Backup') ? '▣' : type.includes('Notification') ? '⚠' : type.includes('Audit') ? '✓' : type.includes('Review') ? '⌁' : '✦'; }
+function timelineSeverity(type) { return type.includes('removed') || type.includes('Notification') ? 'high' : type.includes('review') || type.includes('Recovery') ? 'medium' : 'low'; }
+function RecoveryTimeline() { const filters = ['All', 'Account added', 'Recovery updated', 'Backup generated', 'Security review', 'Device added', 'Device removed', 'Notifications', 'Audit completed']; const events = buildSecurityTimeline({ accounts: state.accounts, activity: state.activityFeed, notifications: notificationItems(), auditEvents: state.auditEvents, devices: state.devices }); const filtered = state.timelineFilter === 'All' ? events : events.filter((event) => event.type === state.timelineFilter); return h('section', { className: 'panel glass timeline-panel', id: 'timeline' }, h('p', { className: 'eyebrow' }, 'Security Timeline'), h('h2', null, 'Chronological security history'), h('div', { className: 'filter-row' }, filters.map((filter) => h('button', { key: filter, className: state.timelineFilter === filter ? 'active-filter' : '', onClick: () => setState({ timelineFilter: filter }) }, filter))), h('div', { className: 'timeline-list polished-security-timeline' }, filtered.length ? filtered.map((event, index) => { const id = `${event.type}-${event.title}-${event.at}`; const expanded = state.expandedTimelineId === id; return h('article', { key: id, className: `timeline-event severity-${timelineSeverity(event.type)}`, style: { '--delay': `${index * 45}ms` } }, h('button', { onClick: () => setState({ expandedTimelineId: expanded ? '' : id }), 'aria-expanded': expanded }, h('span', { className: 'timeline-icon' }, timelineIcon(event.type)), h('div', null, h('strong', null, event.title), h('small', null, `${event.type} · ${new Date(event.at).toLocaleString()}`)), h('b', null, timelineSeverity(event.type))), expanded && h('p', null, event.detail)); }) : h(EmptyState, { icon: '⌁', title: 'No recent security events.', description: 'Account changes, device updates, notifications, backups, and audits will appear here automatically.', action: 'Run audit', onAction: runSecurityAudit }))); }
 function EmergencySimulator() {
   const scenarios = ['My phone was stolen', 'SIM Swap', 'Laptop stolen', 'Email hacked', 'Authenticator deleted', 'Lost backup codes', 'Identity theft', 'Ransomware'];
   const result = reviewCount() > 1 ? 'PARTIAL' : 'YES';
@@ -1186,7 +1135,7 @@ function CompliancePages() {
 }
 function ImportExportCenter() {
   const imports = ['Google Authenticator', 'Microsoft Authenticator', 'Authy', 'CSV', 'JSON', 'Encrypted Backup'];
-  const exports = [['Encrypted Backup', 'encrypted'], ['CSV', 'csv'], ['JSON', 'json'], ['PDF', 'pdf'], ['Emergency Recovery Kit', 'emergency-kit']];
+  const exports = [['Accounts JSON', 'json'], ['Accounts CSV', 'csv'], ['Timeline PDF', 'timeline'], ['Audit PDF', 'security'], ['Recovery PDF', 'recovery'], ['Security Report PDF', 'pdf'], ['Encrypted Backup', 'encrypted'], ['Emergency Recovery Kit', 'emergency-kit']];
   return h('section', { className: 'panel glass import-export-center', id: 'import-export' }, h('p', { className: 'eyebrow' }, 'Import / Export'), h('h2', null, 'Bring recovery data in and take it out safely'), h('form', { className: 'import-form', onSubmit: importAccountsFromSource }, h('select', { name: 'source', value: state.importSource, onChange: (event) => setState({ importSource: event.target.value }) }, imports.map((item) => h('option', { key: item }, item))), h('button', { className: 'primary' }, 'Run local import')), h('div', { className: 'export-grid' }, exports.map(([label, kind]) => h('button', { key: kind, onClick: () => exportFormat(kind) }, label))));
 }
 function AnalyticsDashboard() {
@@ -1227,7 +1176,13 @@ function AccountDetailPage() {
 function CommandPalette() {
   if (!state.commandPaletteOpen) return null;
   const commands = commandPaletteItems().filter(([label, detail]) => `${label} ${detail}`.toLowerCase().includes(state.globalSearch.toLowerCase()));
-  return h('section', { className: 'command-palette-backdrop', role: 'dialog', 'aria-label': 'Command palette' }, h('div', { className: 'command-palette glass' }, h('div', { className: 'panel-head' }, h('div', null, h('p', { className: 'eyebrow' }, 'CMD + K'), h('h2', null, 'Command Palette')), h('button', { onClick: () => setState({ commandPaletteOpen: false }) }, 'Close')), h('input', { autoFocus: true, value: state.globalSearch, onChange: (event) => setState({ globalSearch: event.target.value }), placeholder: 'Search commands, accounts, settings, reports…' }), h('div', { className: 'command-list' }, commands.map((command) => h('button', { key: command[0], onClick: () => executeCommand(command) }, h('strong', null, command[0]), h('small', null, command[1]))))));
+  const activeIndex = Math.min(state.commandIndex, Math.max(0, commands.length - 1));
+  const onKeyDown = (event) => {
+    if (event.key === 'ArrowDown') { event.preventDefault(); setState({ commandIndex: Math.min(activeIndex + 1, commands.length - 1) }); }
+    if (event.key === 'ArrowUp') { event.preventDefault(); setState({ commandIndex: Math.max(activeIndex - 1, 0) }); }
+    if (event.key === 'Enter' && commands[activeIndex]) { event.preventDefault(); executeCommand(commands[activeIndex]); }
+  };
+  return h('section', { className: 'command-palette-backdrop', role: 'dialog', 'aria-label': 'Command palette', onKeyDown }, h('div', { className: 'command-palette glass' }, h('div', { className: 'panel-head' }, h('div', null, h('p', { className: 'eyebrow' }, 'CMD + K'), h('h2', null, 'Command Palette')), h('button', { onClick: () => setState({ commandPaletteOpen: false }) }, 'Close')), h('input', { autoFocus: true, value: state.globalSearch, onChange: (event) => setState({ globalSearch: event.target.value, commandIndex: 0 }), placeholder: 'Search commands, accounts, settings, reports…', 'aria-label': 'Search commands' }), h('div', { className: 'command-list', role: 'listbox' }, commands.map((command, index) => h('button', { key: command[0], className: index === activeIndex ? 'active-command' : '', role: 'option', 'aria-selected': index === activeIndex, onClick: () => executeCommand(command) }, h('strong', null, command[0]), h('small', null, command[1]))))));
 }
 function ReportGenerator() {
   const reports = ['Recovery Report', 'Organization Report', 'Security Audit', 'Recovery Readiness', 'Password Health', 'Executive Summary'];
@@ -1496,15 +1451,14 @@ function PwaReadinessPanel() {
 }
 function Settings() {
   const groups = [
-    ['Profile', [['language', 'Language'], ['connectedDevices', 'Connected Devices'], ['version', `Version ${buildVersion()}`]]],
-    ['Security', [['security', 'Security'], ['autoLock', 'Auto Lock'], ['sessionTimeout', 'Session Timeout'], ['trustedDevices', 'Trusted Devices']]],
+    ['General', [['language', 'Language'], ['connectedDevices', 'Connected Devices'], ['version', `Version ${buildVersion()}`]]],
     ['Appearance', [['theme', 'Theme'], ['darkMode', 'Dark Mode'], ['accessibility', 'Accessibility']]],
-    ['Notifications', [['notifications', 'Notifications'], ['privacy', 'Privacy']]],
-    ['Recovery', [['biometricLogin', 'Biometric Login'], ['faceId', 'Face ID'], ['touchId', 'Touch ID']]],
-    ['Vault', [['vault', 'Vault'], ['autoLock', 'Vault Auto Lock']]],
+    ['Security', [['security', 'Security'], ['autoLock', 'Auto Lock'], ['sessionTimeout', 'Session Timeout'], ['trustedDevices', 'Trusted Devices']]],
+    ['Notifications', [['notifications', 'Notifications'], ['preferredNotifications', 'Preferred Notifications']]],
+    ['Recovery', [['biometricLogin', 'Biometric Login'], ['faceId', 'Face ID'], ['touchId', 'Touch ID'], ['vault', 'Vault Auto Lock']]],
+    ['Privacy', [['privacy', 'Privacy'], ['exportVault', 'Export Data']]],
     ['Billing', [['billing', 'Billing']]],
-    ['API', [['api', 'API'], ['developerMode', 'Developer Mode']]],
-    ['Export', [['exportVault', 'Export Data']]],
+    ['About', [['api', 'API'], ['developerMode', 'Developer Mode']]],
     ['Danger Zone', [['deleteAccount', 'Delete Account']]]
   ];
   const toggle = async (key, checked) => { const settings = { ...state.settings, [key]: checked }; setState({ settings }); if (usingLiveAccounts()) { try { await writeUserScopedDoc('settings', 'preferences', settings); } catch (error) { setState({ dataError: safeError(error, 'Settings could not be saved. Please try again.') }); } } };
@@ -1521,7 +1475,7 @@ function Settings() {
       h('select', { name: 'language', defaultValue: state.userProfile?.language || state.settings.language || 'English' }, ['English', 'Spanish', 'French'].map((item) => h('option', { key: item }, item))),
       h('button', { className: 'primary full-span' }, 'Save Profile')
     ),
-    h('div', { className: 'settings-section-grid' }, groups.map(([title, options]) => h('article', { key: title, className: title === 'Danger Zone' ? 'danger-settings' : '' }, h('h3', null, title), options.map(([key, label]) => h('label', { key }, h('span', null, label), h('input', { type: 'checkbox', checked: state.settings[key] ?? true, onChange: (event) => toggle(key, event.target.checked) })))))),
+    h('div', { className: 'settings-section-grid collapsible-settings' }, groups.map(([title, options]) => h('details', { key: title, className: title === 'Danger Zone' ? 'danger-settings' : '', open: ['General', 'Security', 'Notifications'].includes(title) }, h('summary', null, h('h3', null, title), h('span', null, '⌄')), options.map(([key, label]) => h('label', { key }, h('span', null, label), h('input', { type: 'checkbox', checked: state.settings[key] ?? true, onChange: (event) => toggle(key, event.target.checked) })))))),
     h(ProductionStatusPanel),
     h(RecoveryDataPortability),
     h(SyncAndAuthPanel)
@@ -1608,6 +1562,17 @@ function FloatingAICoach() {
   return h('aside', { className: 'floating-ai-coach glass', 'aria-label': 'AI Recovery Assistant' }, h('p', { className: 'eyebrow' }, 'AI Recovery Assistant'), h('strong', null, state.assistantPrompt), h('div', { className: 'prompt-list' }, prompts.map((prompt) => h('button', { key: prompt, className: state.assistantPrompt === prompt ? 'active' : '', onClick: () => setState({ assistantPrompt: prompt, assistantStep: 0 }) }, prompt))), h('div', { className: 'typing-line' }, 'SecureSwitch is preparing your recovery plan', h('span', null, '•••')), h('ol', { className: 'assistant-steps' }, steps.map((step, index) => h('li', { key: step, className: index <= state.assistantStep ? 'done' : '' }, h('span', null, index + 1), step))), h('div', { className: 'assistant-progress' }, h('span', { style: { width: `${((state.assistantStep + 1) / steps.length) * 100}%` } })), h('small', null, `Estimated recovery time: ${steps.length * 2} minutes`), h('button', { className: 'primary', onClick: () => setState({ assistantStep: Math.min(state.assistantStep + 1, steps.length - 1) }) }, 'Next step'));
 }
 
+function ExecutiveInsightCards() {
+  return h('div', { className: 'executive-insight-grid' }, executiveInsightCards(state.accounts, state.devices, state.activityFeed).map((card, index) => h('article', { key: card.title, className: 'delight-card', style: { '--delay': `${index * 55}ms` } }, h('span', null, card.title), h('strong', { className: 'animated-stat' }, card.value), h('small', null, card.detail))));
+}
+function AchievementStrip() {
+  const streak = securityStreak(state.activityFeed.length ? state.activityFeed : state.auditEvents);
+  return h('div', { className: 'achievement-strip' }, h('article', { className: 'streak-card' }, h('span', null, streak.label), h('strong', null, `${streak.current} days`), h('small', null, `Best ${streak.best} · Last activity ${new Date(streak.lastActivity).toLocaleDateString()}`)), achievementProgress(state.accounts, state.devices, state.activityFeed).map((item) => h('article', { key: item.name, className: `achievement-card ${item.unlocked ? 'unlocked' : ''}`, style: { '--progress': item.percent / 100 } }, h('i', null, item.icon), h('strong', null, item.name), h('span', null, `${item.percent}%`), h('small', null, item.detail))));
+}
+function QuickFixCenter() {
+  const fixes = quickFixActions(state.accounts, state.devices).filter((item) => !state.dismissedFixes.includes(item.id));
+  return h('section', { className: 'panel glass suggested-fixes quick-fix-center' }, h('p', { className: 'eyebrow' }, 'Quick Fix Center'), h('h2', null, fixes.length ? 'Highest-impact actions' : 'Everything looks protected.'), fixes.length ? fixes.map((fix) => h('article', { key: fix.id, className: `quick-fix-row priority-${fix.severity.toLowerCase()}` }, h('b', null, fix.severity), h('div', null, h('strong', null, fix.title), h('small', null, `${fix.accountName}: ${fix.reason} · +${fix.improvement} points`)), h('button', { className: 'primary', onClick: () => { location.hash = fix.primaryRoute; toast(`✓ ${fix.title} opened`); } }, 'Fix Now'), h('button', { onClick: () => { location.hash = 'security-audit'; toast(`${fix.accountName} queued for review`); } }, 'Review'), h('button', { onClick: () => setState({ dismissedFixes: state.dismissedFixes.concat(fix.id) }) }, 'Dismiss'))) : h(EmptyState, { icon: '✓', title: 'No risks detected.', description: "You're ahead of schedule. SecureSwitch will surface new issues when account data changes.", action: 'Run audit', onAction: runSecurityAudit }));
+}
 function ExecutiveSecurityScoreCard() {
   const metrics = executiveSecurityMetrics(state.accounts, state.devices);
   const score = metrics.averageHealthScore;
@@ -1617,6 +1582,8 @@ function ExecutiveSecurityScoreCard() {
     h('div', { className: 'executive-score-hero' }, h('div', { className: 'executive-ring', style: { '--score': `${score * 3.6}deg` } }, h('strong', null, score), h('span', null, securityGrade(score))), h('div', null, h('p', { className: 'eyebrow' }, 'Overall Security Score'), h('h2', null, 'Never Lose Another Account Again.'), h('p', null, 'A live command center for identity recovery, device trust, and account resilience.'))),
     h('div', { className: 'command-metric-grid' }, dashboardMetrics.map(([label, value]) => h('article', { key: label }, h('span', null, label), h('strong', null, value)))),
     h(MiniTrendCharts),
+    h(ExecutiveInsightCards),
+    h(AchievementStrip),
     h('div', { className: 'ai-insight-strip' }, dailySecurityInsights(state.accounts, state.devices).slice(0, 3).map((insight) => h('span', { key: insight }, insight))),
     h('article', { className: `priority-recommendation ${recommendation.severity.toLowerCase()}` }, h('b', null, recommendation.severity), h('span', null, recommendation.text), h('small', null, `Estimated fix time: ${recommendation.time}`), h('button', { className: 'primary', onClick: () => { location.hash = 'security-audit'; toast('Fix workflow opened'); } }, 'Fix Now'))
   );
@@ -1660,6 +1627,16 @@ function DashboardHome() {
   return [h(Hero), h(ExecutiveSecurityScoreCard), h('div', { className: 'lower-grid dashboard-home-grid' }, h(Accounts), h(Activity))];
 }
 
+function AppHealthPage() {
+  const memory = performance?.memory ? `${Math.round(performance.memory.usedJSHeapSize / 1048576)} MB` : 'Unavailable';
+  const rows = [
+    ['App Version', buildVersion()], ['Firebase Status', state.firebaseReady ? 'Ready' : 'Fallback mode'], ['Storage Usage', `${state.accounts.length} accounts · ${state.backupCodes.length} backup records`], ['IndexedDB', 'Browser managed'], ['Live Sync', usingLiveAccounts() ? 'Connected' : 'Not connected'], ['User ID', state.user?.uid || 'Signed out'], ['Browser', navigator.userAgent.split(' ').slice(0, 3).join(' ')], ['OS', navigator.platform || 'Unknown'], ['Memory estimate', memory], ['Build timestamp', buildInfo().buildVersion || 'local']
+  ];
+  return h('section', { className: 'panel glass dedicated-page app-health-page', id: 'app-health' }, h('p', { className: 'eyebrow' }, 'Diagnostics'), h('h2', null, 'App health'), h('div', { className: 'status-grid' }, rows.map(([label, value]) => h('article', { key: label }, h('span', null, label), h('strong', null, value)))));
+}
+function GlobalLoading() { return state.pageLoading ? h('div', { className: 'global-loading glass', role: 'status', 'aria-live': 'polite' }, h('span'), h('strong', null, 'Loading SecureSwitch')) : null; }
+function SuccessMoment() { return state.successPulse ? h('div', { className: 'success-moment', role: 'status', 'aria-live': 'polite' }, h('span', null, '✓'), h('strong', null, state.successPulse)) : null; }
+
 function routeRequiresAuth(route) { return state.firebaseReady && !state.user && !['dashboard', 'settings', 'notifications'].includes(route); }
 function ProtectedRouteNotice() { return h('section', { className: 'panel glass protected-route', role: 'status' }, h('p', { className: 'eyebrow' }, 'Protected route'), h('h2', null, 'Sign in to open live workspace data'), h('p', null, 'Closed beta routes use Firebase Authentication before reading or writing private account recovery records.'), h(AuthCard)); }
 function PageContent() {
@@ -1686,7 +1663,8 @@ function PageContent() {
     billing: () => h(BillingSubscriptionsPanel),
     settings: () => h(Settings),
     notifications: () => h(NotificationCenterPage),
-    'import-export': () => h(ImportExportCenter)
+    'import-export': () => h(ImportExportCenter),
+    'app-health': () => h(AppHealthPage)
   };
   if (routeRequiresAuth(route)) return h(ProtectedRouteNotice);
   return (pages[route] || pages.dashboard)();
@@ -1733,8 +1711,10 @@ function App() {
       h(OnboardingWizard),
       h(CommandPalette),
       h(UpgradeModal),
+      h(GlobalLoading),
       h(Dashboard),
       h(AISecurityCopilot),
+      h(SuccessMoment),
       h('div', { className: 'toast ' + (state.toast ? 'show' : ''), role: 'status', 'aria-live': 'polite' }, state.toast)
     )
   );
@@ -1746,7 +1726,7 @@ async function boot() {
   root = createRoot(document.getElementById('root'));
   window.addEventListener('online', () => { setState({ isOffline: false }); toast('SecureSwitch is back online'); });
   window.addEventListener('offline', () => { setState({ isOffline: true }); toast('Offline mode active'); });
-  window.addEventListener('hashchange', () => setState({ route: (location.hash || '#dashboard').replace('#', '') || 'dashboard' }));
+  window.addEventListener('hashchange', () => { setState({ pageLoading: true, route: (location.hash || '#dashboard').replace('#', '') || 'dashboard' }); window.setTimeout(() => setState({ pageLoading: false }), 180); });
   window.addEventListener('keydown', (event) => { if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); setState({ commandPaletteOpen: !state.commandPaletteOpen }); } if (event.key === 'Escape') setState({ commandPaletteOpen: false }); });
   await loadFirebase();
   render();

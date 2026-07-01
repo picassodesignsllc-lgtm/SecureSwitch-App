@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 import { accountCategories, firestoreCollections, normalizeAccount, scoreAccount, riskLevel, recommendationsFor, dashboardSummary } from '../src/recoveryEngine.js';
 import { analyzeAccountSecurity, answerSecurityQuestion, buildSecurityTimeline, dailySecurityInsights, executiveSecurityMetrics, explainableSecurityScore, generateSecurityRecommendations } from '../src/services/aiCopilot.js';
+import { achievementProgress, executiveInsightCards, quickFixActions, securityStreak } from '../src/services/delight.js';
 
 let source = await readFile('src/app.js', 'utf8');
 source = source
@@ -37,6 +38,10 @@ const context = {
   executiveSecurityMetrics,
   explainableSecurityScore,
   generateSecurityRecommendations,
+  achievementProgress,
+  executiveInsightCards,
+  quickFixActions,
+  securityStreak,
   serviceRegistry: {
     authentication: ['signIn'],
     billing: ['plans'],

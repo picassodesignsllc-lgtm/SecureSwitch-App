@@ -4413,3 +4413,63 @@ img, svg, canvas, video { max-width: 100%; }
 .ai-insight-strip span { padding: 10px 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,.08); background: rgba(15, 23, 42, .55); color: #dbeafe; font-size: .86rem; }
 @keyframes panelFloatIn { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
 @media (max-width: 768px) { .ai-copilot { right: 12px; bottom: calc(88px + env(safe-area-inset-bottom)); } .ai-copilot-panel { max-height: calc(100vh - 180px); padding: 14px; } .ai-copilot-panel form { grid-template-columns: 1fr; } }
+
+/* Phase 25 Apple-level polish and delight */
+:root { --delight-ease: cubic-bezier(.16, 1, .3, 1); }
+.panel, .glass, .account-row, .summary-card, .health-score-card, .shortcut, .quick-row, .notification-list article, .timeline-event, .delight-card, .achievement-card { transition: transform .28s var(--delight-ease), box-shadow .28s var(--delight-ease), border-color .28s var(--delight-ease), background .28s var(--delight-ease); }
+@media (hover: hover) { .panel:hover, .account-row:hover, .summary-card:hover, .health-score-card:hover, .delight-card:hover, .achievement-card:hover { transform: translateY(-3px); box-shadow: 0 24px 70px rgba(30, 64, 175, .24), 0 0 42px rgba(124, 58, 237, .12); } }
+button, a, input, select { transition: transform .18s var(--delight-ease), box-shadow .18s var(--delight-ease), border-color .18s var(--delight-ease), background .18s var(--delight-ease); }
+button:active, .quick-row:active, .account-row:active { transform: scale(.985); }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid rgba(96, 165, 250, .8); outline-offset: 3px; }
+.dashboard-home-grid > *, .command-metric-grid > *, .premium-metric-grid > *, .executive-insight-grid > *, .achievement-strip > * { animation: delightFadeUp .42s var(--delight-ease) both; animation-delay: var(--delay, 0ms); }
+.executive-ring, .mini-score-ring, .animated-ring, .recovery-readiness-ring { animation: ringGlow 1.1s var(--delight-ease) both; }
+.executive-ring strong, .floating-score strong, .animated-stat { animation: statCount .7s var(--delight-ease) both; }
+.svg-chart-card polyline { stroke-dasharray: 420; stroke-dashoffset: 420; animation: chartDraw .95s var(--delight-ease) forwards; }
+.loading-state span, .empty-illustration { background-size: 200% 100%; animation: shimmer 1.8s linear infinite; }
+.executive-insight-grid { display: grid; grid-template-columns: repeat(7, minmax(120px, 1fr)); gap: 10px; margin: 14px 0; }
+.delight-card { padding: 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 18px; background: linear-gradient(145deg, rgba(15,23,42,.72), rgba(30,41,59,.42)); }
+.delight-card span, .achievement-card small, .streak-card small { color: #93a4bd; font-size: .74rem; }
+.delight-card strong { display: block; margin: 6px 0; color: #f8fafc; }
+.achievement-strip { display: grid; grid-template-columns: minmax(180px, 1.2fr) repeat(6, minmax(110px, 1fr)); gap: 10px; margin: 14px 0; }
+.achievement-card, .streak-card { padding: 12px; border-radius: 18px; border: 1px solid rgba(255,255,255,.08); background: rgba(15,23,42,.58); overflow: hidden; position: relative; }
+.achievement-card::after { content: ''; position: absolute; inset: auto 0 0; height: 3px; background: linear-gradient(90deg, #38bdf8, #a78bfa); transform-origin: left; transform: scaleX(calc(var(--progress, 1))); }
+.achievement-card.unlocked { box-shadow: 0 0 34px rgba(56, 189, 248, .18); }
+.achievement-card i { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 12px; background: rgba(59, 130, 246, .14); color: #bfdbfe; }
+.quick-fix-center { display: grid; gap: 10px; }
+.quick-fix-row { display: grid; grid-template-columns: auto 1fr auto auto auto; gap: 10px; align-items: center; padding: 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 18px; background: rgba(15,23,42,.52); animation: delightFadeUp .36s var(--delight-ease) both; }
+.quick-fix-row b { color: #fbbf24; }
+.polished-security-timeline .timeline-event { padding: 0; overflow: hidden; animation: delightFadeUp .38s var(--delight-ease) both; animation-delay: var(--delay, 0ms); }
+.timeline-event > button { width: 100%; display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; text-align: left; padding: 13px; background: transparent; border: 0; color: inherit; }
+.timeline-icon { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 14px; background: rgba(56, 189, 248, .12); color: #bfdbfe; }
+.timeline-event p { margin: 0; padding: 0 13px 13px 59px; color: #cbd5e1; }
+.timeline-event.severity-high { border-color: rgba(248, 113, 113, .24); }
+.timeline-event.severity-medium { border-color: rgba(251, 191, 36, .22); }
+.timeline-event.severity-low { border-color: rgba(52, 211, 153, .2); }
+.copilot-answer { animation: typeIn .5s steps(18, end) both; }
+.toast.show { animation: toastPop .28s var(--delight-ease) both; }
+@keyframes delightFadeUp { from { opacity: 0; transform: translateY(10px) scale(.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes ringGlow { 0% { filter: drop-shadow(0 0 0 rgba(56,189,248,0)); transform: scale(.985); } 65% { filter: drop-shadow(0 0 18px rgba(56,189,248,.38)); } 100% { filter: drop-shadow(0 0 8px rgba(56,189,248,.18)); transform: scale(1); } }
+@keyframes chartDraw { to { stroke-dashoffset: 0; } }
+@keyframes statCount { from { opacity: .35; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+@keyframes typeIn { from { opacity: .35; clip-path: inset(0 100% 0 0); } to { opacity: 1; clip-path: inset(0); } }
+@keyframes toastPop { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@media (max-width: 1024px) { .executive-insight-grid, .achievement-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); } .quick-fix-row { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .executive-insight-grid, .achievement-strip { grid-template-columns: 1fr; } .timeline-event > button { grid-template-columns: auto 1fr; } .timeline-event > button b { grid-column: 2; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+
+/* Phase 27 production-ready experience polish */
+.global-loading { position: fixed; inset: 16px 16px auto 50%; transform: translateX(-50%); z-index: 120; display: inline-flex; align-items: center; gap: 10px; width: fit-content; padding: 10px 14px; border-radius: 999px; animation: toastPop .22s cubic-bezier(.16,1,.3,1) both; }
+.global-loading span { width: 18px; height: 18px; border-radius: 999px; background: linear-gradient(90deg, rgba(56,189,248,.25), rgba(167,139,250,.9), rgba(56,189,248,.25)); background-size: 220% 100%; animation: shimmer 1.2s linear infinite; }
+.success-moment { position: fixed; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 130; display: inline-flex; align-items: center; gap: 10px; padding: 12px 16px; border: 1px solid rgba(52,211,153,.22); border-radius: 999px; background: rgba(2, 6, 23, .82); box-shadow: 0 18px 60px rgba(16,185,129,.22); backdrop-filter: blur(18px); animation: successRise .75s cubic-bezier(.16,1,.3,1) both; }
+.success-moment span { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 999px; background: rgba(16,185,129,.18); color: #bbf7d0; animation: ringGlow .8s cubic-bezier(.16,1,.3,1) both; }
+.command-list .active-command { border-color: rgba(96,165,250,.55); background: rgba(59,130,246,.16); transform: translateX(3px); }
+.collapsible-settings details { padding: 14px; border: 1px solid rgba(255,255,255,.08); border-radius: 20px; background: rgba(15,23,42,.5); transition: border-color .24s cubic-bezier(.16,1,.3,1), background .24s cubic-bezier(.16,1,.3,1); }
+.collapsible-settings summary { cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.collapsible-settings summary::-webkit-details-marker { display: none; }
+.collapsible-settings details[open] { background: rgba(15,23,42,.72); border-color: rgba(96,165,250,.18); }
+.collapsible-settings details label { margin-top: 10px; }
+.app-health-page .status-grid article { animation: delightFadeUp .36s cubic-bezier(.16,1,.3,1) both; }
+.import-export-center .export-grid button, .waitlist-form button, .account-form button { min-height: 44px; }
+@keyframes successRise { 0% { opacity: 0; transform: translate(-50%, 10px) scale(.98); } 25% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -8px) scale(1); } }
+@media (max-width: 768px) { .global-loading { top: calc(12px + env(safe-area-inset-top)); max-width: calc(100vw - 24px); } .success-moment { width: calc(100% - 32px); justify-content: center; } .top-actions { position: sticky; top: 0; z-index: 30; backdrop-filter: blur(18px); } button, .quick-row, .account-actions button { min-height: 44px; } }

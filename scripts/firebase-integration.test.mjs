@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { applyBulkReview, buildActivityEvent, buildNotification, buildSecurityScoreDocument, recoveryProfileFromForm, userScopedPath } from '../src/services/liveData.js';
 import { analyzeAccountSecurity, answerSecurityQuestion, buildSecurityTimeline, executiveSecurityMetrics, explainableSecurityScore, generateSecurityRecommendations } from '../src/services/aiCopilot.js';
+import { achievementProgress, executiveInsightCards, quickFixActions, securityStreak } from '../src/services/delight.js';
 
 const firebase = { serverTimestamp: () => 'SERVER_TIME' };
 
@@ -82,4 +83,20 @@ test('AI copilot answers natural language questions and builds chronological tim
   assert.equal(timeline[0].title, 'Recovery updated');
   assert.equal(metrics.totalAccounts, 1);
   assert.ok(metrics.criticalIssues > 0);
+});
+
+
+test('delight layer derives executive insights, achievements, streaks, and quick fixes', () => {
+  const accounts = [
+    { id: 'apple', name: 'Apple', recoveryEmail: 'safe@example.com', recoveryPhone: '+15550100', backupCodes: 'Saved', authenticator: 'Passkey', trustedContacts: 'Alicia', passkeyStatus: 'Enabled', deviceVerification: 'Trusted', lastReviewed: '2026-06-01' },
+    { id: 'paypal', name: 'PayPal', recoveryEmail: '', recoveryPhone: '', backupCodes: '', authenticator: 'SMS only', trustedContacts: '', lastReviewed: '2024-01-01' }
+  ];
+  const insights = executiveInsightCards(accounts, [], [{ title: 'Backup Complete', createdAt: '2026-07-01T12:00:00.000Z' }]);
+  const achievements = achievementProgress(accounts, [], []);
+  const fixes = quickFixActions(accounts, []);
+  const streak = securityStreak([{ createdAt: '2026-07-01T12:00:00.000Z' }]);
+  assert.ok(insights.some((item) => item.title === 'Highest Risk Account'));
+  assert.ok(achievements.some((item) => item.name === 'Recovery Rookie' && item.unlocked));
+  assert.equal(fixes[0].accountName, 'PayPal');
+  assert.ok(streak.current >= 1);
 });

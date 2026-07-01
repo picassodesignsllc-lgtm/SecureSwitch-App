@@ -14,6 +14,7 @@ const firebaseConfig = {
 };
 
 await exec(process.execPath, ['--check', 'src/app.js'], { stdio: 'inherit' });
+await exec(process.execPath, ['scripts/check-no-duplicate-functions.mjs'], { stdio: 'inherit' });
 await exec(process.execPath, ['--check', 'src/firebaseConfig.js'], { stdio: 'inherit' });
 await exec(process.execPath, ['--check', 'src/services/api.js'], { stdio: 'inherit' });
 await exec(process.execPath, ['--check', 'src/services/billing.js'], { stdio: 'inherit' });
@@ -22,6 +23,7 @@ await exec(process.execPath, ['--check', 'src/services/backup.js'], { stdio: 'in
 await exec(process.execPath, ['--check', 'src/services/devices.js'], { stdio: 'inherit' });
 await exec(process.execPath, ['--check', 'src/services/liveData.js'], { stdio: 'inherit' });
 await exec(process.execPath, ['--check', 'src/services/aiCopilot.js'], { stdio: 'inherit' });
+await exec(process.execPath, ['--check', 'src/services/delight.js'], { stdio: 'inherit' });
 await rm('build', { recursive: true, force: true });
 await mkdir('build/dist', { recursive: true });
 await cp('index.html', 'build/dist/index.html');
