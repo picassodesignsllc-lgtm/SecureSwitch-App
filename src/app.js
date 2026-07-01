@@ -84,7 +84,7 @@ function onboardingKey(user = state.user) { return `secureswitch:onboarded:${use
 function onboardingSeen(user = null) { try { return localStorage.getItem(onboardingKey(user)) === 'yes'; } catch { return false; } }
 function rememberOnboarding(user = null) { try { localStorage.setItem(onboardingKey(user || state.user), 'yes'); } catch { /* Ignore private browsing storage failures. */ } }
 
-const state = { user: null, auth: null, db: null, firebase: null, firebaseReady: false, vaultKey: null, mode: 'login', userProfile: null, accounts: demoAccounts.map(normalizeAccount), recoveryMethods: [], trustedContacts: [], backupCodes: [], securityAlerts: [], recoveryTimeline: timelineEvents, emergencyKits: [], settings: {}, selectedRecovery: '+1 (415) 555-0184', switchOld: '+1 (415) 555-0184', switchNew: '+1 (628) 555-0149', blackoutArmed: false, emergencyActive: false, emergencyRecoveryActive: false, scanComplete: false, aiStep: 0, timelineFilter: 'All', simulatorScenario: 'My phone was stolen', simulatorRan: false, activeProfile: null, vaultUnlocked: false, selectedVaultCategory: 'Recovery Emails', assistantPrompt: 'My phone was stolen', assistantStep: 0, emergencyScenario: 'Phone Stolen', recoveryWizardScenario: 'Phone stolen', recoveryWizardStep: 0, accountSearch: '', accountCategory: 'All', accountRiskFilter: 'All', accountStatusFilter: 'All', accountSort: 'Risk', accountDensity: 'compact', deviceSearch: '', devicePlatformFilter: 'All', deviceRiskFilter: 'All', deviceTrustFilter: 'All', deviceStatusFilter: 'All', deviceSort: 'Last seen', deviceDensity: 'compact', recoverySearch: '', recoveryStatusFilter: 'All', recoveryRiskFilter: 'All', recoveryPasskeyFilter: 'All', recoveryMfaFilter: 'All', recoveryCategoryFilter: 'All', recoverySort: 'Readiness', recoveryDensity: 'compact', editingAccountId: '', loading: false, authError: '', dataError: '', exportStatus: '', importStatus: '', onboardingOpen: !onboardingSeen(), onboardingStep: 0, onboardingProtection: 'Advanced', onboardingAccounts: ['Google', 'Apple', 'Instagram'], vaultCreating: false, onboardingComplete: false, globalSearch: '', settingsSearch: '', notificationSearch: '', notificationFilter: 'All', rememberMe: true, notificationsRead: [], notifications: [], activityFeed: [], recoveryContacts: [], securityScores: [], adminVisible: false, organizations: demoOrganizations, selectedOrgRole: 'Member', inviteEmail: '', productTourStep: 0, commandPaletteOpen: false, selectedAccountId: '', expandedAccountId: '', accountDetailTab: 'Overview', auditRan: false, auditReport: '', upgradeModal: '', route: (location.hash || '#dashboard').replace('#', '') || 'dashboard', reportType: 'Recovery Report', waitlistStatus: '', waitlistReferral: '', importSource: 'CSV', isOffline: typeof navigator !== 'undefined' ? !navigator.onLine : false, securityEvents: [], auditEvents: [], devices: [], subscriptionPlan: 'free', backupStatus: 'Automatic encrypted backups ready', toast: 'Ready', aiCopilotOpen: false, aiCopilotQuestion: 'What should I fix first?', aiCopilotAnswer: '', dismissedFixes: [], expandedTimelineId: '', pageLoading: false, successPulse: '', commandIndex: 0, selectedOrganizationId: 'family', enterpriseInvitations: [], approvalWorkflows: [], enterprisePolicies: defaultSecurityPolicies(), enterpriseAuditLog: [], dashboardWidgetOrder: (() => { try { return JSON.parse(localStorage.getItem('secureswitch:dashboard-widgets')) || ['Executive Score', 'Accounts', 'Activity']; } catch { return ['Executive Score', 'Accounts', 'Activity']; } })(), notificationStatusFilter: 'All', runtimeMode: (() => { try { return localStorage.getItem('secureswitch:runtime-mode') || 'auto'; } catch { return 'auto'; } })() };
+const state = { user: null, auth: null, db: null, firebase: null, firebaseReady: false, vaultKey: null, mode: 'login', userProfile: null, accounts: demoAccounts.map(normalizeAccount), recoveryMethods: [], trustedContacts: [], backupCodes: [], securityAlerts: [], recoveryTimeline: timelineEvents, emergencyKits: [], settings: {}, selectedRecovery: '+1 (415) 555-0184', switchOld: '+1 (415) 555-0184', switchNew: '+1 (628) 555-0149', blackoutArmed: false, emergencyActive: false, emergencyRecoveryActive: false, scanComplete: false, aiStep: 0, timelineFilter: 'All', simulatorScenario: 'My phone was stolen', simulatorRan: false, activeProfile: null, vaultUnlocked: false, selectedVaultCategory: 'Recovery Emails', assistantPrompt: 'My phone was stolen', assistantStep: 0, emergencyScenario: 'Phone Stolen', recoveryWizardScenario: 'Phone stolen', recoveryWizardStep: 0, accountSearch: '', accountCategory: 'All', accountRiskFilter: 'All', accountStatusFilter: 'All', accountSort: 'Risk', accountDensity: 'compact', deviceSearch: '', devicePlatformFilter: 'All', deviceRiskFilter: 'All', deviceTrustFilter: 'All', deviceStatusFilter: 'All', deviceSort: 'Last seen', deviceDensity: 'compact', recoverySearch: '', recoveryStatusFilter: 'All', recoveryRiskFilter: 'All', recoveryPasskeyFilter: 'All', recoveryMfaFilter: 'All', recoveryCategoryFilter: 'All', recoverySort: 'Readiness', recoveryDensity: 'compact', editingAccountId: '', loading: false, authError: '', dataError: '', exportStatus: '', importStatus: '', onboardingOpen: !onboardingSeen(), onboardingStep: 0, onboardingProtection: 'Advanced', onboardingAccounts: ['Google', 'Apple', 'Instagram'], vaultCreating: false, onboardingComplete: false, globalSearch: '', settingsSearch: '', notificationSearch: '', notificationFilter: 'All', notificationCategory: 'All Activity', notificationDateFilter: 'All', notificationUnreadOnly: false, notificationPinnedOnly: false, notificationSort: 'Newest', notificationDensity: 'compact', selectedNotificationId: '', pinnedNotifications: [], archivedNotifications: [], rememberMe: true, notificationsRead: [], notifications: [], activityFeed: [], recoveryContacts: [], securityScores: [], adminVisible: false, organizations: demoOrganizations, selectedOrgRole: 'Member', inviteEmail: '', productTourStep: 0, commandPaletteOpen: false, selectedAccountId: '', expandedAccountId: '', accountDetailTab: 'Overview', auditRan: false, auditReport: '', upgradeModal: '', route: (location.hash || '#dashboard').replace('#', '') || 'dashboard', reportType: 'Recovery Report', waitlistStatus: '', waitlistReferral: '', importSource: 'CSV', isOffline: typeof navigator !== 'undefined' ? !navigator.onLine : false, securityEvents: [], auditEvents: [], devices: [], subscriptionPlan: 'free', backupStatus: 'Automatic encrypted backups ready', toast: 'Ready', aiCopilotOpen: false, aiCopilotQuestion: 'What should I fix first?', aiCopilotAnswer: '', dismissedFixes: [], expandedTimelineId: '', pageLoading: false, successPulse: '', commandIndex: 0, selectedOrganizationId: 'family', enterpriseInvitations: [], approvalWorkflows: [], enterprisePolicies: defaultSecurityPolicies(), enterpriseAuditLog: [], dashboardWidgetOrder: (() => { try { return JSON.parse(localStorage.getItem('secureswitch:dashboard-widgets')) || ['Executive Score', 'Accounts', 'Activity']; } catch { return ['Executive Score', 'Accounts', 'Activity']; } })(), notificationStatusFilter: 'All', runtimeMode: (() => { try { return localStorage.getItem('secureswitch:runtime-mode') || 'auto'; } catch { return 'auto'; } })() };
 const h = (...args) => React.createElement(...args);
 function EmptyState({ icon = '◌', title, description, action, onAction, secondaryAction, onSecondaryAction }) { return h('div', { className: 'empty-state premium-empty-state' }, h('span', { className: 'empty-illustration' }, icon), h('strong', null, title), h('p', null, description), h('div', { className: 'empty-actions' }, action && h('button', { className: 'primary', onClick: onAction }, action), secondaryAction && h('button', { className: 'ghost', onClick: onSecondaryAction }, secondaryAction))); }
 
@@ -1117,22 +1117,11 @@ function VaultHeroVisual() {
 }
 
 function Hero() {
-  const score = usingLiveAccounts() ? liveProtectionScore() : 86;
-  const protectedCount = state.accounts.filter((account) => scoreFor(account) >= 80).length;
-  const lastReviewed = state.accounts.map((account) => account.lastReviewed).filter(Boolean).sort().pop() || 'Today';
-  const heroMetrics = [
-    ['Protection Score', `${score}%`],
-    ['Accounts Protected', protectedCount],
-    ['Last Backup', state.backupStatus?.includes('ready') ? 'Ready' : 'Today'],
-    ['Last Security Scan', state.scanComplete ? 'Complete' : lastReviewed],
-    ['Risk Level', protectionStatus(score)]
-  ];
   return h('section', { className: 'hero glass', id: 'dashboard' },
     h('div', { className: 'hero-copy-panel' },
       h('p', { className: 'eyebrow' }, '✦ Digital Recovery Platform'),
       h('h1', null, state.user ? `Hello ${firstName()} 👋` : 'Never lose another account ', !state.user && h('span', null, 'again.')),
       h('p', null, 'SecureSwitch protects your logins, recovery options, and digital identity before disaster strikes.'),
-      h('div', { className: 'hero-metrics-strip' }, heroMetrics.map(([label, value]) => h('article', { key: label }, h('span', null, label), h('strong', null, value)))),
       h('div', { className: 'hero-actions' }, h('button', { className: 'primary', onClick: runHealthScan }, 'Run Health Check'), h('button', { onClick: () => toast('Demo walkthrough coming soon') }, 'Watch Demo'))
     ),
     h(VaultHeroVisual)
@@ -1542,18 +1531,120 @@ function PricingPage() {
   const plans = [['FREE', '$0', ['10 accounts', 'Basic monitoring', 'Security Score']], ['PRO', '$9.99/month', ['Unlimited accounts', 'AI Assistant', 'Recovery Center']], ['FAMILY', '$19.99/month', ['Up to 6 users', 'Shared dashboard', 'Recovery alerts']], ['ENTERPRISE', 'Contact sales', ['Admin dashboard', 'Compliance reports', 'Advanced analytics']]];
   return h('section', { className: 'panel glass premium-page pricing-page', id: 'pricing' }, h('p', { className: 'eyebrow' }, 'Premium Subscriptions'), h('h2', null, 'Plans built for recovery readiness'), h('div', { className: 'pricing-grid' }, plans.map(([name, price, features]) => h('article', { key: name, className: name === 'PRO' ? 'featured-plan' : '' }, h('h3', null, name), h('strong', null, price), h('ul', null, features.map((feature) => h('li', { key: feature }, feature))), h('button', { className: 'primary', onClick: () => toast('Stripe is isolated and not connected yet') }, name === 'FREE' ? 'Current demo' : 'Upgrade')))));
 }
-function NotificationCenterPage() {
-  const allItems = notificationItems().map((item, index) => {
-    const severity = item.detail?.match(/critical|breach|unknown/i) ? 'Critical' : item.detail?.match(/old|missing|alert|review/i) ? 'Warning' : 'Info';
-    return { ...item, severity, status: state.notificationsRead.includes(item.id) ? 'Resolved' : 'Unread', timestamp: index === 0 ? 'Just now' : `${index + 1}h ago`, icon: severity === 'Critical' ? '!' : severity === 'Warning' ? '⚠' : '✓' };
+function notificationSeverity(item) {
+  const text = `${item.severity || ''} ${item.title || ''} ${item.detail || ''}`;
+  if (/critical|breach|unknown|suspicious|high/i.test(text)) return 'Critical';
+  if (/old|missing|alert|review|warning|risk/i.test(text)) return 'Warning';
+  return 'Info';
+}
+function notificationCategory(item) {
+  const text = `${item.title || ''} ${item.detail || ''}`.toLowerCase();
+  if (/recover|backup|vault|code/.test(text)) return 'Recovery';
+  if (/device|login|session/.test(text)) return 'Devices';
+  if (/account|password|mfa|passkey/.test(text)) return 'Accounts';
+  if (/ai|copilot|recommendation/.test(text)) return 'AI Copilot';
+  if (/audit|scan|score|security/.test(text)) return 'Audit';
+  return 'Information';
+}
+function notificationTimestamp(item, index) { return item.createdAt || item.updatedAt || item.timestamp || item.date || ''; }
+function notificationSource(item) { return item.source || item.category || notificationCategory(item); }
+function notificationRelatedAccount(item) {
+  const text = `${item.title || ''} ${item.detail || ''}`.toLowerCase();
+  return state.accounts.find((account) => text.includes(account.name.toLowerCase()) || (account.handle && text.includes(String(account.handle).toLowerCase())));
+}
+function notificationRelatedDevice(item) {
+  const text = `${item.title || ''} ${item.detail || ''}`.toLowerCase();
+  return state.devices.find((device) => text.includes(String(device.name || '').toLowerCase()) || text.includes(String(device.browser || '').toLowerCase()));
+}
+function enrichedNotifications() {
+  return notificationItems().map((item, index) => {
+    const severity = notificationSeverity(item);
+    const category = notificationCategory(item);
+    const account = notificationRelatedAccount(item);
+    const device = notificationRelatedDevice(item);
+    const timestamp = notificationTimestamp(item, index);
+    const status = state.notificationsRead.includes(item.id) ? 'Resolved' : 'Unread';
+    const recommendation = generateSecurityRecommendations(state.accounts, state.devices).find((rec) => account && rec.accountName === account.name);
+    return { ...item, severity, category, account, device, timestamp, source: notificationSource(item), status, pinned: state.pinnedNotifications.includes(item.id), archived: state.archivedNotifications.includes(item.id), recommendedAction: recommendation?.recommendedAction || (category === 'Recovery' ? 'Open Recovery Vault' : category === 'Devices' ? 'Review Devices' : category === 'Accounts' ? 'Open Account' : 'Review Signal'), icon: severity === 'Critical' ? '!' : severity === 'Warning' ? '⚠' : '✓' };
   });
+}
+function notificationGroup(timestamp) {
+  if (!timestamp) return 'Earlier';
+  const date = new Date(timestamp);
+  if (!Number.isFinite(date.getTime())) return 'Earlier';
+  const now = new Date();
+  const age = Math.floor((now - date) / 86400000);
+  if (age <= 0) return 'Today';
+  if (age === 1) return 'Yesterday';
+  if (age <= 7) return 'Last 7 Days';
+  return 'Earlier';
+}
+function groupedNotifications(items) { return items.reduce((groups, item) => { (groups[notificationGroup(item.timestamp)] ||= []).push(item); return groups; }, {}); }
+function notificationMatchesCategory(item, category) {
+  if (category === 'All Activity') return true;
+  if (category === 'Critical') return item.severity === 'Critical';
+  if (category === 'Warnings') return item.severity === 'Warning';
+  if (category === 'Unread') return item.status === 'Unread';
+  if (category === 'Pinned') return item.pinned;
+  if (category === 'Archived') return item.archived;
+  return item.category === category;
+}
+function toggleNotificationPinned(item) {
+  const pinned = state.pinnedNotifications.includes(item.id) ? state.pinnedNotifications.filter((id) => id !== item.id) : [item.id].concat(state.pinnedNotifications);
+  setState({ pinnedNotifications: pinned });
+}
+function archiveNotificationLocal(item) {
+  setState({ archivedNotifications: Array.from(new Set(state.archivedNotifications.concat(item.id))), notificationsRead: Array.from(new Set(state.notificationsRead.concat(item.id))) });
+}
+function dismissNotificationLocal(item) { setState({ archivedNotifications: Array.from(new Set(state.archivedNotifications.concat(item.id))) }); }
+function NotificationCenterPage() {
   const query = state.notificationSearch.toLowerCase();
-  const filter = state.notificationFilter;
-  const items = allItems.filter((item) => (filter === 'All' || item.severity === filter || item.status === filter) && `${item.title} ${item.detail}`.toLowerCase().includes(query));
-  return h('section', { className: 'panel glass premium-page notification-center-page', id: 'notifications' },
-    h('div', { className: 'panel-head' }, h('div', null, h('p', { className: 'eyebrow' }, 'Notification Center V2'), h('h2', null, 'Filtered enterprise security signals')), h('button', { onClick: () => allItems.forEach(markNotificationRead) }, 'Mark all read')),
-    h('div', { className: 'account-toolbar' }, h('input', { value: state.notificationSearch, onChange: (event) => setState({ notificationSearch: event.target.value }), placeholder: 'Search notifications…', 'aria-label': 'Search notifications' }), h('select', { value: state.notificationFilter, onChange: (event) => setState({ notificationFilter: event.target.value }) }, ['All', 'Critical', 'Warning', 'Info', 'Resolved', 'Unread'].map((filter) => h('option', { key: filter }, filter)))),
-    items.length ? h('div', { className: 'notification-list polished-notifications' }, items.map((item) => h('article', { key: item.id, className: `${item.status.toLowerCase()} severity-${item.severity.toLowerCase()}` }, h('span', { className: 'notification-icon' }, item.icon), h('div', null, h('strong', null, item.title), h('small', null, `${item.detail} · ${item.timestamp}`)), h('b', null, item.severity), h('span', null, item.status), h('button', { onClick: () => markNotificationRead(item) }, item.status === 'Resolved' ? 'Read' : 'Mark read'), h('button', { onClick: () => deleteNotification(item) }, 'Archive')))) : h(EmptyState, { icon: '✓', title: 'No notifications found', description: 'Your filters are clear. SecureSwitch will surface important account recovery events here.', action: 'Clear filters', onAction: () => setState({ notificationSearch: '', notificationFilter: 'All' }) })
+  const categories = ['All Activity', 'Critical', 'Warnings', 'Information', 'Recovery', 'Devices', 'Accounts', 'AI Copilot', 'Audit', 'Archived', 'Unread', 'Pinned'];
+  const allItems = enrichedNotifications();
+  const filtered = allItems
+    .filter((item) => notificationMatchesCategory(item, state.notificationCategory || 'All Activity'))
+    .filter((item) => state.notificationFilter === 'All' || item.severity === state.notificationFilter || item.status === state.notificationFilter)
+    .filter((item) => state.notificationDateFilter === 'All' || notificationGroup(item.timestamp) === state.notificationDateFilter)
+    .filter((item) => !state.notificationUnreadOnly || item.status === 'Unread')
+    .filter((item) => !state.notificationPinnedOnly || item.pinned)
+    .filter((item) => `${item.title} ${item.detail} ${item.category} ${item.source} ${item.account?.name || ''} ${item.device?.name || ''}`.toLowerCase().includes(query))
+    .sort((a, b) => state.notificationSort === 'Oldest' ? String(a.timestamp || '').localeCompare(String(b.timestamp || '')) : String(b.timestamp || '').localeCompare(String(a.timestamp || '')));
+  const visible = filtered.slice(0, 80);
+  const selected = allItems.find((item) => item.id === state.selectedNotificationId) || visible[0] || allItems[0];
+  const selectedIndex = Math.max(0, visible.findIndex((item) => item.id === selected?.id));
+  const inboxKeyDown = (event) => {
+    if (event.key === 'ArrowDown' && visible.length) { event.preventDefault(); setState({ selectedNotificationId: visible[Math.min(selectedIndex + 1, visible.length - 1)].id }); }
+    if (event.key === 'ArrowUp' && visible.length) { event.preventDefault(); setState({ selectedNotificationId: visible[Math.max(selectedIndex - 1, 0)].id }); }
+    if (event.key === 'Enter' && selected) { event.preventDefault(); markNotificationRead(selected); }
+    if (event.key === 'Escape') { event.preventDefault(); setState({ notificationSearch: '', notificationCategory: 'All Activity', notificationUnreadOnly: false, notificationPinnedOnly: false }); }
+  };
+  const relatedRecommendations = selected ? generateSecurityRecommendations(state.accounts, state.devices).filter((item) => !selected.account || item.accountName === selected.account.name).slice(0, 4) : [];
+  const relatedTimeline = selected ? buildSecurityTimeline({ accounts: selected.account ? [selected.account] : state.accounts, activity: state.activityFeed, notifications: [selected], auditEvents: state.auditEvents, devices: selected.device ? [selected.device] : state.devices }).slice(0, 5) : [];
+  return h('section', { className: 'panel glass premium-page notification-center-page intelligence-inbox', id: 'notifications' },
+    h('header', { className: 'notification-intel-head' }, h('div', null, h('p', { className: 'eyebrow' }, 'Security Intelligence Inbox'), h('h2', null, 'Notifications that explain what changed'), h('small', null, `${allItems.length} signals · ${unreadNotifications().length} unread · ${state.pinnedNotifications.length} pinned`)), h('button', { className: 'primary', onClick: () => allItems.forEach(markNotificationRead) }, 'Mark all read')),
+    h('div', { className: 'notification-intel-layout' },
+      h('aside', { className: 'notification-category-rail', 'aria-label': 'Notification categories' }, categories.map((category) => h('button', { key: category, className: (state.notificationCategory || 'All Activity') === category ? 'active' : '', onClick: () => setState({ notificationCategory: category }) }, h('span', null, category), h('small', null, allItems.filter((item) => notificationMatchesCategory(item, category)).length)))),
+      h('main', { className: 'notification-inbox-panel', onKeyDown: inboxKeyDown, tabIndex: 0 },
+        h('div', { className: 'notification-toolbar' },
+          h('input', { value: state.notificationSearch, onChange: (event) => setState({ notificationSearch: event.target.value }), placeholder: 'Search notifications, accounts, devices…', 'aria-label': 'Search notifications' }),
+          h('select', { value: state.notificationFilter, onChange: (event) => setState({ notificationFilter: event.target.value }) }, ['All', 'Critical', 'Warning', 'Info', 'Resolved', 'Unread'].map((filter) => h('option', { key: filter }, filter))),
+          h('select', { value: state.notificationCategory || 'All Activity', onChange: (event) => setState({ notificationCategory: event.target.value }) }, categories.map((category) => h('option', { key: category }, category))),
+          h('select', { value: state.notificationDateFilter || 'All', onChange: (event) => setState({ notificationDateFilter: event.target.value }) }, ['All', 'Today', 'Yesterday', 'Last 7 Days', 'Earlier'].map((filter) => h('option', { key: filter }, filter))),
+          h('button', { className: state.notificationUnreadOnly ? 'active-filter' : '', onClick: () => setState({ notificationUnreadOnly: !state.notificationUnreadOnly }) }, 'Unread'),
+          h('button', { className: state.notificationPinnedOnly ? 'active-filter' : '', onClick: () => setState({ notificationPinnedOnly: !state.notificationPinnedOnly }) }, 'Pinned'),
+          h('select', { value: state.notificationSort || 'Newest', onChange: (event) => setState({ notificationSort: event.target.value }) }, ['Newest', 'Oldest'].map((item) => h('option', { key: item }, item))),
+          h('button', { onClick: () => setState({ notificationDensity: state.notificationDensity === 'compact' ? 'comfortable' : 'compact' }) }, state.notificationDensity === 'compact' ? 'Compact' : 'Comfortable')
+        ),
+        visible.length ? h('div', { className: `notification-feed density-${state.notificationDensity || 'compact'}` }, Object.entries(groupedNotifications(visible)).map(([group, items]) => h('section', { key: group }, h('div', { className: 'notification-group-title' }, h('span', null, group), h('small', null, items.length)), items.map((item) => h('article', { key: item.id, className: `notification-intel-row severity-${item.severity.toLowerCase()} ${selected?.id === item.id ? 'selected' : ''}`, onClick: () => setState({ selectedNotificationId: item.id }), tabIndex: 0 }, h('span', { className: 'notification-intel-icon' }, item.icon), h('div', { className: 'notification-intel-copy' }, h('div', null, h('b', null, item.severity), h('strong', null, highlightMatch(item.title, query)), h('small', null, item.timestamp ? formatDate(item.timestamp) : 'No timestamp')), h('p', null, highlightMatch(item.detail, query)), h('footer', null, h('span', null, item.source), item.account && h('span', null, item.account.name), item.device && h('span', null, item.device.name), h('span', null, item.status), h('span', null, item.recommendedAction))), h('div', { className: 'notification-quick-actions' }, h('button', { onClick: (event) => { event.stopPropagation(); markNotificationRead(item); } }, 'Mark Read'), h('button', { onClick: (event) => { event.stopPropagation(); toggleNotificationPinned(item); } }, item.pinned ? 'Unpin' : 'Pin'), h('button', { onClick: (event) => { event.stopPropagation(); archiveNotificationLocal(item); } }, 'Archive'))))))) : h(EmptyState, { icon: '✓', title: 'No notifications found', description: 'Your filters are clear. SecureSwitch will surface existing account recovery and security signals here.', action: 'Clear filters', onAction: () => setState({ notificationSearch: '', notificationFilter: 'All', notificationCategory: 'All Activity', notificationDateFilter: 'All', notificationUnreadOnly: false, notificationPinnedOnly: false }) })
+      ),
+      h('aside', { className: 'notification-context-panel' }, selected ? [
+        h('section', { key: 'details' }, h('p', { className: 'eyebrow' }, selected.severity), h('h3', null, selected.title), h('p', null, selected.detail), h('div', { className: 'context-action-row' }, h('button', { onClick: () => markNotificationRead(selected) }, 'Mark Read'), h('button', { onClick: () => toggleNotificationPinned(selected) }, selected.pinned ? 'Unpin' : 'Pin'), h('button', { onClick: () => archiveNotificationLocal(selected) }, 'Archive'), h('button', { onClick: () => navigator.clipboard?.writeText(`${selected.title}: ${selected.detail}`) }, 'Copy Details'))),
+        h('section', { key: 'related' }, h('strong', null, 'Related Context'), h('article', null, h('span', null, 'Account'), h('small', null, selected.account?.name || 'No related account')), h('article', null, h('span', null, 'Device'), h('small', null, selected.device?.name || selected.device?.browser || 'No related device')), h('article', null, h('span', null, 'Recovery'), h('small', null, selected.account ? `${scoreFor(selected.account)}% ready` : `${averageScore()}% workspace readiness`))),
+        h('section', { key: 'timeline' }, h('strong', null, 'Timeline'), relatedTimeline.map((event) => h('article', { key: `${event.type}-${event.title}-${event.at}` }, h('span', null, event.title), h('small', null, `${event.type} · ${event.at ? formatDate(event.at) : 'No timestamp'}`)))),
+        h('section', { key: 'recommendations' }, h('strong', null, 'Security Recommendations'), (relatedRecommendations.length ? relatedRecommendations : generateSecurityRecommendations(state.accounts, state.devices).slice(0, 3)).map((item) => h('article', { key: `${item.accountName}-${item.reason}` }, h('span', null, item.accountName), h('small', null, `${item.reason} · ${item.recommendedAction}`)))),
+        h('section', { key: 'ai' }, h('strong', null, 'AI Explanation'), h('p', null, answerSecurityQuestion('Explain why my score is low.', { accounts: selected.account ? [selected.account] : state.accounts, devices: selected.device ? [selected.device] : state.devices })), h('button', { onClick: () => { setState({ aiCopilotQuestion: selected.title }); location.hash = 'ai-recovery-coach'; } }, 'Open AI Copilot'))
+      ] : h(EmptyState, { icon: '✓', title: 'No signal selected', description: 'Select an existing notification to inspect its related account, device, recovery, audit, and recommendation context.' }))
+    )
   );
 }
 function SmartRecommendationsPanel() {
