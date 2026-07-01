@@ -213,6 +213,62 @@ function subscribeToSupportCollections(user) {
   }, (error) => setState({ dataError: safeError(error, 'Could not load settings') }));
   collectionUnsubscribes.push(settingsUnsubscribe);
 }
+async function ensureUserScopedCollections(user) {
+  if (!state.db || !state.firebase || !user) return;
+  const serverTime = state.firebase.serverTimestamp ? state.firebase.serverTimestamp() : new Date().toISOString();
+  const base = (...parts) => state.firebase.doc(state.db, 'users', user.uid, ...parts);
+  const defaults = [
+    ['settings', 'preferences', { darkMode: true, notifications: true, cloudSync: true, exportVault: true, importVault: true, emergencyPin: false, biometricLock: false, createdAt: serverTime }],
+    ['securityScores', 'current', { score: averageScore(), reasons: recoveryScoreFactors().factors.map(([label, count]) => ({ label, count })), createdAt: serverTime }],
+    ['activity', 'welcome', { title: 'SecureSwitch workspace created', type: 'login', createdAt: serverTime }],
+    ['recoveryContacts', 'primary', { name: 'Trusted contact placeholder', status: 'Add a real contact', createdAt: serverTime }],
+    ['recoveryMethods', 'primary', { type: 'Recovery method inventory', status: 'Ready to populate', createdAt: serverTime }],
+    ['trustedContacts', 'primary', { name: 'Trusted contact placeholder', status: 'Add a real contact', createdAt: serverTime }],
+    ['backupCodes', 'inventory', { status: 'Encrypted backup code inventory ready', count: 0, createdAt: serverTime }],
+    ['securityAlerts', 'welcome', { title: 'SecureSwitch live sync enabled', severity: 'Info', status: 'Open', createdAt: serverTime }],
+    ['recoveryTimeline', 'welcome', { date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' }), title: 'SecureSwitch account connected', status: 'Done', category: 'Security', createdAt: serverTime }],
+    ['emergencyKits', 'default', { title: 'Default emergency kit', status: 'Ready to build', items: ['Trusted contacts', 'Recovery letter', 'Insurance notes'], createdAt: serverTime }],
+    ['organizations', 'family-demo', { name: 'Family Vault', role: 'Owner', members: 1, vaults: 1, permission: 'Full access', activity: 'Organization created', createdAt: serverTime }],
+    ['billing', 'subscription', { plan: 'free', status: 'Demo / Free', stripeConnected: false, trialEligible: true, createdAt: serverTime }],
+    ['devices', 'current-browser', { ...currentDeviceSnapshot(), createdAt: serverTime }],
+    ['backups', 'latest', { ...createBackupManifest([]), status: 'Ready', createdAt: serverTime }]
+  ];
+  await Promise.all(defaults.map(([collectionName, docId, data]) => state.firebase.setDoc(base(collectionName, docId), data, { merge: true })));
+}
+function resetLiveCollections() {
+  collectionUnsubscribes.forEach((unsubscribe) => unsubscribe());
+  collectionUnsubscribes = [];
+  setState({ recoveryMethods: [], trustedContacts: [], recoveryContacts: [], backupCodes: [], securityAlerts: [], notifications: [], activityFeed: [], securityScores: [], recoveryTimeline: timelineEvents, emergencyKits: [], organizations: demoOrganizations, settings: {} });
+}
+function subscribeToUserCollection(name, stateKey, transform = (doc) => ({ id: doc.id, ...doc.data() })) {
+  const unsubscribe = state.firebase.onSnapshot(userCollection(name), (snapshot) => {
+    const records = snapshot.docs.map(transform);
+    setState({ [stateKey]: records });
+  }, (error) => setState({ dataError: safeError(error, `Could not load ${name}`) }));
+  collectionUnsubscribes.push(unsubscribe);
+}
+function subscribeToSupportCollections(user) {
+  resetLiveCollections();
+  if (!state.db || !state.firebase || !user) return;
+  subscribeToUserCollection('recoveryMethods', 'recoveryMethods');
+  subscribeToUserCollection('trustedContacts', 'trustedContacts');
+  subscribeToUserCollection('recoveryContacts', 'recoveryContacts');
+  subscribeToUserCollection('securityScores', 'securityScores');
+  subscribeToUserCollection('activity', 'activityFeed');
+  subscribeToUserCollection('notifications', 'notifications');
+  subscribeToUserCollection('backupCodes', 'backupCodes');
+  subscribeToUserCollection('securityAlerts', 'securityAlerts');
+  subscribeToUserCollection('recoveryTimeline', 'recoveryTimeline', (doc) => ({ id: doc.id, ...doc.data(), date: doc.data().date || 'Today', title: doc.data().title || 'Recovery event', status: doc.data().status || 'Done' }));
+  subscribeToUserCollection('emergencyKits', 'emergencyKits');
+  subscribeToUserCollection('organizations', 'organizations');
+  subscribeToUserCollection('auditLogs', 'auditEvents');
+  subscribeToUserCollection('devices', 'devices');
+  const settingsUnsubscribe = state.firebase.onSnapshot(userCollection('settings'), (snapshot) => {
+    const settings = Object.assign({}, ...snapshot.docs.map((doc) => doc.data()));
+    setState({ settings });
+  }, (error) => setState({ dataError: safeError(error, 'Could not load settings') }));
+  collectionUnsubscribes.push(settingsUnsubscribe);
+}
 function subscribeToAccounts(user) {
   if (accountUnsubscribe) accountUnsubscribe();
   if (!state.db || !state.firebase || !user) { setState({ accounts: demoAccounts.map(normalizeAccount), userProfile: null, dataError: '' }); resetLiveCollections(); return; }
