@@ -10539,3 +10539,284 @@ a,
 .target-account-row .account-meta-chip:nth-of-type(n + 3) {
   display: none !important;
 }
+
+/* Urgent Phase 3 rollback/fix — lock reference layout without responsive overflow. */
+html,
+body,
+#root,
+.app-shell,
+.content-shell {
+  max-width: 100vw !important;
+  overflow-x: hidden !important;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.dashboard,
+.main-column,
+.app-page-shell,
+.desktop-top-grid,
+.target-shortcuts,
+.lower-grid,
+.dashboard-home-grid,
+.target-lower-grid,
+.dashboard-side,
+.right-protection-panel,
+.hero,
+.panel,
+.glass,
+.target-account-row,
+.activity,
+.quick-row {
+  min-width: 0 !important;
+}
+
+@media (min-width: 1540px) {
+  .sidebar {
+    position: fixed !important;
+    inset: 0 auto 0 0 !important;
+    width: 260px !important;
+  }
+  .content-shell {
+    margin-left: 260px !important;
+  }
+  .dashboard {
+    width: 1234px !important;
+    max-width: 1234px !important;
+    grid-template-columns: 850px 370px !important;
+  }
+}
+
+@media (min-width: 1181px) and (max-width: 1539px) {
+  .sidebar {
+    position: fixed !important;
+    inset: 0 auto 0 0 !important;
+    width: 260px !important;
+  }
+  .content-shell {
+    margin-left: 260px !important;
+    padding-inline: 18px !important;
+  }
+  .dashboard {
+    width: min(1234px, calc(100vw - 260px - 36px)) !important;
+    max-width: calc(100vw - 260px - 36px) !important;
+    grid-template-columns: minmax(0, calc(100% - 384px)) 370px !important;
+  }
+}
+
+@media (min-width: 1181px) {
+  .dashboard {
+    gap: 14px !important;
+  }
+  .hero {
+    width: 100% !important;
+    height: 448px !important;
+    min-height: 448px !important;
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 350px) !important;
+  }
+  .hero-copy-panel,
+  .hero h1,
+  .hero p:not(.eyebrow) {
+    min-width: 0 !important;
+  }
+  .hero .premium-vault,
+  .hero .vault-stage {
+    width: min(350px, 100%) !important;
+    max-width: 350px !important;
+  }
+  .right-protection-panel {
+    width: 370px !important;
+    max-width: 370px !important;
+  }
+}
+
+@media (max-width: 1180px) {
+  .app-shell {
+    display: block !important;
+    grid-template-columns: 1fr !important;
+  }
+  .sidebar {
+    position: relative !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    padding: 16px !important;
+    border-right: 0 !important;
+    border-bottom: 1px solid rgba(114, 132, 178, .22) !important;
+  }
+  .brand {
+    height: auto !important;
+    margin-bottom: 14px !important;
+  }
+  .brand b {
+    position: static !important;
+  }
+  .sidebar nav {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+  .sidebar nav a {
+    min-width: 0 !important;
+    justify-content: center !important;
+  }
+  .go-pro,
+  .profile {
+    display: none !important;
+  }
+  .content-shell {
+    margin-left: 0 !important;
+    width: 100% !important;
+    padding: 14px !important;
+  }
+  .dashboard {
+    width: 100% !important;
+    max-width: 100% !important;
+    grid-template-columns: 1fr !important;
+  }
+  .right-protection-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  .protection-panel-card {
+    grid-column: 1 / -1 !important;
+  }
+}
+
+@media (max-width: 860px) {
+  .sidebar nav {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+  .sidebar nav a {
+    min-height: 42px !important;
+    padding-inline: 10px !important;
+    font-size: .86rem !important;
+  }
+  .nav-glyph {
+    width: 20px !important;
+    height: 20px !important;
+  }
+  .top-actions {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    width: 100% !important;
+  }
+  .top-actions button,
+  .top-actions .add-account {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+  .hero {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    grid-template-columns: 1fr !important;
+    padding: 28px 18px !important;
+    text-align: center !important;
+  }
+  .hero-copy-panel {
+    justify-items: center !important;
+    max-width: 100% !important;
+  }
+  .hero h1,
+  .hero p:not(.eyebrow) {
+    text-align: center !important;
+    max-width: 100% !important;
+  }
+  .hero h1 {
+    font-size: clamp(3rem, 12vw, 4.8rem) !important;
+  }
+  .hero .premium-vault,
+  .hero .vault-stage {
+    width: min(330px, 100%) !important;
+    justify-self: center !important;
+  }
+  .target-shortcuts,
+  .lower-grid,
+  .dashboard-home-grid,
+  .target-lower-grid,
+  .desktop-utility-grid,
+  .right-protection-panel {
+    grid-template-columns: 1fr !important;
+  }
+  .protection-panel-card {
+    grid-column: auto !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .content-shell {
+    padding: 12px 12px calc(92px + env(safe-area-inset-bottom)) !important;
+  }
+  .sidebar {
+    padding: 12px !important;
+  }
+  .sidebar nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  .brand-wordmark,
+  .brand b {
+    display: none !important;
+  }
+  .top-actions {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  .top-actions .add-account {
+    grid-column: 1 / -1 !important;
+  }
+  .hero {
+    padding: 24px 16px !important;
+    border-radius: 16px !important;
+  }
+  .hero h1 {
+    font-size: clamp(2.55rem, 15vw, 3.55rem) !important;
+    line-height: .92 !important;
+  }
+  .hero p:not(.eyebrow) {
+    font-size: .95rem !important;
+  }
+  .hero-actions {
+    width: 100% !important;
+  }
+  .hero-actions button {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+  .hero .premium-vault,
+  .hero .vault-stage {
+    width: min(280px, 100%) !important;
+  }
+  .target-shortcut-card,
+  .target-accounts-card,
+  .activity-panel,
+  .protection-panel-card,
+  .protected,
+  .quick-panel,
+  .readiness-card {
+    border-radius: 16px !important;
+  }
+  .target-account-row {
+    grid-template-columns: 40px minmax(0, 1fr) auto !important;
+  }
+  .target-account-row .account-meta-chip,
+  .target-account-row i {
+    display: none !important;
+  }
+  .account-primary small,
+  .target-account-row small {
+    max-width: 100% !important;
+  }
+  .activity {
+    grid-template-columns: 40px minmax(0, 1fr) auto !important;
+  }
+  .target-score-ring {
+    width: min(206px, 72vw) !important;
+    height: min(206px, 72vw) !important;
+  }
+}
