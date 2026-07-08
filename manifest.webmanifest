@@ -1,0 +1,13 @@
+{
+  "name": "SecureSwitch",
+  "short_name": "SecureSwitch",
+  "description": "Premium digital recovery command center for protected accounts, encrypted vaults, and recovery readiness.",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#050816",
+  "theme_color": "#0ea5e9",
+  "orientation": "any",
+  "icons": [
+    { "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='42' fill='%23050816'/%3E%3Cpath d='M96 28 152 52v42c0 38-23 60-56 78-33-18-56-40-56-78V52l56-24Z' fill='%230ea5e9'/%3E%3Cpath d='M74 98 90 114l32-42' fill='none' stroke='white' stroke-width='14' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E", "sizes": "192x192", "type": "image/svg+xml" }
+  ]
+}
