@@ -600,7 +600,7 @@ async function createOrganization(event) {
   const form = event.currentTarget;
   const organization = createOrganizationRecord({ name: sanitizeInput(form.organization.value || 'SecureSwitch Organization'), role: state.selectedOrgRole, ownerId: state.user?.uid || 'local' });
   organization.accounts = state.accounts.length;
-  organization.devices = state.devices.length || 1;
+  organization.devices = safeArray(state.devices).length || 1;
   organization.securityScore = averageScore();
   const audit = enterpriseAuditEvent({ action: 'Account Added', actor: firstName(), category: 'Organization', description: `${organization.name} organization created`, severity: 'Info' });
   try {
@@ -753,7 +753,7 @@ function commandPaletteItems() {
     ['Show Missing MFA', `${state.accounts.filter((account) => !account.authenticator || /sms only/i.test(account.authenticator)).length} accounts`, () => { setState({ accountSearch: 'SMS' }); location.hash = 'accounts'; }],
     ['Show Weak Passwords', `${riskFindings().length} security findings`, () => { location.hash = 'security-audit'; }],
     ['Show Recovery Ready', `${state.accounts.filter((account) => account.ready).length} ready accounts`, () => { setState({ recoveryStatusFilter: 'Ready' }); location.hash = 'recovery-center'; }],
-    ['Show Devices', `${state.devices.length || 1} device records`, () => { location.hash = 'devices'; }],
+    ['Show Devices', `${safeArray(state.devices).length || 1} device records`, () => { location.hash = 'devices'; }],
     ['Show Audit Events', `${buildSecurityTimeline({ accounts: state.accounts, activity: state.activityFeed, notifications: notificationItems(), auditEvents: state.auditEvents, devices: state.devices }).length} events`, () => { location.hash = 'security-center'; }],
     ['Add Account', 'Open existing account form', () => { location.hash = 'accounts'; toast('Account form ready'); }],
     ['Backup Codes', 'Open recovery center backup code workflow', () => { location.hash = 'recovery-center'; toast('Backup code workflow ready'); }],
@@ -831,16 +831,18 @@ function filteredAccounts() {
     .sort((a, b) => state.accountSort === 'Name' ? a.name.localeCompare(b.name) : state.accountSort === 'Last updated' ? String(b.lastReviewed || '').localeCompare(String(a.lastReviewed || '')) : scoreFor(a) - scoreFor(b));
 }
 
-function scoreFor(account) { return analyzeAccountSecurity(account).score; }
-function accountRisk(account) { return analyzeAccountSecurity(account); }
-function averageScore() { return explainableSecurityScore(state.accounts).score; }
+function safeArray(value) { return Array.isArray(value) ? value : []; }
+function safeAccounts() { return safeArray(state.accounts).filter(Boolean); }
+function scoreFor(account) { return analyzeAccountSecurity(account || {}).score; }
+function accountRisk(account) { return analyzeAccountSecurity(account || {}); }
+function averageScore() { return explainableSecurityScore(safeAccounts()).score; }
 function liveProtectionScore() { return averageScore(); }
-function reviewCount() { return state.accounts.filter((account) => account.status === 'Review' || scoreFor(account) < 80).length; }
-function linkedAccounts() { return state.accounts.filter((account) => [account.phone, account.email, account.recoveryPhone, account.recoveryEmail].includes(state.selectedRecovery)); }
-function switchAccounts() { return state.accounts.filter((account) => account.phone === state.switchOld || account.recoveryPhone === state.switchOld); }
-function weakAccounts() { return state.accounts.filter((account) => scoreFor(account) < 90 || account.status === 'Review'); }
+function reviewCount() { return safeAccounts().filter((account) => account.status === 'Review' || scoreFor(account) < 80).length; }
+function linkedAccounts() { return safeAccounts().filter((account) => [account.phone, account.email, account.recoveryPhone, account.recoveryEmail].includes(state.selectedRecovery)); }
+function switchAccounts() { return safeAccounts().filter((account) => account.phone === state.switchOld || account.recoveryPhone === state.switchOld); }
+function weakAccounts() { return safeAccounts().filter((account) => scoreFor(account) < 90 || account.status === 'Review'); }
 function duplicatedRecoveryEmails() {
-  const counts = state.accounts.reduce((map, account) => { const email = account.recoveryEmail || account.email; if (email) map[email] = (map[email] || 0) + 1; return map; }, {});
+  const counts = safeAccounts().reduce((map, account) => { const email = account.recoveryEmail || account.email; if (email) map[email] = (map[email] || 0) + 1; return map; }, {});
   return Object.values(counts).filter((count) => count > 1).reduce((sum, count) => sum + count, 0);
 }
 function oldPhoneAccounts() { return state.accounts.filter((account) => account.phone === state.switchOld || account.recoveryPhone === state.switchOld); }
@@ -866,7 +868,7 @@ function issueList() {
 }
 function recoveryScoreFactors() {
   const summary = dashboardSummary(state.accounts);
-  const stalePasswords = state.accounts.filter((account) => Date.parse(account.lastReviewed || '') < Date.now() - 180 * 86400000).length;
+  const stalePasswords = safeAccounts().filter((account) => Date.parse(account.lastReviewed || '') < Date.now() - 180 * 86400000).length;
   const duplicateMethods = duplicatedRecoveryEmails();
   const noRecoveryKit = state.emergencyKits.length ? 0 : 1;
   const incompleteEmergencyContacts = Math.max(0, summary.missingTrustedContacts - state.trustedContacts.length);
@@ -1117,16 +1119,25 @@ function VaultHeroVisual() {
 }
 
 function Hero() {
-  return h('section', { className: 'hero glass', id: 'dashboard' },
+  const accounts = safeAccounts();
+  const score = averageScore();
+  const lastReviewed = accounts.map((account) => account.lastReviewed).filter(Boolean).sort().pop() || 'Today';
+  return h('section', { className: 'hero glass v2-hero', id: 'dashboard' },
     h('div', { className: 'hero-copy-panel' },
-      h('p', { className: 'eyebrow' }, '✦ Digital Recovery Platform'),
-      h('h1', null, state.user ? `Hello ${firstName()} 👋` : 'Never lose another account ', !state.user && h('span', null, 'again.')),
-      h('p', null, 'SecureSwitch protects your logins, recovery options, and digital identity before disaster strikes.'),
+      h('p', { className: 'eyebrow' }, '✦ SecureSwitch Command Center'),
+      h('h1', null, state.user ? `Hello ${firstName()}` : 'Never lose another account ', !state.user && h('span', null, 'again.')),
+      h('p', null, 'A compact recovery command center for accounts, devices, vault health, and protection status.'),
       h('div', { className: 'hero-actions' }, h('button', { className: 'primary', onClick: runHealthScan }, 'Run Health Check'), h('button', { onClick: () => toast('Demo walkthrough coming soon') }, 'Watch Demo'))
     ),
-    h(VaultHeroVisual)
+    h('div', { className: 'premium-vault v2-vault-hero', 'aria-label': 'Secure vault summary' },
+      h('div', { className: 'v2-vault-cube', 'aria-hidden': true }, h('span'), h('i')),
+      h('div', { className: 'v2-vault-stats' },
+        [['Score', `${score}%`], ['Accounts', accounts.length], ['Last Review', lastReviewed]].map(([label, value]) => h('article', { key: label }, h('strong', null, value), h('span', null, label)))
+      )
+    )
   );
 }
+
 
 function ProtectionScore() {
   const score = usingLiveAccounts() ? liveProtectionScore() : 86;
@@ -1134,11 +1145,11 @@ function ProtectionScore() {
   return h('aside', { className: 'floating-score glass protection-panel-card', 'aria-label': 'Live Protection Score' },
     h('p', { className: 'eyebrow score-title' }, 'Live Protection Score ⓘ'),
     h('div', { className: 'target-score-ring', style: { '--score': `${score * 3.6}deg` } }, h('strong', null, `${score}%`), h('span', { className: status.toLowerCase().replaceAll(' ', '-') }, `◆ ${status}`)),
-    h('div', { className: 'target-score-stats' }, [['Accounts', state.accounts.length], ['Need Review', reviewCount()], ['Switch Plan', `${Math.max(1, switchAccounts().length)}m`]].map(([label, value]) => h('article', { key: label }, h('strong', null, value), h('span', null, label))))
+    h('div', { className: 'target-score-stats' }, [['Accounts', safeAccounts().length], ['Need Review', reviewCount()], ['Switch Plan', `${Math.max(1, switchAccounts().length)}m`]].map(([label, value]) => h('article', { key: label }, h('strong', null, value), h('span', null, label))))
   );
 }
 function ProtectedStatus() {
-  return h('article', { className: 'protected glass' }, h('span', { className: 'check-orb' }, '▣'), h('div', null, h('h3', null, state.user ? `Hello ${firstName()} 👋` : 'You’re protected'), h('p', null, state.user ? `Recovery Score ${averageScore()}% · Accounts ${state.accounts.length} · Health Check Ready` : 'Great job! Keep your recovery methods up to date.')), h('b', null, '›'));
+  return h('article', { className: 'protected glass' }, h('span', { className: 'check-orb' }, '▣'), h('div', null, h('h3', null, state.user ? `Hello ${firstName()} 👋` : 'You’re protected'), h('p', null, state.user ? `Recovery Score ${averageScore()}% · Accounts ${safeAccounts().length} · Health Check Ready` : 'Great job! Keep your recovery methods up to date.')), h('b', null, '›'));
 }
 
 function QuickActions() {
@@ -1277,22 +1288,22 @@ function WeeklyReport() { const summary = dashboardSummary(state.accounts); cons
 function RecoveryInsights() { return h('section', { className: 'panel glass insights-panel' }, h('p', { className: 'eyebrow' }, 'Recovery Insights'), h('h2', null, 'What to fix next'), h('ul', null, [`${oldPhoneAccounts().length} accounts using an old phone number.`, `${state.accounts.filter((account) => !account.trustedContacts).length} accounts missing trusted contacts.`, `${duplicatedRecoveryEmails()} recovery emails are duplicated.`, 'One banking account has no backup codes.', 'Estimated repair time: 7 minutes.'].map((item) => h('li', { key: item }, item))), h('button', { className: 'primary', onClick: runHealthScan }, 'Fix Everything')); }
 function IdentityDNA() { const axes = ['Authentication', 'Recovery', 'Privacy', 'Backups', 'Passkeys', 'Emergency', 'Security', 'Family']; return h('section', { className: 'panel glass dna-panel' }, h('p', { className: 'eyebrow' }, 'Identity DNA'), h('h2', null, 'Overall Identity Health'), h('div', { className: 'dna-orbit' }, axes.map((axis, index) => h('span', { key: axis, style: { '--i': index } }, axis)))); }
 function RecoveryMap() { return h('section', { className: 'panel glass recovery-map' }, h('p', { className: 'eyebrow' }, 'Recovery Map'), h('h2', null, 'Interactive account recovery profiles'), state.accounts.map((account) => h('button', { className: 'map-row', key: account.name, onClick: () => setState({ activeProfile: account.name }) }, h('strong', null, account.name), h('span', null, `${scoreFor(account)}% health`), h('span', null, account.phone || 'No phone'), h('span', null, account.recoveryEmail || account.email || 'No email'), h('span', null, account.backupCodes ? 'Backup codes' : 'Missing codes'), h('b', null, scoreFor(account) > 79 ? 'Low risk' : 'High risk'))), state.activeProfile && h('p', { className: 'muted' }, `${state.activeProfile} profile opened: phone, recovery email, backup codes, passkeys, authenticator, trusted contacts, and risk level are ready for review.`)); }
-function Activity() { const rows = usingLiveAccounts() && state.activityFeed.length ? state.activityFeed.map((event) => `${event.title || event.type || 'Activity'} — ${event.type || 'SecureSwitch'} — ${event.createdAt ? 'just now' : 'Today'}`) : usingLiveAccounts() && state.recoveryTimeline.length ? state.recoveryTimeline.map((event) => `${event.title} — ${event.category || 'SecureSwitch'} — ${event.date || 'Today'}`) : activity; return h('section', { className: 'panel glass activity-panel' }, h('div', { className: 'panel-head' }, h('p', { className: 'eyebrow' }, 'Recent Activity'), h('a', { href: '#timeline' }, 'View all')), rows.map((item) => { const [title, service, time] = item.split(' — '); return h('article', { className: 'activity', key: item }, h('span', null, title.includes('Password') ? '▣' : title.includes('email') ? '✉' : title.includes('scanned') ? '⌗' : '⌁'), h('div', null, h('strong', null, title), h('small', null, service)), h('time', null, time)); })); }
+function Activity() { const activityFeed = safeArray(state.activityFeed); const recoveryTimeline = safeArray(state.recoveryTimeline); const rows = usingLiveAccounts() && activityFeed.length ? activityFeed.map((event) => `${event.title || event.type || 'Activity'} — ${event.type || 'SecureSwitch'} — ${event.createdAt ? 'just now' : 'Today'}`) : usingLiveAccounts() && recoveryTimeline.length ? recoveryTimeline.map((event) => `${event.title} — ${event.category || 'SecureSwitch'} — ${event.date || 'Today'}`) : activity; return h('section', { className: 'panel glass activity-panel' }, h('div', { className: 'panel-head' }, h('p', { className: 'eyebrow' }, 'Recent Activity'), h('a', { href: '#timeline' }, 'View all')), rows.map((item) => { const [title, service, time] = item.split(' — '); return h('article', { className: 'activity', key: item }, h('span', null, title.includes('Password') ? '▣' : title.includes('email') ? '✉' : title.includes('scanned') ? '⌗' : '⌁'), h('div', null, h('strong', null, title), h('small', null, service)), h('time', null, time)); })); }
 function Readiness() { return h('section', { className: 'panel glass readiness-panel' }, h('div', { className: 'panel-head' }, h('p', { className: 'eyebrow' }, 'Recovery Readiness'), h('strong', null, `${liveProtectionScore()}%`)), h('div', { className: 'progress' }, h('span', { style: { width: `${liveProtectionScore()}%` } })), h('p', null, 'You’re ready for the unexpected. Keep it up!')); }
 function notificationItems() {
-  const live = state.notifications.map((note, index) => ({ id: note.id || `live-note-${index}`, title: note.title || 'Security notification', detail: note.detail || note.status || 'Open', unread: note.unread !== false }));
-  if (live.length) return live.concat(state.securityAlerts.map((alert, index) => ({ id: alert.id || `alert-${index}`, title: alert.title || 'Security alert', detail: alert.severity || alert.status || 'Review' })));
+  const live = safeArray(state.notifications).map((note, index) => ({ id: note.id || `live-note-${index}`, title: note.title || 'Security notification', detail: note.detail || note.status || 'Open', unread: note.unread !== false }));
+  if (live.length) return live.concat(safeArray(state.securityAlerts).map((alert, index) => ({ id: alert.id || `alert-${index}`, title: alert.title || 'Security alert', detail: alert.severity || alert.status || 'Review' })));
   return [
-    ['Recent Security Alerts', `${dashboardSummary(state.accounts).securityAlerts.length} alerts from score engine`],
+    ['Recent Security Alerts', `${dashboardSummary(safeAccounts()).securityAlerts.length} alerts from score engine`],
     ['Recovery Reminders', `${reviewCount()} accounts need review`],
-    ['Password Expiration', `${state.accounts.filter((account) => Date.parse(account.lastReviewed || '') < Date.now() - 180 * 86400000).length} passwords aging`],
+    ['Password Expiration', `${safeAccounts().filter((account) => Date.parse(account.lastReviewed || '') < Date.now() - 180 * 86400000).length} passwords aging`],
     ['Weekly Score Reports', `Recovery score is ${averageScore()}%`],
-    ['Successful Backups', `${state.accounts.filter((account) => account.backupCodes).length} accounts have backup codes`],
+    ['Successful Backups', `${safeAccounts().filter((account) => account.backupCodes).length} accounts have backup codes`],
     ['New Device Logins', state.user ? 'Persistent session active' : 'Demo session only'],
     ['Suspicious Activity', oldPhoneAccounts().length ? 'Old phone number still used' : 'No suspicious changes detected']
   ].map(([title, detail], index) => ({ id: `note-${index}`, title, detail }));
 }
-function unreadNotifications() { return notificationItems().filter((item) => !state.notificationsRead.includes(item.id)); }
+function unreadNotifications() { return notificationItems().filter((item) => !safeArray(state.notificationsRead).includes(item.id)); }
 function LandingPage() {
   const faqs = ['How is SecureSwitch different?', 'Do you store passwords?', 'Can I export my vault?', 'Is there a mobile app?'];
   return h('section', { className: 'landing-page glass', id: 'landing' },
@@ -1398,10 +1409,10 @@ function CommandPalette() {
 
 function ReportGenerator() {
   const reports = ['Recovery Report', 'Organization Report', 'Security Audit', 'Recovery Readiness', 'Password Health', 'Executive Summary'];
-  return h('section', { className: 'panel glass report-generator', id: 'report-generator' }, h('p', { className: 'eyebrow' }, 'Report Generator'), h('h2', null, 'Beautiful production reports'), h('div', { className: 'report-controls' }, h('select', { value: state.reportType, onChange: (event) => setState({ reportType: event.target.value }) }, reports.map((report) => h('option', { key: report }, report))), ['pdf', 'csv', 'json'].map((format) => h('button', { key: format, className: format === 'pdf' ? 'primary' : '', onClick: () => generateProductionReport(format) }, `Export ${format.toUpperCase()}`))), h('div', { className: 'report-preview' }, h('strong', null, state.reportType), h('p', null, `Includes Recovery Score ${averageScore()}%, Password Health ${passwordHealthScore()}%, ${state.organizations.length} organizations, ${state.accounts.length} accounts, and executive-ready recommendations.`)));
+  return h('section', { className: 'panel glass report-generator', id: 'report-generator' }, h('p', { className: 'eyebrow' }, 'Report Generator'), h('h2', null, 'Beautiful production reports'), h('div', { className: 'report-controls' }, h('select', { value: state.reportType, onChange: (event) => setState({ reportType: event.target.value }) }, reports.map((report) => h('option', { key: report }, report))), ['pdf', 'csv', 'json'].map((format) => h('button', { key: format, className: format === 'pdf' ? 'primary' : '', onClick: () => generateProductionReport(format) }, `Export ${format.toUpperCase()}`))), h('div', { className: 'report-preview' }, h('strong', null, state.reportType), h('p', null, `Includes Recovery Score ${averageScore()}%, Password Health ${passwordHealthScore()}%, ${state.organizations.length} organizations, ${safeAccounts().length} accounts, and executive-ready recommendations.`)));
 }
 function ProductionAdminDashboard() {
-  return h('section', { className: 'panel glass production-admin-dashboard', id: 'production-admin' }, h('p', { className: 'eyebrow' }, 'Production Admin Panel'), h('h2', null, 'Operational analytics snapshot'), h('div', { className: 'command-metric-grid' }, [['User count', state.user ? 1 : 0], ['Active devices', state.devices.length || 1], ['Recovery success', `${Math.max(0, 100 - reviewCount() * 8)}%`], ['Server health', state.isOffline ? 'Offline' : 'Online'], ['App version', buildVersion()], ['Firebase status', state.firebaseReady ? 'Ready' : 'Demo fallback'], ['Protected routes', 'Enabled'], ['Runtime', runtimeModeLabel()]].map(([label, value]) => h('article', { key: label }, h('span', null, label), h('strong', null, value)))));
+  return h('section', { className: 'panel glass production-admin-dashboard', id: 'production-admin' }, h('p', { className: 'eyebrow' }, 'Production Admin Panel'), h('h2', null, 'Operational analytics snapshot'), h('div', { className: 'command-metric-grid' }, [['User count', state.user ? 1 : 0], ['Active devices', safeArray(state.devices).length || 1], ['Recovery success', `${Math.max(0, 100 - reviewCount() * 8)}%`], ['Server health', state.isOffline ? 'Offline' : 'Online'], ['App version', buildVersion()], ['Firebase status', state.firebaseReady ? 'Ready' : 'Demo fallback'], ['Protected routes', 'Enabled'], ['Runtime', runtimeModeLabel()]].map(([label, value]) => h('article', { key: label }, h('span', null, label), h('strong', null, value)))));
 }
 function TeamFamilyVaults() {
   const selected = state.organizations.find((org) => (org.id || org.name) === state.selectedOrganizationId) || state.organizations[0] || demoOrganizations[0];
@@ -1411,7 +1422,7 @@ function TeamFamilyVaults() {
   return h('section', { className: 'panel glass enterprise-panel team-vaults', id: 'team-vaults' },
     h('div', { className: 'panel-head' }, h('div', null, h('p', { className: 'eyebrow' }, 'Organization Mode'), h('h2', null, 'Enterprise recovery workspaces')), h('span', null, `${state.organizations.length} orgs`)),
     h('div', { className: 'enterprise-switcher' }, state.organizations.map((org) => h('button', { key: org.id || org.name, className: (org.id || org.name) === state.selectedOrganizationId ? 'active' : '', onClick: () => setState({ selectedOrganizationId: org.id || org.name }) }, h('strong', null, org.name), h('small', null, `${org.role || 'Owner'} · ${org.members || 1} members`)))),
-    h('div', { className: 'enterprise-grid compact' }, [['Members', selected.members || 1], ['Roles', orgRoles.join(' · ')], ['Devices', selected.devices || state.devices.length || 1], ['Accounts', selected.accounts || state.accounts.length], ['Audit Logs', selected.auditLogs || auditRows.length], ['Recovery Policies', selected.recoveryPolicies || 7], ['Security Score', `${selected.securityScore || averageScore()}%`]].map(([label, value]) => h('article', { key: label }, h('span', null, label), h('strong', null, value)))),
+    h('div', { className: 'enterprise-grid compact' }, [['Members', selected.members || 1], ['Roles', orgRoles.join(' · ')], ['Devices', selected.devices || safeArray(state.devices).length || 1], ['Accounts', selected.accounts || state.accounts.length], ['Audit Logs', selected.auditLogs || auditRows.length], ['Recovery Policies', selected.recoveryPolicies || 7], ['Security Score', `${selected.securityScore || averageScore()}%`]].map(([label, value]) => h('article', { key: label }, h('span', null, label), h('strong', null, value)))),
     h('form', { className: 'enterprise-form', onSubmit: createOrganization }, h('input', { name: 'organization', placeholder: 'Organization or family name', required: true }), h('select', { value: state.selectedOrgRole, onChange: (event) => setState({ selectedOrgRole: event.target.value }) }, orgRoles.map((role) => h('option', { key: role }, role))), h('button', { className: 'primary' }, 'Create organization')),
     h('form', { className: 'enterprise-form', onSubmit: inviteOrganizationMember }, h('input', { name: 'inviteEmail', type: 'email', placeholder: 'Invite member by email', value: state.inviteEmail, onChange: (event) => setState({ inviteEmail: event.target.value }) }), h('button', null, `Invite as ${state.selectedOrgRole}`)),
     h('div', { className: 'enterprise-split' },
@@ -1423,7 +1434,7 @@ function TeamFamilyVaults() {
   );
 }
 function PasswordHealthCenter() {
-  const checks = [['Weak passwords', weakAccounts().length], ['Reused passwords', duplicatedRecoveryEmails()], ['Old passwords', state.accounts.filter((account) => Date.parse(account.lastReviewed || '') < Date.now() - 180 * 86400000).length], ['Missing MFA', state.accounts.filter((account) => !account.authenticator || account.authenticator === 'SMS only').length], ['Missing recovery email', state.accounts.filter((account) => !account.recoveryEmail).length], ['Missing phone', state.accounts.filter((account) => !account.recoveryPhone).length], ['Missing backup codes', state.accounts.filter((account) => !account.backupCodes).length]];
+  const checks = [['Weak passwords', weakAccounts().length], ['Reused passwords', duplicatedRecoveryEmails()], ['Old passwords', safeAccounts().filter((account) => Date.parse(account.lastReviewed || '') < Date.now() - 180 * 86400000).length], ['Missing MFA', state.accounts.filter((account) => !account.authenticator || account.authenticator === 'SMS only').length], ['Missing recovery email', state.accounts.filter((account) => !account.recoveryEmail).length], ['Missing phone', state.accounts.filter((account) => !account.recoveryPhone).length], ['Missing backup codes', state.accounts.filter((account) => !account.backupCodes).length]];
   return h('section', { className: 'panel glass enterprise-panel password-health-center', id: 'password-health' }, h('p', { className: 'eyebrow' }, 'Password Health Center'), h('h2', null, `${passwordHealthScore()}% overall password health`), h('div', { className: 'enterprise-meter' }, h('span', { style: { width: `${passwordHealthScore()}%` } })), h('div', { className: 'enterprise-grid' }, checks.map(([label, count]) => h('article', { key: label }, h('strong', null, count), h('span', null, label), h('small', null, count ? 'Action recommended' : 'Clear')))));
 }
 function DarkWebMonitor() {
@@ -1483,7 +1494,7 @@ function AIRecoveryCoachPage() {
   const answer = state.aiCopilotAnswer || answerSecurityQuestion(activeQuestion, answerContext);
   const ask = (question = activeQuestion) => setState({ aiCopilotQuestion: question, aiCopilotAnswer: answerSecurityQuestion(question, answerContext) });
   const citations = [
-    `${state.accounts.length} accounts`,
+    `${safeAccounts().length} accounts`,
     `${context.recommendations.length} recommendations`,
     `${context.timeline.length} security events`,
     `${notificationItems().length} notifications`
@@ -1563,7 +1574,7 @@ function enrichedNotifications() {
     const account = notificationRelatedAccount(item);
     const device = notificationRelatedDevice(item);
     const timestamp = notificationTimestamp(item, index);
-    const status = state.notificationsRead.includes(item.id) ? 'Resolved' : 'Unread';
+    const status = safeArray(state.notificationsRead).includes(item.id) ? 'Resolved' : 'Unread';
     const recommendation = generateSecurityRecommendations(state.accounts, state.devices).find((rec) => account && rec.accountName === account.name);
     return { ...item, severity, category, account, device, timestamp, source: notificationSource(item), status, pinned: state.pinnedNotifications.includes(item.id), archived: state.archivedNotifications.includes(item.id), recommendedAction: recommendation?.recommendedAction || (category === 'Recovery' ? 'Open Recovery Vault' : category === 'Devices' ? 'Review Devices' : category === 'Accounts' ? 'Open Account' : 'Review Signal'), icon: severity === 'Critical' ? '!' : severity === 'Warning' ? '⚠' : '✓' };
   });
@@ -1656,7 +1667,7 @@ function ExportCenterPage() {
   return h('section', { className: 'panel glass premium-page export-center-page', id: 'exports' }, h('p', { className: 'eyebrow' }, 'Exports'), h('h2', null, 'Generate recovery artifacts'), h('div', { className: 'export-grid' }, exports.map(([label, kind]) => h('button', { key: kind, onClick: () => exportReport(kind) }, label))));
 }
 function AdminPanel() {
-  return h('section', { className: 'panel glass premium-page hidden-admin-panel', id: 'admin-panel' }, h('div', { className: 'panel-head' }, h('div', null, h('p', { className: 'eyebrow' }, 'Hidden Admin'), h('h2', null, 'Demo analytics and feature flags')), h('button', { onClick: () => setState({ adminVisible: !state.adminVisible }) }, state.adminVisible ? 'Hide' : 'Reveal')), state.adminVisible && h('div', { className: 'premium-metric-grid' }, [['Beta analytics', `${state.accounts.length} accounts`], ['User counts', state.user ? '1 active user' : '0 live users'], ['Subscription counts', 'Payments disabled'], ['Recovery statistics', `${averageScore()}% avg score`], ['Feature flags', 'AI coach, exports, pricing'], ['Application version', buildVersion()]].map(([label, value]) => h('article', { key: label }, h('span', null, label), h('strong', null, value)))));
+  return h('section', { className: 'panel glass premium-page hidden-admin-panel', id: 'admin-panel' }, h('div', { className: 'panel-head' }, h('div', null, h('p', { className: 'eyebrow' }, 'Hidden Admin'), h('h2', null, 'Demo analytics and feature flags')), h('button', { onClick: () => setState({ adminVisible: !state.adminVisible }) }, state.adminVisible ? 'Hide' : 'Reveal')), state.adminVisible && h('div', { className: 'premium-metric-grid' }, [['Beta analytics', `${safeAccounts().length} accounts`], ['User counts', state.user ? '1 active user' : '0 live users'], ['Subscription counts', 'Payments disabled'], ['Recovery statistics', `${averageScore()}% avg score`], ['Feature flags', 'AI coach, exports, pricing'], ['Application version', buildVersion()]].map(([label, value]) => h('article', { key: label }, h('span', null, label), h('strong', null, value)))));
 }
 function AccountHealthPage() {
   const summary = dashboardSummary(state.accounts);
@@ -1679,7 +1690,7 @@ function SecurityCenterPage() {
     ['Recent Alerts', alerts.length],
     ['Suspicious Changes', oldPhoneAccounts().length],
     ['Weak Accounts', weakAccounts().length],
-    ['Password Age', `${state.accounts.filter((account) => Date.parse(account.lastReviewed || '') < Date.now() - 180 * 86400000).length} old`],
+    ['Password Age', `${safeAccounts().filter((account) => Date.parse(account.lastReviewed || '') < Date.now() - 180 * 86400000).length} old`],
     ['Recovery Issues', issueList().length],
     ['Recommended Actions', dashboardSummary(state.accounts).suggestedNextFixes.length || 1],
     ['Security Timeline', state.recoveryTimeline.length]
@@ -1912,7 +1923,7 @@ function ProductionSecurityCenter() {
     ['Missing MFA', state.accounts.filter((account) => !account.authenticator && !account.passkeyStatus).length],
     ['Weak Passwords', weakAccounts().length],
     ['No Recovery Method', state.accounts.filter((account) => !account.recoveryEmail && !account.recoveryPhone).length],
-    ['Old Passwords', state.accounts.filter((account) => Date.parse(account.lastReviewed || '') < Date.now() - 180 * 86400000).length],
+    ['Old Passwords', safeAccounts().filter((account) => Date.parse(account.lastReviewed || '') < Date.now() - 180 * 86400000).length],
     ['Compromised Accounts', state.securityAlerts.filter((alert) => /critical|comprom/i.test(`${alert.severity} ${alert.title}`)).length],
     ['Inactive Accounts', state.accounts.filter((account) => Date.parse(account.lastReviewed || '') < Date.now() - 365 * 86400000).length],
     ['High Risk Accounts', state.accounts.filter((account) => scoreFor(account) < 60).length]
@@ -1988,8 +1999,8 @@ function settingsWorkspaceSections() {
     { id: 'general', title: 'General', description: 'Profile and workspace basics.', rows: [['Profile', profileName], ['Workspace name', state.organizations[0]?.name || 'SecureSwitch Workspace'], ['Language', language], ['Region', country], ['Timezone', timezone], ['Time format', state.settings.timeFormat || 'System default']] },
     { id: 'appearance', title: 'Appearance', description: 'Existing interface preferences.', rows: [['Theme', state.userProfile?.theme || state.settings.theme || 'Dark'], ['Accent', state.settings.accent || 'Blue / Purple'], ['Density', state.accountDensity || 'Compact'], ['Animations', state.settings.reducedMotion ? 'Reduced' : 'Enabled'], ['Compact mode', state.accountDensity === 'compact' ? 'On' : 'Off'], ['Glass mode', state.settings.glassMode === false ? 'Off' : 'On']] },
     { id: 'accounts', title: 'Accounts', description: 'Current account workspace.', rows: [['Total accounts', state.accounts.length], ['Protected accounts', state.accounts.filter((account) => scoreFor(account) >= 80).length], ['Accounts at risk', reviewCount()], ['Categories', new Set(state.accounts.map((account) => account.category).filter(Boolean)).size], ['Selected account', selectedAccount().name]] },
-    { id: 'security', title: 'Security', description: 'Session, device, MFA, and audit posture.', rows: [['Session timeout', state.settings.sessionTimeout ? 'Enabled' : 'System default'], ['Passkey status', `${passkeyCount}/${state.accounts.length} accounts`], ['MFA status', `${mfaCount}/${state.accounts.length} accounts`], ['Recovery readiness', `${averageScore()}%`], ['Trusted devices', `${Math.max(0, state.devices.length - riskyDevices)}/${state.devices.length || 1}`], ['Audit events', buildSecurityTimeline({ accounts: state.accounts, activity: state.activityFeed, notifications, auditEvents: state.auditEvents, devices: state.devices }).length]] },
-    { id: 'recovery', title: 'Recovery', description: 'Recovery Vault information.', rows: [['Recovery score', `${averageScore()}%`], ['Recovery contacts', state.recoveryContacts.length || state.accounts.filter((account) => account.trustedContacts).length], ['Backup codes', state.accounts.filter((account) => account.backupCodes).length], ['Recovery reminders', state.settings.recoveryReminders === false ? 'Off' : 'On'], ['Recovery-ready accounts', `${recoveryReady}/${state.accounts.length}`], ['Last review', state.accounts.map((account) => account.lastReviewed).filter(Boolean).sort().at(-1) || 'Not recorded']] },
+    { id: 'security', title: 'Security', description: 'Session, device, MFA, and audit posture.', rows: [['Session timeout', state.settings.sessionTimeout ? 'Enabled' : 'System default'], ['Passkey status', `${passkeyCount}/${safeAccounts().length} accounts`], ['MFA status', `${mfaCount}/${safeAccounts().length} accounts`], ['Recovery readiness', `${averageScore()}%`], ['Trusted devices', `${Math.max(0, state.devices.length - riskyDevices)}/${safeArray(state.devices).length || 1}`], ['Audit events', buildSecurityTimeline({ accounts: state.accounts, activity: state.activityFeed, notifications, auditEvents: state.auditEvents, devices: state.devices }).length]] },
+    { id: 'recovery', title: 'Recovery', description: 'Recovery Vault information.', rows: [['Recovery score', `${averageScore()}%`], ['Recovery contacts', state.recoveryContacts.length || state.accounts.filter((account) => account.trustedContacts).length], ['Backup codes', safeAccounts().filter((account) => account.backupCodes).length], ['Recovery reminders', state.settings.recoveryReminders === false ? 'Off' : 'On'], ['Recovery-ready accounts', `${recoveryReady}/${state.accounts.length}`], ['Last review', state.accounts.map((account) => account.lastReviewed).filter(Boolean).sort().at(-1) || 'Not recorded']] },
     { id: 'notifications', title: 'Notifications', description: 'Current notification preferences.', rows: [['Security alerts', state.settings.notifications === false ? 'Off' : 'On'], ['Weekly reports', state.settings.weeklyReports === false ? 'Off' : 'On'], ['Critical alerts', unreadNotifications().length], ['Push', state.settings.pushNotifications ? 'On' : 'Browser default'], ['Email', state.userProfile?.preferredNotifications || state.settings.preferredNotifications || 'Security only'], ['Unread notifications', unreadNotifications().length]] },
     { id: 'privacy', title: 'Privacy', description: 'Local privacy and data controls.', rows: [['Runtime mode', runtimeModeLabel()], ['Vault unlocked', state.vaultUnlocked ? 'Yes' : 'No'], ['Export data', state.settings.exportVault === false ? 'Disabled' : 'Available'], ['Cloud sync', usingLiveAccounts() ? 'Live Firestore' : 'Local demo state'], ['Encrypted backups', state.backupStatus || 'Ready']] },
     { id: 'ai', title: 'AI Copilot', description: 'Existing local copilot behavior.', rows: [['Suggestion level', aiActions ? 'Prioritized' : 'Quiet'], ['Explanation detail', state.aiCopilotAnswer ? 'Expanded' : 'Summary'], ['Workspace summaries', dailySecurityInsights(state.accounts, state.devices).length], ['Recommendations', aiActions], ['Current prompt', state.aiCopilotQuestion || 'Not set']] },
@@ -2143,7 +2154,7 @@ function ExecutiveSecurityScoreCard() {
   );
 }
 function MiniTrendCharts() {
-  const values = [averageScore(), passwordHealthScore(), Math.max(35, 100 - riskFindings().length * 6), Math.min(98, 62 + state.accounts.filter((account) => account.backupCodes).length * 8), Math.max(44, averageScore() - reviewCount() * 2)];
+  const values = [averageScore(), passwordHealthScore(), Math.max(35, 100 - riskFindings().length * 6), Math.min(98, 62 + safeAccounts().filter((account) => account.backupCodes).length * 8), Math.max(44, averageScore() - reviewCount() * 2)];
   const labels = ['Security Trend', 'Recovery Progress', 'Risk History', 'Weekly Health', 'Protection Timeline'];
   return h('div', { className: 'svg-chart-grid', 'aria-label': 'Animated security charts' }, values.map((value, index) => {
     const points = [22, 38, 34, 56, value].map((point, i) => `${i * 42 + 8},${100 - point}`).join(' ');
@@ -2167,7 +2178,7 @@ function FamilyProtectionPage() {
 }
 function EmergencyRecoveryModePage() {
   const items = ['Recovery Emails', 'Recovery Phones', 'Backup Codes', 'Trusted Devices', 'Identity Documents', 'Recovery Contacts', 'Emergency Checklist'];
-  return h('section', { className: `panel glass dedicated-page emergency-recovery-mode ${state.emergencyRecoveryActive ? 'active' : ''}` }, h('p', { className: 'eyebrow' }, 'Emergency Recovery Mode'), h('h2', null, 'High-stress recovery workspace'), h('button', { className: 'danger emergency-launch', onClick: () => setState({ emergencyRecoveryActive: !state.emergencyRecoveryActive }) }, state.emergencyRecoveryActive ? 'Emergency Mode Active' : 'Activate Emergency Recovery'), state.emergencyRecoveryActive && h('div', { className: 'premium-metric-grid' }, items.map((item) => h('article', { key: item }, h('strong', null, item), h('small', null, item === 'Backup Codes' ? `${state.accounts.filter((account) => account.backupCodes).length} accounts ready` : 'Open verified recovery records'), h('button', { onClick: () => toast(`${item} opened`) }, 'Open')))));
+  return h('section', { className: `panel glass dedicated-page emergency-recovery-mode ${state.emergencyRecoveryActive ? 'active' : ''}` }, h('p', { className: 'eyebrow' }, 'Emergency Recovery Mode'), h('h2', null, 'High-stress recovery workspace'), h('button', { className: 'danger emergency-launch', onClick: () => setState({ emergencyRecoveryActive: !state.emergencyRecoveryActive }) }, state.emergencyRecoveryActive ? 'Emergency Mode Active' : 'Activate Emergency Recovery'), state.emergencyRecoveryActive && h('div', { className: 'premium-metric-grid' }, items.map((item) => h('article', { key: item }, h('strong', null, item), h('small', null, item === 'Backup Codes' ? `${safeAccounts().filter((account) => account.backupCodes).length} accounts ready` : 'Open verified recovery records'), h('button', { onClick: () => toast(`${item} opened`) }, 'Open')))));
 }
 function SecureVaultPage() {
   const capacity = Math.min(100, vaultItems().length * 8 + state.accounts.length * 3);
@@ -2193,7 +2204,7 @@ function FeatureShortcuts() {
 }
 function DashboardAccountsPreview() {
   const names = ['Google', 'Instagram', 'Coinbase', 'Amazon', 'Slack'];
-  const accounts = names.map((name) => state.accounts.find((account) => account.name === name)).filter(Boolean);
+  const accounts = names.map((name) => safeAccounts().find((account) => account.name === name)).filter(Boolean);
   return h('section', { className: 'panel glass target-accounts-card', id: 'accounts' }, h('div', { className: 'panel-head target-card-head' }, h('p', { className: 'eyebrow' }, 'Your Accounts'), h('a', { href: '#accounts' }, 'View all')), accounts.map((account) => {
     const review = scoreFor(account) < 80;
     const deviceCount = account.deviceVerification === 'Trusted' ? 2 : account.deviceVerification ? 1 : 0;
@@ -2209,25 +2220,35 @@ function DashboardAccountsPreview() {
     );
   }));
 }
-function DashboardUtilities() {
-  const status = state.isOffline ? 'Offline' : state.firebaseReady ? 'Production ready' : 'Demo ready';
-  const utilities = [
-    ['Devices', `${state.devices.length || 1} trusted`, 'Device inventory', '#devices'],
-    ['Recovery', `${averageScore()}% ready`, 'Recovery center', '#recovery-center'],
-    ['Alerts', `${unreadNotifications().length} unread`, 'Security status', '#notifications'],
-    ['AI Copilot', 'Ask what to fix', 'Integrated assistant', '#ai-recovery-coach'],
-    ['Live Metrics', `${state.accounts.length} accounts`, status, '#security-center']
-  ];
-  return h('section', { className: 'desktop-utility-grid' }, utilities.map(([title, value, detail, href]) => h('a', { key: title, href, className: 'utility-card glass' }, h('span', null, title), h('strong', null, value), h('small', null, detail))));
+function CompanyLogoGrid() {
+  const accounts = safeAccounts().slice(0, 14);
+  return h('section', { className: 'company-logo-grid glass', 'aria-label': 'Protected companies' },
+    accounts.map((account) => h('span', { key: account.id || account.name, className: `app-icon brand-icon brand-${brandSlug(account.name)}`, style: { '--brand-color': account.color }, title: account.name }, brandMark(account.name)))
+  );
 }
+function DashboardUtilities() {
+  const accounts = safeAccounts();
+  const deviceCount = safeArray(state.devices).length || accounts.filter((account) => account.deviceVerification).length || 1;
+  const vaultStats = [
+    ['Vault Items', vaultItems().length],
+    ['Backup Codes', accounts.filter((account) => account.backupCodes).length],
+    ['Passkeys', accounts.filter((account) => account.passkeyStatus).length],
+    ['Trusted Devices', deviceCount]
+  ];
+  return h('section', { className: 'desktop-utility-grid' },
+    h('article', { className: 'device-card glass' }, h('span', null, 'Devices'), h('strong', null, deviceCount), h('small', null, state.isOffline ? 'Offline review' : 'Trusted workspace')),
+    vaultStats.map(([label, value]) => h('article', { key: label, className: 'vault-stat-card glass' }, h('span', null, label), h('strong', { className: 'animated-counter' }, value), h('small', null, 'Live workspace metric')))
+  );
+}
+
 function DashboardHome() {
-  return [h('div', { className: 'desktop-top-grid' }, h(Hero)), h(FeatureShortcuts), h('div', { className: 'lower-grid dashboard-home-grid target-lower-grid' }, h(DashboardAccountsPreview), h(Activity)), h(DashboardUtilities)];
+  return [h('div', { className: 'desktop-top-grid' }, h(Hero)), h(FeatureShortcuts), h(CompanyLogoGrid), h('div', { className: 'lower-grid dashboard-home-grid target-lower-grid' }, h(DashboardAccountsPreview), h(Activity)), h(DashboardUtilities)];
 }
 
 function AppHealthPage() {
   const memory = performance?.memory ? `${Math.round(performance.memory.usedJSHeapSize / 1048576)} MB` : 'Unavailable';
   const rows = [
-    ['App Version', buildVersion()], ['Firebase Status', state.firebaseReady ? 'Ready' : 'Fallback mode'], ['Storage Usage', `${state.accounts.length} accounts · ${state.backupCodes.length} backup records`], ['IndexedDB', 'Browser managed'], ['Live Sync', usingLiveAccounts() ? 'Connected' : 'Not connected'], ['User ID', state.user?.uid || 'Signed out'], ['Browser', navigator.userAgent.split(' ').slice(0, 3).join(' ')], ['OS', navigator.platform || 'Unknown'], ['Memory estimate', memory], ['Build timestamp', buildInfo().buildVersion || 'local']
+    ['App Version', buildVersion()], ['Firebase Status', state.firebaseReady ? 'Ready' : 'Fallback mode'], ['Storage Usage', `${safeAccounts().length} accounts · ${state.backupCodes.length} backup records`], ['IndexedDB', 'Browser managed'], ['Live Sync', usingLiveAccounts() ? 'Connected' : 'Not connected'], ['User ID', state.user?.uid || 'Signed out'], ['Browser', navigator.userAgent.split(' ').slice(0, 3).join(' ')], ['OS', navigator.platform || 'Unknown'], ['Memory estimate', memory], ['Build timestamp', buildInfo().buildVersion || 'local']
   ];
   return h('section', { className: 'panel glass dedicated-page app-health-page', id: 'app-health' }, h('p', { className: 'eyebrow' }, 'Diagnostics'), h('h2', null, 'App health'), h('div', { className: 'status-grid' }, rows.map(([label, value]) => h('article', { key: label }, h('span', null, label), h('strong', null, value)))));
 }
