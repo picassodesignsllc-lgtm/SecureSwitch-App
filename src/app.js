@@ -832,6 +832,10 @@ function filteredAccounts() {
 }
 
 function safeArray(value) { return Array.isArray(value) ? value : []; }
+function safeAccounts() {
+  const accounts = safeArray(state.accounts).filter(Boolean);
+  return accounts.length ? accounts : demoAccounts.map(normalizeAccount);
+}
 function safeAccounts() { return safeArray(state.accounts).filter(Boolean); }
 function scoreFor(account) { return analyzeAccountSecurity(account || {}).score; }
 function accountRisk(account) { return analyzeAccountSecurity(account || {}); }
@@ -845,7 +849,7 @@ function duplicatedRecoveryEmails() {
   const counts = safeAccounts().reduce((map, account) => { const email = account.recoveryEmail || account.email; if (email) map[email] = (map[email] || 0) + 1; return map; }, {});
   return Object.values(counts).filter((count) => count > 1).reduce((sum, count) => sum + count, 0);
 }
-function oldPhoneAccounts() { return state.accounts.filter((account) => account.phone === state.switchOld || account.recoveryPhone === state.switchOld); }
+function oldPhoneAccounts() { return safeAccounts().filter((account) => account.phone === state.switchOld || account.recoveryPhone === state.switchOld); }
 function riskScore() { return Math.min(10, Math.round(((reviewCount() * 1.7) + (oldPhoneAccounts().length * 0.8) + duplicatedRecoveryEmails()) * 10) / 10); }
 function scoreBreakdown() {
   const score = averageScore();
@@ -941,6 +945,47 @@ async function saveRecoveryCenter(event) {
     toast('Recovery save needs attention');
   }
 }
+
+async function markNotificationRead(notification) {
+  setState({ notificationsRead: Array.from(new Set(state.notificationsRead.concat(notification.id))) });
+  if (usingLiveAccounts() && notification.id && !notification.id.startsWith('note-') && !notification.id.startsWith('alert-')) {
+    try { await writeUserScopedDoc('notifications', notification.id, { unread: false, readAt: new Date().toISOString() }); } catch (error) { setState({ dataError: safeError(error, 'Notification could not be marked read.') }); }
+  }
+}
+async function deleteNotification(notification) {
+  setState({ notifications: state.notifications.filter((item) => item.id !== notification.id), notificationsRead: Array.from(new Set(state.notificationsRead.concat(notification.id))) });
+  if (usingLiveAccounts() && notification.id && !notification.id.startsWith('note-') && !notification.id.startsWith('alert-')) {
+    try { await state.firebase.deleteDoc(userDoc('notifications', notification.id)); } catch (error) { setState({ dataError: safeError(error, 'Notification could not be deleted.') }); }
+  }
+  toast('Notification deleted');
+}
+
+async function saveUserProfile(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const profile = {
+    displayName: sanitizeInput(form.displayName.value),
+    photoURL: sanitizeInput(form.photoURL.value),
+    timezone: sanitizeInput(form.timezone.value),
+    country: sanitizeInput(form.country.value),
+    preferredNotifications: sanitizeInput(form.preferredNotifications.value),
+    theme: sanitizeInput(form.theme.value),
+    language: sanitizeInput(form.language.value)
+  };
+  setState({ userProfile: { ...state.userProfile, ...profile }, settings: { ...state.settings, theme: profile.theme, language: profile.language, preferredNotifications: profile.preferredNotifications } });
+  try {
+    if (usingLiveAccounts()) {
+      await state.firebase.setDoc(state.firebase.doc(state.db, 'users', state.user.uid), profile, { merge: true });
+      await writeUserScopedDoc('settings', 'profile', profile);
+      await recordAudit('settings_update', { section: 'profile' });
+    }
+    successToast('Profile saved');
+  } catch (error) {
+    setState({ dataError: safeError(error, 'Profile could not be saved.') });
+    toast('Profile save needs attention');
+  }
+}
+
 
 async function markNotificationRead(notification) {
   setState({ notificationsRead: Array.from(new Set(state.notificationsRead.concat(notification.id))) });
@@ -2226,10 +2271,40 @@ function CompanyLogoGrid() {
     accounts.map((account) => h('span', { key: account.id || account.name, className: `app-icon brand-icon brand-${brandSlug(account.name)}`, style: { '--brand-color': account.color }, title: account.name }, brandMark(account.name)))
   );
 }
+function SecurityAlertsPanel() {
+  const alerts = notificationItems().slice(0, 3);
+  return h('article', { className: 'security-alerts-card glass' },
+    h('span', null, 'Security Alerts'),
+    h('strong', { className: 'animated-counter' }, alerts.length),
+    h('small', null, alerts[0]?.title || 'No urgent alerts'),
+    h('div', { className: 'mini-alert-list' }, alerts.map((alert) => h('i', { key: alert.id || alert.title }, alert.title)))
+  );
+}
 function DashboardUtilities() {
   const accounts = safeAccounts();
   const deviceCount = safeArray(state.devices).length || accounts.filter((account) => account.deviceVerification).length || 1;
   const vaultStats = [
+    ['Vault Summary', vaultItems().length || accounts.length],
+    ['Backup Codes', accounts.filter((account) => account.backupCodes).length],
+    ['Passkeys', accounts.filter((account) => account.passkeyStatus).length]
+  ];
+  return h('section', { className: 'desktop-utility-grid' },
+    h('article', { className: 'device-card glass' }, h('span', null, 'Devices'), h('strong', null, deviceCount), h('small', null, state.isOffline ? 'Offline review' : 'Trusted workspace')),
+    vaultStats.map(([label, value]) => h('article', { key: label, className: 'vault-stat-card glass' }, h('span', null, label), h('strong', { className: 'animated-counter' }, value), h('small', null, 'Live workspace metric'))),
+    h(SecurityAlertsPanel)
+  );
+}
+
+function DashboardFallback() {
+  return [h('div', { className: 'desktop-top-grid' }, h(Hero)), h(FeatureShortcuts), h('div', { className: 'lower-grid dashboard-home-grid target-lower-grid' }, h(DashboardAccountsPreview), h(Activity)), h(DashboardUtilities)];
+}
+function DashboardHome() {
+  try {
+    return [h('div', { className: 'desktop-top-grid' }, h(Hero)), h(FeatureShortcuts), h(CompanyLogoGrid), h('div', { className: 'lower-grid dashboard-home-grid target-lower-grid' }, h(DashboardAccountsPreview), h(Activity)), h(DashboardUtilities)];
+  } catch (error) {
+    console.error('Dashboard render recovered with demo fallback', error);
+    return h(DashboardFallback);
+  }
     ['Vault Items', vaultItems().length],
     ['Backup Codes', accounts.filter((account) => account.backupCodes).length],
     ['Passkeys', accounts.filter((account) => account.passkeyStatus).length],
