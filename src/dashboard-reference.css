@@ -1,0 +1,243 @@
+/* SecureSwitch approved dashboard reference lock — desktop-first, scoped to dashboard only. */
+.dashboard[data-route="dashboard"] {
+  grid-template-columns: minmax(0, 850px) 370px !important;
+  gap: 14px !important;
+  max-width: 1234px !important;
+  margin: 0 auto !important;
+  align-items: start !important;
+}
+
+.dashboard[data-route="dashboard"] .main-column {
+  gap: 14px !important;
+  min-width: 0 !important;
+}
+
+.dashboard[data-route="dashboard"] .top-actions {
+  height: 46px !important;
+  min-height: 46px !important;
+  gap: 12px !important;
+  margin: 0 !important;
+}
+
+.dashboard[data-route="dashboard"] .desktop-top-grid {
+  min-width: 0 !important;
+}
+
+.dashboard[data-route="dashboard"] .hero {
+  height: 448px !important;
+  min-height: 448px !important;
+  grid-template-columns: minmax(0, 1fr) 330px !important;
+  align-items: center !important;
+  gap: 24px !important;
+  padding: 38px 48px !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  background:
+    radial-gradient(circle at 82% 52%, rgba(47,128,255,.30), transparent 19rem),
+    linear-gradient(145deg, rgba(13,18,48,.96), rgba(3,9,23,.98)) !important;
+}
+
+.dashboard[data-route="dashboard"] .hero-copy-panel {
+  align-content: center !important;
+  gap: 16px !important;
+  justify-items: start !important;
+  text-align: left !important;
+}
+
+.dashboard[data-route="dashboard"] .hero h1 {
+  max-width: 520px !important;
+  font-size: clamp(3.5rem, 5vw, 5.15rem) !important;
+  line-height: .88 !important;
+  letter-spacing: -.078em !important;
+  text-align: left !important;
+}
+
+.dashboard[data-route="dashboard"] .hero p:not(.eyebrow) {
+  max-width: 520px !important;
+  font-size: 1rem !important;
+  line-height: 1.55 !important;
+  text-align: left !important;
+}
+
+.dashboard[data-route="dashboard"] .hero-actions {
+  width: auto !important;
+  margin-top: 4px !important;
+  gap: 12px !important;
+}
+
+.dashboard[data-route="dashboard"] .hero-actions button {
+  min-height: 48px !important;
+  padding: 0 22px !important;
+  border-radius: 10px !important;
+}
+
+.dashboard[data-route="dashboard"] .premium-vault.v2-vault-hero {
+  grid-template-columns: 1fr !important;
+  justify-items: center !important;
+  align-content: center !important;
+}
+
+.dashboard[data-route="dashboard"] .v2-vault-cube {
+  width: 230px !important;
+  max-width: 100% !important;
+}
+
+.dashboard[data-route="dashboard"] .v2-vault-stats {
+  display: none !important;
+}
+
+.dashboard[data-route="dashboard"] .target-shortcuts {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+}
+
+.dashboard[data-route="dashboard"] .target-shortcut-card {
+  min-height: 96px !important;
+  aspect-ratio: auto !important;
+  grid-template-columns: 42px minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  align-content: center !important;
+  gap: 10px !important;
+  padding: 14px 16px !important;
+  border-radius: 14px !important;
+}
+
+.dashboard[data-route="dashboard"] .target-shortcut-card > span {
+  grid-row: 1 / span 2 !important;
+}
+
+.dashboard[data-route="dashboard"] .target-shortcut-card strong,
+.dashboard[data-route="dashboard"] .target-shortcut-card small {
+  grid-column: 2 !important;
+}
+
+.dashboard[data-route="dashboard"] .target-shortcut-card b {
+  grid-column: 3 !important;
+  grid-row: 1 / span 2 !important;
+  align-self: center !important;
+}
+
+.dashboard[data-route="dashboard"] .company-logo-grid,
+.dashboard[data-route="dashboard"] .desktop-utility-grid {
+  display: none !important;
+}
+
+.dashboard[data-route="dashboard"] .lower-grid,
+.dashboard[data-route="dashboard"] .dashboard-home-grid,
+.dashboard[data-route="dashboard"] .target-lower-grid {
+  grid-template-columns: minmax(0, 1.2fr) minmax(300px, .8fr) !important;
+  gap: 10px !important;
+}
+
+.dashboard[data-route="dashboard"] .target-accounts-card,
+.dashboard[data-route="dashboard"] .activity-panel {
+  min-height: 348px !important;
+  padding: 16px 18px !important;
+  border-radius: 14px !important;
+}
+
+.dashboard[data-route="dashboard"] .target-account-row {
+  min-height: 55px !important;
+  grid-template-columns: 40px minmax(0, 1fr) auto 14px !important;
+  gap: 10px !important;
+  padding: 7px 0 !important;
+}
+
+.dashboard[data-route="dashboard"] .target-account-row .account-meta-chip {
+  display: none !important;
+}
+
+.dashboard[data-route="dashboard"] .activity {
+  min-height: 64px !important;
+  padding: 8px 0 !important;
+}
+
+.dashboard[data-route="dashboard"] .right-protection-panel {
+  position: sticky !important;
+  top: 16px !important;
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 14px !important;
+  max-width: 370px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.dashboard[data-route="dashboard"] .protection-panel-card {
+  padding: 24px 18px 18px !important;
+  border-radius: 14px !important;
+}
+
+.dashboard[data-route="dashboard"] .target-score-ring {
+  width: 196px !important;
+  height: 196px !important;
+  margin: 14px auto 18px !important;
+}
+
+.dashboard[data-route="dashboard"] .target-score-stats {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+}
+
+.dashboard[data-route="dashboard"] .target-score-stats article {
+  min-width: 0 !important;
+  min-height: 88px !important;
+  text-align: center !important;
+}
+
+.dashboard[data-route="dashboard"] .protected,
+.dashboard[data-route="dashboard"] .quick-panel,
+.dashboard[data-route="dashboard"] .readiness-card {
+  border-radius: 14px !important;
+}
+
+.dashboard[data-route="dashboard"] .quick-panel {
+  gap: 8px !important;
+}
+
+.dashboard[data-route="dashboard"] .quick-row {
+  height: 46px !important;
+}
+
+@media (min-width: 1450px) {
+  .content-shell { padding-inline: 20px !important; }
+}
+
+@media (max-width: 1299px) {
+  .dashboard[data-route="dashboard"] {
+    grid-template-columns: minmax(0, 1fr) 330px !important;
+    max-width: 1120px !important;
+  }
+  .dashboard[data-route="dashboard"] .hero {
+    height: 420px !important;
+    min-height: 420px !important;
+    padding: 34px 38px !important;
+    grid-template-columns: minmax(0, 1fr) 280px !important;
+  }
+  .dashboard[data-route="dashboard"] .hero h1 {
+    font-size: clamp(3.2rem, 5vw, 4.45rem) !important;
+  }
+  .dashboard[data-route="dashboard"] .v2-vault-cube { width: 195px !important; }
+  .dashboard[data-route="dashboard"] .right-protection-panel { max-width: 330px !important; }
+}
+
+@media (max-width: 1024px) {
+  .dashboard[data-route="dashboard"] { grid-template-columns: 1fr !important; max-width: none !important; }
+  .dashboard[data-route="dashboard"] .right-protection-panel { position: static !important; max-width: none !important; }
+  .dashboard[data-route="dashboard"] .hero { height: auto !important; min-height: 560px !important; grid-template-columns: 1fr !important; text-align: center !important; }
+  .dashboard[data-route="dashboard"] .hero-copy-panel { justify-items: center !important; }
+  .dashboard[data-route="dashboard"] .hero h1,
+  .dashboard[data-route="dashboard"] .hero p:not(.eyebrow) { text-align: center !important; }
+}
+
+@media (max-width: 768px) {
+  .dashboard[data-route="dashboard"] .target-shortcuts,
+  .dashboard[data-route="dashboard"] .lower-grid,
+  .dashboard[data-route="dashboard"] .dashboard-home-grid,
+  .dashboard[data-route="dashboard"] .target-lower-grid { grid-template-columns: 1fr !important; }
+  .dashboard[data-route="dashboard"] .hero { min-height: 0 !important; padding: 28px 20px !important; }
+  .dashboard[data-route="dashboard"] .hero h1 { font-size: clamp(2.65rem, 13vw, 4rem) !important; }
+}
