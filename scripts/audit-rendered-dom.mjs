@@ -40,15 +40,20 @@ const expectedRail = ['floating-score', 'protected', 'quick-panel', 'readiness-p
 if (JSON.stringify(rightRailNames) !== JSON.stringify(expectedRail)) throw new Error(`Right rail mismatch. Expected ${expectedRail.join(', ')}, got ${rightRailNames.join(', ')}`);
 
 if (findByClass('shortcut').length !== 4) throw new Error(`Expected four shortcut cards, found ${findByClass('shortcut').length}`);
-if (findByClass('account-row').length < 5) throw new Error('Expected compact readable account rows.');
-if (findByClass('activity').length < 4) throw new Error('Expected compact readable activity rows.');
+if (findByClass('account-row').length !== 5) throw new Error(`Expected exactly five account rows, found ${findByClass('account-row').length}.`);
+if (findByClass('activity').length !== 4) throw new Error(`Expected exactly four activity rows, found ${findByClass('activity').length}.`);
+if (findByClass('hollow-score-ring').length !== 1) throw new Error('Hollow score ring must render exactly once.');
 
 for (const href of ['#dashboard', '#accounts', '#switch', '#blackout', '#kit', '#lookup', '#settings', '#timeline']) {
   if (!anchors.includes(href)) throw new Error(`Missing routed link: ${href}`);
 }
 const summaryText = textOf(tree);
-for (const expectedText of ['Never lose another account', 'Run Health Check', 'Watch Demo', '+ Add Account', 'Live Protection Score', 'You’re protected', 'Recovery Readiness', 'View all']) {
+for (const expectedText of ['Never lose another account', 'Run Health Check', 'Watch Demo', '+ Add Account', 'Live Protection Score', '86%', 'Excellent', 'You’re protected', 'Recovery Readiness', 'View all']) {
   if (!summaryText.includes(expectedText)) throw new Error(`Missing approved dashboard text/control: ${expectedText}`);
 }
 
-console.log('Rendered DOM audit passed: one approved dashboard, one right rail, required routed links, and readable account/activity rows.');
+for (const forbiddenText of ['Production account registry', 'Vault assets', '5/5 shown']) {
+  if (summaryText.includes(forbiddenText)) throw new Error(`Forbidden dashboard text remains: ${forbiddenText}`);
+}
+
+console.log('Rendered DOM audit passed: hollow 86% ring, exact account/activity rows, one dashboard renderer, required routed links, and forbidden legacy dashboard text absent.');
