@@ -25,6 +25,747 @@ const familyMembers = [
   { name: 'Brother', score: 68, note: 'Missing trusted contact' },
   { name: 'Grandma', score: 34, note: '⚠ No recovery phone' }
 ];
+const accountTemplates = ['Google', 'Apple', 'Microsoft', 'GitHub', 'Instagram', 'Facebook', 'X', 'Coinbase', 'Amazon', 'Discord', 'Dropbox', 'PayPal', 'Steam', 'More...', 'Custom Account'];
+const providerCatalog = { Google: ['#4285f4', 'G', 'Email'], Apple: ['#f8fafc', '', 'Email'], Microsoft: ['#00a4ef', 'M', 'Cloud'], GitHub: ['#8b949e', 'GH', 'Business'], Instagram: ['#e4405f', 'IG', 'Social'], Facebook: ['#1877f2', 'f', 'Social'], X: ['#111827', '𝕏', 'Social'], Coinbase: ['#0052ff', 'CB', 'Crypto'], Amazon: ['#ff9900', 'A', 'Shopping'], Discord: ['#5865f2', 'D', 'Gaming'], Dropbox: ['#0061ff', 'DB', 'Cloud'], PayPal: ['#003087', 'P', 'Banking'], Steam: ['#171a21', 'S', 'Gaming'], 'More...': ['#2bb8ff', '+', 'Custom'] };
+function providerMeta(name) { return providerCatalog[name] || [ '#2bb8ff', (name || '?').slice(0, 2).toUpperCase(), 'Custom' ]; }
+function brandSlug(name = '') { return String(name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'custom'; }
+function brandMark(name = '') {
+  const marks = { Google: 'G', Instagram: '◎', Facebook: 'f', Discord: '♟', Apple: '', Microsoft: '▦', GitHub: '⌘', Amazon: 'a', Coinbase: 'C', Slack: '✣', Dropbox: '◆', Steam: '●', 'Chase Bank': '◆', 'Crypto Wallet': '◇' };
+  return marks[name] || providerMeta(name)[1] || String(name).slice(0, 1).toUpperCase();
+}
+const onboardingAccountOptions = ['Google', 'Apple', 'Facebook', 'Instagram', 'Microsoft', 'Amazon', 'Discord', 'Slack', 'Coinbase', 'Custom'];
+const appCategories = ['Google', 'Apple', 'Microsoft', 'Banking', 'Crypto', 'Social', 'Gaming', 'Email', ...accountCategories.filter((category) => !['Google', 'Apple', 'Microsoft', 'Banking', 'Crypto', 'Social', 'Gaming', 'Email'].includes(category))];
+let accountUnsubscribe;
+let collectionUnsubscribes = [];
+let React;
+let root;
+function onboardingKey(user = state.user) { return `secureswitch:onboarded:${user?.uid || user?.email || 'local'}`; }
+function onboardingSeen(user = null) { try { return localStorage.getItem(onboardingKey(user)) === 'yes'; } catch { return false; } }
+function rememberOnboarding(user = null) { try { localStorage.setItem(onboardingKey(user || state.user), 'yes'); } catch { /* Ignore private browsing storage failures. */ } }
+
+const state = { user: null, auth: null, db: null, firebase: null, firebaseReady: false, vaultKey: null, mode: 'login', userProfile: null, accounts: demoAccounts.map(normalizeAccount), recoveryMethods: [], trustedContacts: [], backupCodes: [], securityAlerts: [], recoveryTimeline: timelineEvents, emergencyKits: [], settings: {}, selectedRecovery: '+1 (415) 555-0184', switchOld: '+1 (415) 555-0184', switchNew: '+1 (628) 555-0149', blackoutArmed: false, emergencyActive: false, emergencyRecoveryActive: false, scanComplete: false, aiStep: 0, timelineFilter: 'All', simulatorScenario: 'My phone was stolen', simulatorRan: false, activeProfile: null, vaultUnlocked: false, selectedVaultCategory: 'Recovery Emails', assistantPrompt: 'My phone was stolen', assistantStep: 0, emergencyScenario: 'Phone Stolen', recoveryWizardScenario: 'Phone stolen', recoveryWizardStep: 0, accountSearch: '', accountCategory: 'All', accountRiskFilter: 'All', accountStatusFilter: 'All', accountSort: 'Risk', accountDensity: 'compact', deviceSearch: '', devicePlatformFilter: 'All', deviceRiskFilter: 'All', deviceTrustFilter: 'All', deviceStatusFilter: 'All', deviceSort: 'Last seen', deviceDensity: 'compact', recoverySearch: '', recoveryStatusFilter: 'All', recoveryRiskFilter: 'All', recoveryPasskeyFilter: 'All', recoveryMfaFilter: 'All', recoveryCategoryFilter: 'All', recoverySort: 'Readiness', recoveryDensity: 'compact', editingAccountId: '', loading: false, authError: '', dataError: '', exportStatus: '', importStatus: '', onboardingOpen: !onboardingSeen(), onboardingStep: 0, onboardingProtection: 'Advanced', onboardingAccounts: ['Google', 'Apple', 'Instagram'], vaultCreating: false, onboardingComplete: false, globalSearch: '', settingsSearch: '', notificationSearch: '', notificationFilter: 'All', notificationCategory: 'All Activity', notificationDateFilter: 'All', notificationUnreadOnly: false, notificationPinnedOnly: false, notificationSort: 'Newest', notificationDensity: 'compact', selectedNotificationId: '', pinnedNotifications: [], archivedNotifications: [], rememberMe: true, notificationsRead: [], notifications: [], activityFeed: [], recoveryContacts: [], securityScores: [], adminVisible: false, organizations: demoOrganizations, selectedOrgRole: 'Member', inviteEmail: '', productTourStep: 0, commandPaletteOpen: false, selectedAccountId: '', expandedAccountId: '', accountDetailTab: 'Overview', auditRan: false, auditReport: '', upgradeModal: '', route: (location.hash || '#dashboard').replace('#', '') || 'dashboard', reportType: 'Recovery Report', waitlistStatus: '', waitlistReferral: '', importSource: 'CSV', isOffline: typeof navigator !== 'undefined' ? !navigator.onLine : false, securityEvents: [], auditEvents: [], devices: [], subscriptionPlan: 'free', backupStatus: 'Automatic encrypted backups ready', toast: 'Ready', aiCopilotOpen: false, aiCopilotQuestion: 'What should I fix first?', aiCopilotAnswer: '', dismissedFixes: [], expandedTimelineId: '', pageLoading: false, successPulse: '', commandIndex: 0, selectedOrganizationId: 'family', enterpriseInvitations: [], approvalWorkflows: [], enterprisePolicies: defaultSecurityPolicies(), enterpriseAuditLog: [], dashboardWidgetOrder: (() => { try { return JSON.parse(localStorage.getItem('secureswitch:dashboard-widgets')) || ['Executive Score', 'Accounts', 'Activity']; } catch { return ['Executive Score', 'Accounts', 'Activity']; } })(), notificationStatusFilter: 'All', runtimeMode: (() => { try { return localStorage.getItem('secureswitch:runtime-mode') || 'auto'; } catch { return 'auto'; } })() };
+const h = (...args) => React.createElement(...args);
+function EmptyState({ icon = '◌', title, description, action, onAction, secondaryAction, onSecondaryAction }) { return h('div', { className: 'empty-state premium-empty-state' }, h('span', { className: 'empty-illustration' }, icon), h('strong', null, title), h('p', null, description), h('div', { className: 'empty-actions' }, action && h('button', { className: 'primary', onClick: onAction }, action), secondaryAction && h('button', { className: 'ghost', onClick: onSecondaryAction }, secondaryAction))); }
+
+function hasFirebaseConfig() { return Object.values(firebaseConfig).every(Boolean); }
+function setState(patch) { Object.assign(state, patch); render(); }
+function toast(message) { setState({ toast: message }); window.setTimeout(() => setState({ toast: '' }), 2200); }
+function successToast(message) { setState({ successPulse: message, toast: `✓ ${message}` }); window.setTimeout(() => setState({ successPulse: '' }), 900); window.setTimeout(() => setState({ toast: '' }), 2400); }
+function firstName() { return state.userProfile?.displayName?.split(' ')[0] || state.user?.displayName?.split(' ')[0] || state.user?.email?.split('@')[0] || 'there'; }
+function selectedRuntimeMode() { return state.runtimeMode || 'auto'; }
+function usingLiveAccounts() { return selectedRuntimeMode() !== 'demo' && Boolean(state.user && state.db && state.firebaseReady); }
+function runtimeModeLabel() { return usingLiveAccounts() ? 'Production Mode' : selectedRuntimeMode() === 'production' ? 'Production Pending' : 'Demo Mode'; }
+function setRuntimeMode(mode) { try { localStorage.setItem('secureswitch:runtime-mode', mode); } catch { /* Ignore private browsing storage failures. */ } setState({ runtimeMode: mode }); if (mode === 'demo') { subscribeToAccounts(null); toast('Demo Mode enabled'); } else { toast(mode === 'production' ? 'Production Mode requested' : 'Automatic mode enabled'); if (state.user) subscribeToAccounts(state.user); } }
+function apiClient() { return createApiClient({ firebaseReady: state.firebaseReady, user: state.user }); }
+function currentRoute() { return state.route || (location.hash || '#dashboard').replace('#', '') || 'dashboard'; }
+function requireLiveUser() {
+  if (!state.user || !state.db || !state.firebaseReady) throw new Error('Sign in and configure Firebase before syncing data.');
+  return state.user;
+}
+function safeError(error, fallback) { return error?.message || fallback; }
+function friendlyAuthError(error, fallback) {
+  const code = error?.code || '';
+  if (code.includes('invalid-credential') || code.includes('wrong-password') || code.includes('user-not-found')) return 'We could not sign you in. Check your email and password, then try again.';
+  if (code.includes('email-already-in-use')) return 'That email already has a SecureSwitch account. Try logging in instead.';
+  if (code.includes('popup')) return 'The provider sign-in window was closed or blocked. Please try again.';
+  if (code.includes('network')) return 'Network error while contacting Firebase. Demo mode is still available.';
+  return safeError(error, fallback);
+}
+function buildInfo() { return globalThis.SECURESWITCH_CONFIG || {}; }
+function sanitizeInput(value) { return String(value || '').replace(/[<>]/g, '').trim().slice(0, 180); }
+function referralLink(code) { return `${location.origin}${location.pathname}?ref=${encodeURIComponent(code)}`; }
+function buildVersion() { return buildInfo().buildVersion || 'local-dev'; }
+function deployMode() { return buildInfo().deployMode || (location.protocol === 'file:' ? 'local-file' : 'static-web'); }
+function serializeAccount(record) {
+  const account = normalizeAccount(record);
+  return { ...account, serviceName: account.name, username: account.handle, updatedAt: state.firebase?.serverTimestamp ? state.firebase.serverTimestamp() : new Date().toISOString() };
+}
+async function readAccountDoc(doc) {
+  const data = doc.data();
+  if (data?.ciphertext && data?.iv && state.vaultKey) return normalizeAccount({ id: doc.id, ...(await decryptRecord(state.vaultKey, data)) });
+  if (data?.ciphertext && data?.iv && !state.vaultKey) return normalizeAccount({ id: doc.id, name: 'Encrypted recovery record', handle: 'Unlock vault to decrypt', category: 'Custom', status: 'Review', color: '#2bb8ff' });
+  return normalizeAccount({ id: doc.id, ...data });
+}
+function userCollection(name) {
+  const user = requireLiveUser();
+  return state.firebase.collection(state.db, 'users', user.uid, name);
+}
+function userDoc(pathName, docId) {
+  const user = requireLiveUser();
+  return state.firebase.doc(state.db, ...userScopedPath(user.uid, pathName, docId));
+}
+async function writeUserScopedDoc(collectionName, docId, data) {
+  requireLiveUser();
+  const payload = { ...data, updatedAt: state.firebase.serverTimestamp ? state.firebase.serverTimestamp() : new Date().toISOString() };
+  await state.firebase.setDoc(userDoc(collectionName, docId), payload, { merge: true });
+}
+async function refreshLiveSecurityScore(accounts = state.accounts) {
+  if (!usingLiveAccounts()) return;
+  await writeUserScopedDoc('securityScores', 'current', buildSecurityScoreDocument(accounts, state.firebase));
+}
+async function recordLiveActivity(type, account = {}, extra = {}) {
+  const event = { ...buildActivityEvent(type, account, state.firebase), ...extra };
+  setState({ activityFeed: [event].concat(state.activityFeed).slice(0, 30) });
+  if (usingLiveAccounts()) await writeUserScopedDoc('activity', `${type}-${Date.now()}`, event);
+  return event;
+}
+async function recordLiveNotification(type, account = {}, extra = {}) {
+  const note = { ...buildNotification(type, account, state.firebase), ...extra };
+  setState({ notifications: [note].concat(state.notifications).slice(0, 30) });
+  if (usingLiveAccounts()) await writeUserScopedDoc('notifications', `${type}-${Date.now()}`, note);
+  return note;
+}
+async function recordAudit(action, details = {}) {
+  const event = createAuditEvent(action, details);
+  setState({ auditEvents: [event].concat(state.auditEvents).slice(0, 20) });
+  if (usingLiveAccounts()) {
+    try {
+      await state.firebase.setDoc(userDoc('auditLogs', event.id), event, { merge: true });
+    } catch (error) {
+      setState({ dataError: safeError(error, 'Audit event could not sync, but the action completed locally.') });
+    }
+  }
+  return event;
+}
+async function ensureUserDocument(user) {
+  if (!state.db || !state.firebase || !user) return;
+  const profileRef = state.firebase.doc(state.db, 'users', user.uid);
+  const existing = await state.firebase.getDoc(profileRef).catch(() => null);
+  const existingData = existing?.exists?.() ? existing.data() : {};
+  const profile = { ...existingData, email: user.email || '', displayName: existingData.displayName || user.displayName || user.email || 'SecureSwitch user', photoURL: existingData.photoURL || user.photoURL || '', emailVerified: Boolean(user.emailVerified), lastLoginAt: state.firebase.serverTimestamp ? state.firebase.serverTimestamp() : new Date().toISOString() };
+  await state.firebase.setDoc(profileRef, profile, { merge: true });
+  setState({ userProfile: profile, onboardingOpen: !profile.betaOnboardingComplete && !onboardingSeen(user) });
+}
+async function ensureUserScopedCollections(user) {
+  if (!state.db || !state.firebase || !user) return;
+  const serverTime = state.firebase.serverTimestamp ? state.firebase.serverTimestamp() : new Date().toISOString();
+  const base = (...parts) => state.firebase.doc(state.db, 'users', user.uid, ...parts);
+  const defaults = [
+    ['settings', 'preferences', { darkMode: true, notifications: true, cloudSync: true, exportVault: true, importVault: true, emergencyPin: false, biometricLock: false, createdAt: serverTime }],
+    ['securityScores', 'current', { score: averageScore(), reasons: recoveryScoreFactors().factors.map(([label, count]) => ({ label, count })), createdAt: serverTime }],
+    ['activity', 'welcome', { title: 'SecureSwitch workspace created', type: 'login', createdAt: serverTime }],
+    ['recoveryContacts', 'primary', { name: 'Add trusted contact', status: 'Add a real contact', createdAt: serverTime }],
+    ['recoveryMethods', 'primary', { type: 'Recovery method inventory', status: 'Ready to populate', createdAt: serverTime }],
+    ['trustedContacts', 'primary', { name: 'Add trusted contact', status: 'Add a real contact', createdAt: serverTime }],
+    ['backupCodes', 'inventory', { status: 'Encrypted backup code inventory ready', count: 0, createdAt: serverTime }],
+    ['securityAlerts', 'welcome', { title: 'SecureSwitch live sync enabled', severity: 'Info', status: 'Open', createdAt: serverTime }],
+    ['recoveryTimeline', 'welcome', { date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' }), title: 'SecureSwitch account connected', status: 'Done', category: 'Security', createdAt: serverTime }],
+    ['emergencyKits', 'default', { title: 'Default emergency kit', status: 'Ready to build', items: ['Trusted contacts', 'Recovery letter', 'Insurance notes'], createdAt: serverTime }],
+    ['organizations', 'family-demo', { name: 'Family Vault', role: 'Owner', members: 1, vaults: 1, devices: 1, accounts: state.accounts.length, auditLogs: 1, recoveryPolicies: 7, securityScore: averageScore(), permission: 'Full access', activity: 'Organization created', createdAt: serverTime }],
+    ['settings', 'enterprisePolicies', { ...defaultSecurityPolicies(), createdAt: serverTime }],
+    ['billing', 'subscription', { plan: 'free', status: 'Free / beta', stripeConnected: false, paymentsEnabled: false, trialEligible: true, createdAt: serverTime }],
+    ['devices', 'current-browser', { ...currentDeviceSnapshot(), createdAt: serverTime }],
+    ['backups', 'latest', { ...createBackupManifest([]), status: 'Ready', createdAt: serverTime }]
+  ];
+  await Promise.all(defaults.map(([collectionName, docId, data]) => state.firebase.setDoc(base(collectionName, docId), data, { merge: true })));
+}
+function resetLiveCollections() {
+  collectionUnsubscribes.forEach((unsubscribe) => unsubscribe());
+  collectionUnsubscribes = [];
+  setState({ recoveryMethods: [], trustedContacts: [], recoveryContacts: [], backupCodes: [], securityAlerts: [], notifications: [], activityFeed: [], securityScores: [], recoveryTimeline: timelineEvents, emergencyKits: [], organizations: demoOrganizations, enterpriseInvitations: [], enterpriseAuditLog: [], approvalWorkflows: [], enterprisePolicies: defaultSecurityPolicies(), settings: {} });
+}
+function subscribeToUserCollection(name, stateKey, transform = (doc) => ({ id: doc.id, ...doc.data() })) {
+  const unsubscribe = state.firebase.onSnapshot(userCollection(name), (snapshot) => {
+    const records = snapshot.docs.map(transform);
+    setState({ [stateKey]: records });
+  }, (error) => setState({ dataError: safeError(error, `Could not load ${name}`) }));
+  collectionUnsubscribes.push(unsubscribe);
+}
+function subscribeToSupportCollections(user) {
+  resetLiveCollections();
+  if (!state.db || !state.firebase || !user) return;
+  subscribeToUserCollection('recoveryMethods', 'recoveryMethods');
+  subscribeToUserCollection('trustedContacts', 'trustedContacts');
+  subscribeToUserCollection('recoveryContacts', 'recoveryContacts');
+  subscribeToUserCollection('securityScores', 'securityScores');
+  subscribeToUserCollection('activity', 'activityFeed');
+  subscribeToUserCollection('notifications', 'notifications');
+  subscribeToUserCollection('backupCodes', 'backupCodes');
+  subscribeToUserCollection('securityAlerts', 'securityAlerts');
+  subscribeToUserCollection('recoveryTimeline', 'recoveryTimeline', (doc) => ({ id: doc.id, ...doc.data(), date: doc.data().date || 'Today', title: doc.data().title || 'Recovery event', status: doc.data().status || 'Done' }));
+  subscribeToUserCollection('emergencyKits', 'emergencyKits');
+  subscribeToUserCollection('organizations', 'organizations');
+  subscribeToUserCollection('organizationInvites', 'enterpriseInvitations');
+  subscribeToUserCollection('approvals', 'approvalWorkflows');
+  subscribeToUserCollection('enterpriseAuditLog', 'enterpriseAuditLog');
+  subscribeToUserCollection('auditLogs', 'auditEvents');
+  subscribeToUserCollection('devices', 'devices');
+  const settingsUnsubscribe = state.firebase.onSnapshot(userCollection('settings'), (snapshot) => {
+    const settings = Object.assign({}, ...snapshot.docs.map((doc) => doc.data()));
+    setState({ settings });
+  }, (error) => setState({ dataError: safeError(error, 'Could not load settings') }));
+  collectionUnsubscribes.push(settingsUnsubscribe);
+}
+function subscribeToAccounts(user) {
+  if (accountUnsubscribe) accountUnsubscribe();
+  if (!state.db || !state.firebase || !user) { setState({ accounts: demoAccounts.map(normalizeAccount), userProfile: null, dataError: '' }); resetLiveCollections(); return; }
+  setState({ accounts: [], loading: true, dataError: '' });
+  accountUnsubscribe = state.firebase.onSnapshot(state.firebase.collection(state.db, 'users', user.uid, 'accounts'), async (snapshot) => {
+    const records = [];
+    try {
+      for (const doc of snapshot.docs) records.push(await readAccountDoc(doc));
+      setState({ accounts: records, loading: false });
+    } catch (error) {
+      setState({ dataError: safeError(error, 'Unlock your vault to decrypt recovery records.'), loading: false });
+    }
+  }, (error) => setState({ dataError: safeError(error, 'Could not load accounts from Firestore'), loading: false }));
+}
+async function loadFirebase() {
+  if (!hasFirebaseConfig()) { setState({ firebaseReady: false, dataError: '' }); return; }
+  try {
+    const [{ initializeApp }, authModule, firestore] = await Promise.all([
+      import('https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js'),
+      import('https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js'),
+      import('https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js')
+    ]);
+    const app = initializeApp(firebaseConfig);
+    state.auth = authModule.getAuth(app);
+    await authModule.setPersistence(state.auth, state.rememberMe === false ? authModule.browserSessionPersistence : authModule.browserLocalPersistence);
+    state.db = firestore.getFirestore(app);
+    state.firebase = { ...authModule, ...firestore };
+    setState({ firebaseReady: true });
+    authModule.onAuthStateChanged(state.auth, async (user) => {
+      setState({ user, authError: '', dataError: '' });
+      if (user) {
+        try {
+          await ensureUserDocument(user);
+          await ensureUserScopedCollections(user);
+          subscribeToSupportCollections(user);
+        } catch (error) {
+          setState({ dataError: safeError(error, 'Could not prepare your SecureSwitch workspace') });
+        }
+      }
+      subscribeToAccounts(user);
+    });
+  } catch (error) {
+    setState({ firebaseReady: false, authError: '', dataError: safeError(error, 'Firebase unavailable; SecureSwitch is running in demo mode.') });
+  }
+}
+
+async function submitAuth(event) {
+  event.preventDefault();
+  if (!state.auth) return toast('Add Firebase config to enable real auth');
+  const email = event.currentTarget.email.value;
+  const password = event.currentTarget.password.value;
+  setState({ loading: true, authError: '' });
+  try {
+    await state.firebase.setPersistence(state.auth, state.rememberMe ? state.firebase.browserLocalPersistence : state.firebase.browserSessionPersistence);
+    const credential = state.mode === 'signup'
+      ? await state.firebase.createUserWithEmailAndPassword(state.auth, email, password)
+      : await state.firebase.signInWithEmailAndPassword(state.auth, email, password);
+    if (state.mode === 'signup' && credential.user && !credential.user.emailVerified) await state.firebase.sendEmailVerification(credential.user);
+    await ensureUserDocument(credential.user);
+    await recordAudit('login', { method: state.mode === 'signup' ? 'email_signup' : 'email_login' });
+    toast(state.mode === 'signup' ? 'Account created. Verification email sent.' : 'Signed in securely');
+  } catch (error) {
+    setState({ authError: friendlyAuthError(error, 'Authentication failed. Please try again.') });
+    toast('Authentication needs attention');
+  } finally {
+    setState({ loading: false });
+  }
+}
+
+async function sendPasswordReset(email) {
+  if (!state.auth) return toast('Configure Firebase first');
+  if (!email) { setState({ authError: 'Enter your email before requesting a password reset.' }); return; }
+  try {
+    await state.firebase.sendPasswordResetEmail(state.auth, email);
+    toast('Password reset email sent');
+  } catch (error) {
+    setState({ authError: friendlyAuthError(error, 'Password reset failed. Please try again.') });
+  }
+}
+
+async function signInWithProvider(providerName) {
+  if (!state.auth) return toast('Add Firebase config to enable real auth');
+  setState({ loading: true, authError: '' });
+  try {
+    const provider = providerName === 'apple' ? new state.firebase.OAuthProvider('apple.com') : providerName === 'microsoft' ? new state.firebase.OAuthProvider('microsoft.com') : new state.firebase.GoogleAuthProvider();
+    const credential = await state.firebase.signInWithPopup(state.auth, provider);
+    await ensureUserDocument(credential.user);
+    await recordAudit('login', { method: providerName });
+    toast(`Signed in with ${providerName === 'apple' ? 'Apple' : providerName === 'microsoft' ? 'Microsoft' : 'Google'}`);
+  } catch (error) {
+    setState({ authError: friendlyAuthError(error, `${providerName} sign-in failed. Please try again.`) });
+    toast('Provider sign-in needs attention');
+  } finally {
+    setState({ loading: false });
+  }
+}
+async function signOut() {
+  if (accountUnsubscribe) accountUnsubscribe();
+  accountUnsubscribe = null;
+  resetLiveCollections();
+  await recordAudit('logout', { method: 'secure_logout' });
+  if (state.auth) await state.firebase.signOut(state.auth);
+  setState({ user: null, userProfile: null, accounts: demoAccounts.map(normalizeAccount), vaultKey: null, vaultUnlocked: false });
+  toast('Signed out securely');
+}
+
+async function unlockVault(event) {
+  event.preventDefault();
+  if (!state.user || !state.db) return toast('Sign in and configure Firebase first');
+  const profileRef = state.firebase.doc(state.db, 'users', state.user.uid);
+  try {
+    const profileSnap = await state.firebase.getDoc(profileRef);
+    const salt = profileSnap.exists() ? profileSnap.data().vaultSalt : null;
+    const derived = await deriveVaultKey(event.currentTarget.passphrase.value, salt);
+    if (!salt) await state.firebase.setDoc(profileRef, { vaultSalt: derived.salt, email: state.user.email }, { merge: true });
+    state.vaultKey = derived.key;
+    setState({ vaultUnlocked: true });
+    subscribeToAccounts(state.user);
+    await recordAudit('vault_unlock', { severity: 'info' });
+    toast('Encrypted vault unlocked');
+  } catch (error) {
+    setState({ dataError: safeError(error, 'Vault unlock failed') });
+    toast('Vault unlock failed');
+  }
+}
+
+async function saveAccount(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  setState({ loading: true, dataError: '' });
+  if (!form.name.value.trim()) return setState({ dataError: 'Service name is required', loading: false });
+  if (form.email.value && !form.email.value.includes('@')) return setState({ dataError: 'Recovery email must be valid', loading: false });
+  const record = normalizeAccount({
+    id: state.editingAccountId || undefined,
+    name: form.name.value,
+    handle: form.handle.value,
+    category: form.category.value,
+    recoveryEmail: form.email.value,
+    recoveryPhone: form.phone.value,
+    backupCodes: form.codes.value,
+    trustedContacts: form.contacts.value,
+    authenticator: form.authenticator.value,
+    passkeyStatus: form.passkey.value,
+    deviceVerification: form.device.value,
+    lastReviewed: form.reviewed.value,
+    status: 'Review',
+    color: providerMeta(form.name.value)[0]
+  });
+  try {
+    if (usingLiveAccounts()) {
+      requireLiveUser();
+      if (!state.vaultKey) throw new Error('Unlock your encrypted vault before saving live recovery records.');
+      const payload = await encryptRecord(state.vaultKey, serializeAccount(record));
+      if (state.editingAccountId) {
+        await state.firebase.setDoc(userDoc('accounts', record.id), payload, { merge: true });
+        successToast(`${record.name} updated`);
+      } else {
+        await state.firebase.addDoc(userCollection('accounts'), payload);
+        successToast(`${record.name} added`);
+      }
+      const nextAccounts = state.editingAccountId ? state.accounts.map((account) => account.id === record.id ? record : account) : [record, ...state.accounts];
+      await refreshLiveSecurityScore(nextAccounts);
+      await recordLiveActivity(state.editingAccountId ? 'updated' : 'created', record);
+      await recordLiveNotification(state.editingAccountId ? 'updated' : 'created', record);
+      await writeUserScopedDoc('recoveryTimeline', `account-${Date.now()}`, { date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' }), title: `${record.name} recovery record saved`, status: 'Done', category: 'Recovery', accountId: record.id });
+      await recordAudit('recovery_update', { collection: 'accounts', encrypted: true, account: record.name });
+    } else {
+      const accounts = state.editingAccountId ? state.accounts.map((account) => account.id === state.editingAccountId ? record : account) : [record, ...state.accounts];
+      setState({ accounts, editingAccountId: '', activityFeed: [{ id: `local-${Date.now()}`, title: `${record.name} recovery record saved`, type: 'recovery_update', createdAt: new Date().toISOString() }].concat(state.activityFeed).slice(0, 20), notifications: [{ id: `local-note-${Date.now()}`, title: `${record.name} needs review`, detail: recommendationsFor(record)[0] || 'Account health updated', unread: true }].concat(state.notifications).slice(0, 20) });
+      successToast(`${record.name} ${state.editingAccountId ? 'updated' : 'added locally'}`);
+    }
+    form.reset();
+  } catch (error) {
+    setState({ dataError: safeError(error, 'We could not save this recovery record. Your dashboard is still available.') });
+    toast('Account save failed');
+  } finally {
+    setState({ loading: false });
+  }
+}
+
+function editAccount(account) { setState({ editingAccountId: account.id }); setTimeout(() => document.getElementById('account-form')?.scrollIntoView({ behavior: 'smooth' }), 0); }
+async function deleteAccount(accountId) {
+  const account = state.accounts.find((item) => item.id === accountId);
+  setState({ accounts: state.accounts.filter((item) => item.id !== accountId) });
+  if (usingLiveAccounts()) {
+    try {
+      requireLiveUser();
+      await state.firebase.deleteDoc(userDoc('accounts', accountId));
+      await recordLiveActivity('deleted', account || { id: accountId, name: 'Account' });
+      await recordLiveNotification('deleted', account || { id: accountId, name: 'Account' });
+      await refreshLiveSecurityScore(state.accounts.filter((item) => item.id !== accountId));
+      await writeUserScopedDoc('recoveryTimeline', `delete-${Date.now()}`, { date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' }), title: `${account?.name || 'Account'} recovery record deleted`, status: 'Done', category: 'Security' });
+      await recordAudit('recovery_update', { collection: 'accounts', operation: 'delete', account: account?.name || accountId });
+    } catch (error) {
+      setState({ dataError: safeError(error, 'Account could not be deleted') });
+    }
+  }
+  toast(`${account?.name || 'Account'} deleted`);
+}
+function downloadJson(filename, data) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+async function exportEncryptedRecoveryData() {
+  try {
+    if (!state.vaultKey && !usingLiveAccounts()) throw new Error('Unlock your vault before exporting encrypted recovery data.');
+    let records;
+    if (usingLiveAccounts()) {
+      requireLiveUser();
+      const snapshot = await state.firebase.getDocs(userCollection('accounts'));
+      records = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })).filter((record) => record.iv && record.ciphertext);
+      if (!records.length && state.vaultKey && state.accounts.length) records = await Promise.all(state.accounts.map(async (account) => ({ id: account.id, ...(await encryptRecord(state.vaultKey, serializeAccount(account))) })));
+    } else {
+      records = await Promise.all(state.accounts.map(async (account) => ({ id: account.id, ...(await encryptRecord(state.vaultKey, serializeAccount(account))) })));
+    }
+    if (!records.length) throw new Error('No encrypted recovery records are available to export yet.');
+    const bundle = { product: 'SecureSwitch', format: 'encrypted-recovery-export', version: 1, exportedAt: new Date().toISOString(), deployMode: deployMode(), records };
+    downloadJson(`secureswitch-encrypted-export-${new Date().toISOString().slice(0, 10)}.json`, bundle);
+    setState({ exportStatus: `${records.length} encrypted recovery records exported.` });
+    await recordAudit('export', { type: 'encrypted_recovery_data', records: records.length });
+    successToast('Encrypted export ready');
+  } catch (error) {
+    setState({ exportStatus: safeError(error, 'Encrypted export failed') });
+    toast('Encrypted export needs attention');
+  }
+}
+async function importEncryptedRecoveryData(event) {
+  const [file] = event.target.files || [];
+  if (!file) return;
+  try {
+    const bundle = JSON.parse(await file.text());
+    if (bundle.product !== 'SecureSwitch' || bundle.format !== 'encrypted-recovery-export' || !Array.isArray(bundle.records)) throw new Error('This is not a valid SecureSwitch encrypted export.');
+    const encryptedRecords = bundle.records.filter((record) => record.iv && record.ciphertext);
+    if (!encryptedRecords.length) throw new Error('No encrypted recovery records were found in this file.');
+    if (usingLiveAccounts()) {
+      requireLiveUser();
+      await Promise.all(encryptedRecords.map((record) => state.firebase.setDoc(userDoc('accounts', record.id || `import-${globalThis.crypto?.randomUUID ? globalThis.crypto.randomUUID() : Date.now()}`), { iv: record.iv, ciphertext: record.ciphertext }, { merge: true })));
+      await writeUserScopedDoc('recoveryTimeline', `import-${Date.now()}`, { date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' }), title: 'Encrypted recovery data imported', status: 'Review', category: 'Recovery' });
+      await recordAudit('backup', { type: 'encrypted_import', records: encryptedRecords.length });
+    } else {
+      if (!state.vaultKey) throw new Error('Unlock your vault before importing encrypted data in demo mode.');
+      const imported = [];
+      for (const record of encryptedRecords) imported.push(normalizeAccount({ id: record.id, ...(await decryptRecord(state.vaultKey, record)) }));
+      setState({ accounts: imported.concat(state.accounts) });
+    }
+    setState({ importStatus: `${encryptedRecords.length} encrypted recovery records imported.` });
+    toast('Encrypted import complete');
+  } catch (error) {
+    setState({ importStatus: safeError(error, 'Import failed. Only import files you trust.') });
+    toast('Encrypted import failed');
+  } finally {
+    event.target.value = '';
+  }
+}
+function prioritizedRecommendations() {
+  const items = [];
+  for (const account of state.accounts) {
+    if (!account.authenticator || /sms/i.test(account.authenticator)) items.push({ impact: 16, title: 'Enable MFA', detail: `${account.name}: replace SMS with an authenticator or hardware key.` });
+    if (!account.backupCodes) items.push({ impact: 14, title: 'Download Backup Codes', detail: `${account.name}: add encrypted backup code status.` });
+    if (!account.trustedContacts) items.push({ impact: 12, title: 'Add Trusted Contact', detail: `${account.name}: add a human recovery fallback.` });
+    if (!account.recoveryEmail) items.push({ impact: 10, title: 'Verify Recovery Email', detail: `${account.name}: add and verify a recovery email.` });
+    if (Date.parse(account.lastReviewed || '') < Date.now() - 180 * 86400000) items.push({ impact: 8, title: 'Rotate Password', detail: `${account.name}: password/recovery review is stale.` });
+  }
+  if (!state.emergencyKits.length) items.push({ impact: 18, title: 'Export Recovery Kit', detail: 'Create an emergency kit to improve recovery readiness.' });
+  return items.sort((a, b) => b.impact - a.impact).slice(0, 8);
+}
+function highlightMatch(text, query = state.globalSearch) {
+  const value = String(text || '');
+  const needle = String(query || '').trim();
+  if (!needle) return value;
+  const index = value.toLowerCase().indexOf(needle.toLowerCase());
+  if (index === -1) return value;
+  return [value.slice(0, index), h('mark', { key: 'match' }, value.slice(index, index + needle.length)), value.slice(index + needle.length)];
+}
+function globalSearchResults() {
+  const query = state.globalSearch.trim().toLowerCase();
+  if (!query) return [];
+  const entries = [
+    ...state.accounts.map((account) => ({ type: 'Account', label: account.name, detail: [account.handle, account.category, account.recoveryEmail].filter(Boolean).join(' · '), href: '#account-detail', action: () => setState({ selectedAccountId: account.id }) })),
+    ...state.devices.map((device) => ({ type: 'Device', label: device.browser || device.name || 'Device', detail: [device.os, device.location, device.ip].filter(Boolean).join(' · '), href: '#devices' })),
+    ...state.recoveryTimeline.map((event) => ({ type: 'Timeline', label: event.title || 'Timeline event', detail: event.status || event.category || 'Activity', href: '#account-detail' })),
+    ...state.activityFeed.map((event) => ({ type: 'Activity', label: event.title || event.type || 'Activity', detail: event.createdAt || 'Recent', href: '#dashboard' })),
+    ...state.recoveryContacts.map((contact) => ({ type: 'Recovery Contact', label: contact.name || 'Recovery contact', detail: contact.status || contact.email || 'Trusted contact', href: '#recovery-center' })),
+    ...state.recoveryMethods.map((method) => ({ type: 'Recovery Method', label: method.type || method.name || 'Recovery method', detail: method.status || 'Ready', href: '#recovery-center' })),
+    ...state.trustedContacts.map((contact) => ({ type: 'Member', label: contact.name || 'Trusted contact', detail: contact.status || 'Trusted recovery contact', href: '#recovery-center' })),
+    ...state.organizations.map((org) => ({ type: 'Organization', label: org.name, detail: `${org.role || 'Member'} · ${org.members || 1} members`, href: '#team-vaults' })),
+    ...notificationItems().map((note) => ({ type: 'Notification', label: note.title, detail: note.detail, href: '#notifications' })),
+    ...['Settings', 'Reports', 'Vault', 'Commands', 'Devices', 'Recovery Center', 'Security Audit', 'Family', 'Organization', 'Dark Web', 'Premium', 'Emergency Kit', 'AI Recovery Coach'].map((label) => ({ type: label === 'Commands' ? 'Command' : 'Page', label, detail: 'SecureSwitch workspace', href: label === 'Reports' ? '#report-generator' : label === 'Vault' ? '#secure-vault' : label === 'Devices' ? '#devices' : label === 'Family' ? '#family-protection' : label === 'Dark Web' ? '#dark-web' : label === 'Emergency Kit' ? '#kit' : `#${label.toLowerCase().replaceAll(' ', '-')}` }))
+  ];
+  return entries.filter((entry) => `${entry.type} ${entry.label} ${entry.detail}`.toLowerCase().includes(query)).slice(0, 10);
+}
+function downloadTextFile(filename, mimeType, content) {
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+function generatePdf(title, lines) {
+  const safeLines = [title, '', ...lines].map((line) => String(line).replace(/[()\\]/g, ''));
+  const text = safeLines.map((line, index) => `BT /F1 12 Tf 50 ${760 - index * 18} Td (${line}) Tj ET`).join('\n');
+  return `%PDF-1.3\n1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj\n2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj\n3 0 obj << /Type /Page /Parent 2 0 R /Resources << /Font << /F1 4 0 R >> >> /MediaBox [0 0 612 792] /Contents 5 0 R >> endobj\n4 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> endobj\n5 0 obj << /Length ${text.length} >> stream\n${text}\nendstream endobj\ntrailer << /Root 1 0 R >>\n%%EOF`;
+}
+function exportReport(kind) {
+  const recs = prioritizedRecommendations();
+  const lines = [`Recovery Score: ${averageScore()}%`, `Accounts: ${state.accounts.length}`, `Top recommendation: ${recs[0]?.title || 'All clear'}`].concat(recs.map((item) => `${item.title}: ${item.detail}`));
+  if (kind === 'encrypted') { exportEncryptedRecoveryData(); return; }
+  if (kind === 'checklist') downloadTextFile('secureswitch-recovery-checklist.txt', 'text/plain', lines.join('\n'));
+  else if (kind === 'contacts') downloadTextFile('secureswitch-emergency-contacts.txt', 'text/plain', state.accounts.map((account) => `${account.name}: ${account.trustedContacts || 'No trusted contact'}`).join('\n'));
+  else downloadTextFile(`secureswitch-${kind}-report.pdf`, 'application/pdf', generatePdf(`SecureSwitch ${kind} Report`, lines));
+  toast(`${kind} export generated`);
+}
+async function submitWaitlist(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const record = {
+    name: sanitizeInput(form.name.value),
+    email: sanitizeInput(form.email.value),
+    referralCode: sanitizeInput(form.referral.value || `SS-${Date.now().toString(36).toUpperCase()}`),
+    interest: sanitizeInput(form.interest.value),
+    audience: sanitizeInput(form.audience.value),
+    createdAt: new Date().toISOString()
+  };
+  try {
+    if (state.firebaseReady && state.db) await state.firebase.addDoc(state.firebase.collection(state.db, 'waitlist'), record);
+    setState({ waitlistStatus: 'You are on the SecureSwitch beta waitlist.', waitlistReferral: referralLink(record.referralCode) });
+    toast('Waitlist spot reserved');
+  } catch (error) {
+    setState({ waitlistStatus: safeError(error, 'Waitlist could not sync. Your demo signup is saved locally.') });
+  }
+}
+function logSecurityEvent(title) {
+  const event = { title, time: new Date().toLocaleTimeString(), id: `sec-${Date.now()}` };
+  setState({ securityEvents: [event].concat(state.securityEvents).slice(0, 8) });
+}
+function importAccountsFromSource(event) {
+  event.preventDefault();
+  const source = event.currentTarget.source.value;
+  const demo = normalizeAccount({ name: `${source} Import`, handle: 'imported@example.com', category: 'Custom', recoveryEmail: 'imported@example.com', recoveryPhone: '+1 (555) 010-0000', authenticator: source.includes('Authenticator') ? source : 'Imported MFA', backupCodes: source === 'Encrypted Backup' ? 'Encrypted backup imported' : '', trustedContacts: 'Imported contact', status: 'Review', color: '#38bdf8' });
+  setState({ accounts: [demo].concat(state.accounts), importSource: source });
+  logSecurityEvent(`${source} import completed`);
+  toast(`${source} local import complete`);
+}
+function exportFormat(kind) {
+  if (kind === 'csv') downloadTextFile('secureswitch-accounts.csv', 'text/csv', ['name,category,recoveryScore,risk'].concat(state.accounts.map((account) => `${account.name},${account.category},${scoreFor(account)},${riskLevel(account)}`)).join('\n'));
+  else if (kind === 'json') downloadTextFile('secureswitch-accounts.json', 'application/json', JSON.stringify(state.accounts, null, 2));
+  else if (kind === 'emergency-kit') exportReport('contacts');
+  else if (kind === 'encrypted') exportEncryptedRecoveryData();
+  else exportReport('recovery');
+  logSecurityEvent(`${kind} export generated`);
+}
+async function createOrganization(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const organization = createOrganizationRecord({ name: sanitizeInput(form.organization.value || 'SecureSwitch Organization'), role: state.selectedOrgRole, ownerId: state.user?.uid || 'local' });
+  organization.accounts = state.accounts.length;
+  organization.devices = safeArray(state.devices).length || 1;
+  organization.securityScore = averageScore();
+  const audit = enterpriseAuditEvent({ action: 'Account Added', actor: firstName(), category: 'Organization', description: `${organization.name} organization created`, severity: 'Info' });
+  try {
+    if (usingLiveAccounts()) {
+      await writeUserScopedDoc('organizations', organization.id, organization);
+      await writeUserScopedDoc('enterpriseAuditLog', audit.id, audit);
+    }
+    setState({ organizations: [organization].concat(state.organizations), selectedOrganizationId: organization.id, enterpriseAuditLog: [audit].concat(state.enterpriseAuditLog), inviteEmail: '' });
+    logSecurityEvent(`${organization.name} organization created`);
+    await recordAudit('organization_created', { role: organization.role });
+    successToast('Organization workspace created');
+  } catch (error) {
+    setState({ dataError: safeError(error, 'Organization could not be saved. Demo vault is still available.') });
+  }
+}
+async function inviteOrganizationMember(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const inviteEmail = sanitizeInput(form.inviteEmail.value);
+  if (!inviteEmail) return;
+  const invite = createInvitation({ email: inviteEmail, role: state.selectedOrgRole, organizationId: state.selectedOrganizationId, inviter: firstName() });
+  const audit = enterpriseAuditEvent({ action: 'Organization Invite', actor: firstName(), category: 'Members', description: `${state.selectedOrgRole} invite sent to ${inviteEmail}`, severity: 'Info' });
+  try {
+    if (usingLiveAccounts()) {
+      await writeUserScopedDoc('organizationInvites', invite.id, invite);
+      await writeUserScopedDoc('enterpriseAuditLog', audit.id, audit);
+    }
+    setState({ enterpriseInvitations: [invite].concat(state.enterpriseInvitations), enterpriseAuditLog: [audit].concat(state.enterpriseAuditLog), inviteEmail: '' });
+    logSecurityEvent(`${state.selectedOrgRole} invite sent to ${inviteEmail}`);
+    await recordAudit('organization_invite', { role: state.selectedOrgRole });
+    successToast('Invite prepared');
+  } catch (error) {
+    setState({ dataError: safeError(error, 'Invite could not be saved. Demo invite is still visible.') });
+  }
+}
+async function createEnterpriseApproval(action, target) {
+  const approval = createApproval({ action, actor: firstName(), target, category: 'Approvals' });
+  const audit = enterpriseAuditEvent({ action: 'Approval Requested', actor: firstName(), category: 'Approvals', description: `${action} requested for ${target}`, severity: 'Warning' });
+  if (usingLiveAccounts()) {
+    await writeUserScopedDoc('approvals', approval.id, approval);
+    await writeUserScopedDoc('enterpriseAuditLog', audit.id, audit);
+  }
+  setState({ approvalWorkflows: [approval].concat(state.approvalWorkflows), enterpriseAuditLog: [audit].concat(state.enterpriseAuditLog) });
+  successToast('Approval workflow created');
+}
+function resolveEnterpriseApproval(id, status) {
+  const at = new Date().toISOString();
+  setState({ approvalWorkflows: state.approvalWorkflows.map((approval) => approval.id === id ? { ...approval, status, history: [...(approval.history || []), { status, actor: firstName(), at }] } : approval) });
+  successToast(`Approval ${status.toLowerCase()}`);
+}
+function updateDashboardWidget(widget, direction) {
+  const order = reorderWidget(state.dashboardWidgetOrder, widget, direction);
+  try { localStorage.setItem('secureswitch:dashboard-widgets', JSON.stringify(order)); } catch { /* Ignore local storage failures. */ }
+  setState({ dashboardWidgetOrder: order });
+  successToast('Dashboard layout saved');
+}
+function passwordHealthScore() {
+  const totalLoss = state.accounts.reduce((loss, account) => loss + (!account.backupCodes ? 8 : 0) + (!account.authenticator || account.authenticator === 'SMS only' ? 10 : 0) + (!account.recoveryEmail ? 8 : 0) + (!account.recoveryPhone ? 6 : 0) + (riskLevel(account) === 'High' ? 10 : 0), 0);
+  return Math.max(35, Math.min(100, 100 - totalLoss));
+}
+function chartValues() { return [averageScore(), passwordHealthScore(), Math.max(45, 100 - state.securityEvents.length * 6), Math.min(98, 52 + state.emergencyKits.length * 12), 76, 88]; }
+function selectedAccount() { return state.accounts.find((account) => account.id === state.selectedAccountId) || state.accounts[0] || normalizeAccount({ name: 'No account selected', category: 'Custom' }); }
+function accountTimeline(account) {
+  const events = [
+    ['Password changes', account.lastReviewed || 'Today', account.lastReviewed ? 'Password reviewed during latest audit.' : 'No recent password review recorded.'],
+    ['Recovery email updates', account.recoveryEmail ? 'Ready' : 'Missing', account.recoveryEmail || `${account.name} recovery email missing.`],
+    ['Recovery phone updates', account.recoveryPhone ? 'Ready' : 'Missing', account.recoveryPhone || `${account.name} recovery phone missing.`],
+    [account.authenticator ? '2FA enabled' : '2FA disabled', account.authenticator || 'Missing', account.authenticator || `${account.name} has no authenticator recorded.`],
+    [account.passkeyStatus ? 'Passkey added' : 'Passkey missing', account.passkeyStatus || 'Missing', account.passkeyStatus || `${account.name} has no passkey.`],
+    [account.backupCodes ? 'Backup codes generated' : 'No backup codes', account.backupCodes || 'Missing', account.backupCodes || `${account.name} has no backup codes.`],
+    ['New login', 'Current session', state.user ? 'Authenticated SecureSwitch session active.' : 'Demo session active.'],
+    [account.deviceVerification ? 'Trusted device' : 'Unknown device', account.deviceVerification || 'Needs review', account.deviceVerification || `${account.name} device trust needs review.`],
+    [scoreFor(account) < 80 ? 'Security alerts' : 'Security clear', `${scoreFor(account)}%`, recommendationsFor(account)[0] || 'No urgent recommendations.']
+  ];
+  return events.map(([title, status, detail], index) => ({ id: `${account.id || account.name}-${index}`, title, status, detail }));
+}
+function riskFindings(accounts = state.accounts) {
+  return explainableSecurityScore(accounts).deductions.map((item) => ({ account: item.accountName, detail: item.reason, severity: item.severity, action: item.recommendedAction, improvement: item.estimatedImprovement }));
+}
+function liveRiskScore() {
+  const findings = riskFindings();
+  const score = Math.min(100, findings.reduce((sum, item) => sum + (item.severity === 'Critical' ? 18 : item.severity === 'High' ? 12 : 7), 0));
+  const label = score >= 70 ? 'Critical' : score >= 42 ? 'High' : score >= 18 ? 'Medium' : 'Low';
+  return { score, label, findings };
+}
+function runSecurityAudit() {
+  const findings = riskFindings();
+  const lines = ['SecureSwitch Security Audit', `Generated: ${new Date().toISOString()}`, `Overall Risk: ${liveRiskScore().label}`, '', ...findings.map((item) => `${item.severity}: ${item.detail}`)];
+  setState({ auditRan: true, auditReport: lines.join('\n') });
+  toast(`Security audit complete: ${findings.length} finding${findings.length === 1 ? '' : 's'}`);
+}
+function exportSecurityAudit() {
+  if (!state.auditReport) runSecurityAudit();
+  downloadTextFile('secureswitch-security-audit.txt', 'text/plain', state.auditReport || 'Security audit generated.');
+}
+function openUpgrade(feature) { setState({ upgradeModal: feature }); }
+function securityGrade(score = averageScore()) {
+  if (score >= 97) return 'A+';
+  if (score >= 90) return 'A';
+  if (score >= 80) return 'B';
+  if (score >= 67) return 'C';
+  return 'D';
+}
+function protectionStatus(score = liveProtectionScore()) {
+  if (score >= 90) return 'Excellent';
+  if (score >= 75) return 'Strong';
+  if (score >= 60) return 'Needs Review';
+  if (score >= 40) return 'At Risk';
+  return 'Critical';
+}
+function topSecurityRecommendation() {
+  const finding = riskFindings()[0];
+  if (finding) return { text: `${finding.account}: ${finding.detail}. ${finding.action || 'Review now'} could add +${finding.improvement || 0} points.`, time: finding.severity === 'Critical' ? '2 minutes' : '4 minutes', severity: finding.severity };
+  return { text: 'All connected accounts are recovery ready.', time: '1 minute', severity: 'Low' };
+}
+function aiSecurityRecommendations() {
+  const duplicateEmails = Object.entries(state.accounts.reduce((map, account) => { const email = account.recoveryEmail || account.email; if (email) map[email] = (map[email] || 0) + 1; return map; }, {})).filter(([, count]) => count > 1);
+  const recs = generateSecurityRecommendations(state.accounts, state.devices).slice(0, 5).map((item) => ({ severity: item.severity, text: `${item.accountName}: ${item.reason}`, time: item.severity === 'Critical' ? '2 min' : '4 min', action: item.recommendedAction || 'Fix Now' }));
+  if (duplicateEmails.length) recs.unshift({ severity: 'High', text: `You have ${duplicateEmails[0][1]} accounts using the same recovery email.`, time: '3 min', action: 'Review Email' });
+  return recs.length ? recs : [{ severity: 'Low', text: 'No urgent account recovery risks detected.', time: '1 min', action: 'Review' }];
+}
+function vaultItems() {
+  return ['Recovery Codes', 'Passkeys', 'Passport', 'Driver License', 'Insurance', 'Emergency Contacts', 'Wallet Recovery', 'Crypto Recovery Notes', 'Medical Information', 'Important Documents'];
+}
+
+function localJsonList(key, fallback = []) { try { const value = JSON.parse(localStorage.getItem(key) || 'null'); return Array.isArray(value) ? value : fallback; } catch { return fallback; } }
+function saveLocalJsonList(key, value) { try { localStorage.setItem(key, JSON.stringify(value.slice(0, 8))); } catch { /* Ignore private browsing storage failures. */ } }
+function rememberPaletteItem(key, label) {
+  const existing = localJsonList(key).filter((item) => item !== label);
+  saveLocalJsonList(key, [label].concat(existing));
+}
+function favoritePaletteItem(label) {
+  const favorites = localJsonList('secureswitch:command-favorites');
+  const next = favorites.includes(label) ? favorites.filter((item) => item !== label) : [label].concat(favorites);
+  saveLocalJsonList('secureswitch:command-favorites', next);
+  setState({ toast: favorites.includes(label) ? 'Favorite removed' : 'Favorite saved' });
+}
+function commandPaletteItems() {
+  return [
+    ['Go to Dashboard', 'Return to command center', () => { location.hash = 'dashboard'; }],
+    ['Go to Accounts', 'Open account manager', () => { location.hash = 'accounts'; }],
+    ['Go to Devices', 'Open device intelligence center', () => { location.hash = 'devices'; }],
+    ['Open Recovery Vault', 'Open recovery methods and contacts', () => { location.hash = 'recovery-center'; }],
+    ['Open Security Center', 'Open protection command center', () => { location.hash = 'security-center'; }],
+    ['Open AI Copilot', 'Open AI Copilot workspace', () => { location.hash = 'ai-recovery-coach'; setState({ aiCopilotOpen: false }); }],
+    ['Open Notifications', 'Open notification center', () => { location.hash = 'notifications'; }],
+    ['Open Settings', 'Workspace preferences', () => { location.hash = 'settings'; }],
+    ['View Security Score', `${liveProtectionScore()}% protection score`, () => { location.hash = 'security-center'; }],
+    ['Show Risky Accounts', `${weakAccounts().length} accounts need attention`, () => { setState({ accountRiskFilter: 'High' }); location.hash = 'accounts'; }],
+    ['Show Missing MFA', `${state.accounts.filter((account) => !account.authenticator || /sms only/i.test(account.authenticator)).length} accounts`, () => { setState({ accountSearch: 'SMS' }); location.hash = 'accounts'; }],
+    ['Show Weak Passwords', `${riskFindings().length} security findings`, () => { location.hash = 'security-audit'; }],
+    ['Show Recovery Ready', `${state.accounts.filter((account) => account.ready).length} ready accounts`, () => { setState({ recoveryStatusFilter: 'Ready' }); location.hash = 'recovery-center'; }],
+    ['Show Devices', `${safeArray(state.devices).length || 1} device records`, () => { location.hash = 'devices'; }],
+    ['Show Audit Events', `${buildSecurityTimeline({ accounts: state.accounts, activity: state.activityFeed, notifications: notificationItems(), auditEvents: state.auditEvents, devices: state.devices }).length} events`, () => { location.hash = 'security-center'; }],
+    ['Add Account', 'Open existing account form', () => { location.hash = 'accounts'; toast('Account form ready'); }],
+    ['Backup Codes', 'Open recovery center backup code workflow', () => { location.hash = 'recovery-center'; toast('Backup code workflow ready'); }],
+    ['Export', 'Open import/export center', () => { location.hash = 'import-export'; }],
+    ['Theme', 'Theme controls', () => toast('Dark mode is already enabled')],
+    ['Diagnostics', 'Open hidden app health diagnostics', () => { location.hash = 'app-health'; }],
+    ['Run Scan', 'Start health scan', runHealthScan]
+  ];
+}
+function palettePageItems() {
+  return [
+    ['Dashboard', '#dashboard', 'Home command center'], ['Accounts', '#accounts', 'Account manager'], ['Devices', '#devices', 'Device intelligence'], ['Recovery Vault', '#recovery-center', 'Recovery methods'], ['Security Center', '#security-center', 'Security command center'], ['AI Copilot', '#ai-recovery-coach', 'Copilot workspace'], ['Notifications', '#notifications', 'Notification center'], ['Settings', '#settings', 'Workspace settings'], ['Premium', '#premium', 'Plans'], ['Vault', '#secure-vault', 'Secure vault'], ['Emergency Kit', '#kit', 'Emergency access'], ['Family', '#family-protection', 'Family protection'], ['Organization', '#organization', 'Organization workspace'], ['Dark Web', '#dark-web', 'Dark web monitoring']
+  ].map(([label, href, detail]) => ({ group: 'Pages', icon: '⌘', label, detail, href, action: () => { location.hash = href.replace('#', ''); } }));
+}
+function paletteDataItems() {
+  const timeline = buildSecurityTimeline({ accounts: state.accounts, activity: state.activityFeed, notifications: notificationItems(), auditEvents: state.auditEvents, devices: state.devices });
+  const recommendations = generateSecurityRecommendations(state.accounts, state.devices);
+  return [
+    ...state.accounts.map((account) => ({ group: 'Accounts', icon: brandMark(account.name), label: account.name, detail: [account.handle, account.category, riskLevel(account), `${scoreFor(account)}%`].filter(Boolean).join(' · '), action: () => { setState({ selectedAccountId: account.id }); location.hash = 'account-detail'; } })),
+    ...state.devices.map((device) => ({ group: 'Devices', icon: '◈', label: device.name || device.browser || 'Device', detail: [device.os, device.location, device.trusted ? 'Trusted' : 'Needs review'].filter(Boolean).join(' · '), action: () => { location.hash = 'devices'; } })),
+    ...state.recoveryMethods.map((method) => ({ group: 'Recovery', icon: '◇', label: method.type || method.name || 'Recovery method', detail: method.status || 'Recovery record', action: () => { location.hash = 'recovery-center'; } })),
+    ...state.recoveryContacts.map((contact) => ({ group: 'Recovery', icon: '◌', label: contact.name || 'Recovery contact', detail: contact.email || contact.status || 'Trusted contact', action: () => { location.hash = 'recovery-center'; } })),
+    ...timeline.slice(0, 10).map((event) => ({ group: 'Audit & Activity', icon: '•', label: event.title, detail: `${event.type} · ${formatDate(event.at)}`, action: () => { location.hash = 'security-center'; } })),
+    ...notificationItems().map((item) => ({ group: 'Notifications', icon: '!', label: item.title, detail: item.detail || item.category || 'Notification', action: () => { location.hash = 'notifications'; } })),
+    ...recommendations.map((item) => ({ group: 'Recommendations', icon: '+', label: item.recommendedAction || item.title, detail: `${item.accountName}: ${item.reason}`, action: () => { location.hash = 'ai-recovery-coach'; setState({ aiCopilotQuestion: 'What should I fix first?' }); } })),
+    ...Object.entries(state.settings || {}).map(([label, value]) => ({ group: 'Settings', icon: '⚙', label, detail: String(value), action: () => { location.hash = 'settings'; } }))
+  ];
+}
+function commandPaletteResults() {
+  const query = state.globalSearch.trim().toLowerCase();
+  const favorites = localJsonList('secureswitch:command-favorites');
+  const recentCommands = localJsonList('secureswitch:command-recents');
+  const recentSearches = localJsonList('secureswitch:search-recents');
+  const commandItems = commandPaletteItems().map(([label, detail, action]) => ({ group: 'Commands', icon: '↵', label, detail, action }));
+  const recentItems = recentCommands.map((label) => commandItems.find((item) => item.label === label)).filter(Boolean).map((item) => ({ ...item, group: 'Recent' }));
+  const searchItems = recentSearches.map((label) => ({ group: 'Recent Searches', icon: '⌕', label, detail: 'Saved local search', action: () => setState({ globalSearch: label, commandIndex: 0 }) }));
+  const favoriteItems = favorites.map((label) => [...commandItems, ...palettePageItems()].find((item) => item.label === label)).filter(Boolean).map((item) => ({ ...item, group: 'Favorites' }));
+  const entries = [...favoriteItems, ...recentItems, ...searchItems, ...commandItems, ...palettePageItems(), ...paletteDataItems()];
+  const filtered = query ? entries.filter((entry) => `${entry.group} ${entry.label} ${entry.detail}`.toLowerCase().includes(query)) : entries.filter((entry) => ['Favorites', 'Recent', 'Recent Searches', 'Commands', 'Pages'].includes(entry.group));
+  const seen = new Set();
+  return filtered.filter((entry) => { const key = `${entry.group}:${entry.label}:${entry.detail}`; if (seen.has(key)) return false; seen.add(key); return true; }).slice(0, 48);
+}
+function groupedPaletteResults(results) {
+  return results.reduce((groups, item) => { (groups[item.group] ||= []).push(item); return groups; }, {});
+}
+function executeCommand(command) {
+  const label = Array.isArray(command) ? command[0] : command.label;
+  const action = Array.isArray(command) ? command[2] : command.action;
+  if (state.globalSearch.trim()) rememberPaletteItem('secureswitch:search-recents', state.globalSearch.trim());
+  rememberPaletteItem('secureswitch:command-recents', label);
+  setState({ commandPaletteOpen: false, globalSearch: '', commandIndex: 0 });
+  action?.();
+}
 
 const recoveryPlaybooks = {
   'Phone stolen': ['Lock the lost phone remotely', 'Freeze SIM with your carrier', 'Recover Apple ID and Google', 'Restore authenticator from backup', 'Review banking and crypto sessions'],
