@@ -828,13 +828,11 @@ function runHealthScan() { setState({ scanComplete: true }); toast(`Recovery Hea
 function Sidebar() {
   const links = [
     ['▦', 'Dashboard', 'dashboard'], ['♙', 'Accounts', 'accounts'], ['⇄', 'Switch Mode', 'switch'],
-    ['⌾', 'Blackout Mode', 'blackout'], ['▣', 'Emergency Kit', 'kit'], ['⌕', 'Recovery Lookup', 'lookup'], ['⚙', 'Settings', 'settings'],
-    ['✦', 'Health Scan', 'scan'], ['◌', 'Identity Health', 'identity-health'], ['↳', 'Timeline', 'timeline'],
-    ['◇', 'Recovery Coach', 'recovery-coach'], ['⌁', 'Simulator', 'simulator'], ['♡', 'Family Mode', 'family']
+    ['⌾', 'Blackout Mode', 'blackout'], ['▣', 'Emergency Kit', 'kit'], ['⌕', 'Recovery Lookup', 'lookup'], ['⚙', 'Settings', 'settings']
   ];
   return h('aside', { className: 'sidebar', 'aria-label': 'SecureSwitch navigation' },
     h('a', { className: 'brand', href: '#dashboard' }, h('span', { className: 'logo', 'aria-hidden': true }, '0'), h('span', { className: 'brand-wordmark' }, 'SecureSwitch'), h('b', null, 'PRO')),
-    h('nav', null, links.map(([icon, label, id]) => h('a', { key: id, href: `#${id}`, className: id === 'dashboard' ? 'active' : '' }, h('span', { className: 'nav-glyph', 'aria-hidden': true }, icon), h('span', null, label)))),
+    h('nav', null, links.map(([icon, label, id]) => h('a', { key: id, href: `#${id}`, className: currentRoute() === id ? 'active' : '' }, h('span', { className: 'nav-glyph', 'aria-hidden': true }, icon), h('span', null, label)))),
     h('article', { className: 'go-pro' }, h('p', { className: 'eyebrow' }, '✦ Go Pro'), h('p', null, 'Unlock unlimited accounts, advanced monitoring, and priority recovery.'), h('button', { className: 'primary', onClick: () => toast('Go Pro coming soon') }, 'Upgrade Now')),
     h('footer', { className: 'profile' }, h('span', null, 'KH'), h('div', null, h('strong', null, 'Keith Harrison'), h('small', null, 'keith@secureswitch.app')), h('i', null, '⌄'))
   );
@@ -1038,10 +1036,16 @@ function FloatingAICoach() {
 }
 
 function Dashboard() {
-  return h('main', { className: 'dashboard' },
-    h('div', { className: 'main-column' }, h(TopActions), h(Hero), h(Shortcuts), h('div', { className: 'lower-grid' }, h(Accounts), h(Activity)), h(DemoModeBanner), h(OnboardingPanel), h(DashboardSummaryCards), h(HealthScoreGrid), h(IdentityHealthDashboard), h(HealthScan), h(EmergencyButton), h(RecoveryWizardMVP), h(RecoveryCoach), h(EmergencySimulator), h(RecoveryTimeline), h(FamilyMode), h(WeeklyReport), h(RecoveryInsights), h(IdentityDNA), h(RecoveryMap), h(AccountForm), h(SwitchMode), h(BlackoutMode), h(EmergencyKit), h(RecoveryLookup), h(Settings)),
-    h('aside', { className: 'dashboard-side' }, h(ProtectionScore), h(ProtectedStatus), h(QuickActions), h(Readiness), h(FloatingAICoach), h(LiveThreatFeed), h(SuggestedFixes))
+  return h('main', { className: 'dashboard', 'data-route': 'dashboard' },
+    h('div', { className: 'main-column' }, h(TopActions), h(Hero), h(Shortcuts), h('div', { className: 'lower-grid' }, h(Accounts), h(Activity))),
+    h('aside', { className: 'dashboard-side right-protection-panel' }, h(ProtectionScore), h(ProtectedStatus), h(QuickActions), h(Readiness))
   );
+}
+
+function RoutePage() {
+  const route = currentRoute();
+  const pages = { accounts: h(Accounts), switch: h(SwitchMode), blackout: h(BlackoutMode), kit: h(EmergencyKit), lookup: h(RecoveryLookup), settings: h(Settings), scan: h(HealthScan), timeline: h(RecoveryTimeline) };
+  return h('main', { className: 'route-page', 'data-route': route }, pages[route] || h(Dashboard));
 }
 
 function SyncAndAuthPanel() {
@@ -1059,8 +1063,8 @@ function App() {
   return h('div', { className: 'app-shell' },
     h(Sidebar),
     h('section', { className: 'content-shell' },
-      h(Dashboard),
-      h(SyncAndAuthPanel),
+      currentRoute() === 'dashboard' ? h(Dashboard) : h(RoutePage),
+      currentRoute() === 'dashboard' ? null : h(SyncAndAuthPanel),
       h('div', { className: 'toast ' + (state.toast ? 'show' : ''), role: 'status', 'aria-live': 'polite' }, state.toast)
     )
   );
