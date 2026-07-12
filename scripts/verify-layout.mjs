@@ -5,12 +5,12 @@ const app = await readFile('src/app.js', 'utf8');
 
 const requiredCss = [
   'grid-template-columns: 260px minmax(0, 1fr)',
-  'grid-template-columns: minmax(0, 1fr) 370px',
-  'height: calc(100vh - 28px)',
-  'grid-template-rows: 42px 342px 82px minmax(0, 1fr)',
-  'height: 342px',
-  'min-height: 88px',
-  'width: 370px',
+  'grid-template-columns: minmax(0, 1fr) 388px',
+  'height: calc(100vh - 24px)',
+  'grid-template-rows: 42px 366px 94px minmax(0, 1fr)',
+  'height: 366px',
+  'min-height: 94px',
+  'width: 388px',
   'position: static !important',
   'transform: none !important',
   'overflow: hidden !important',
