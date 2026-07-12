@@ -1,6 +1,12 @@
 import { firebaseConfig } from './firebaseConfig.js';
 import { deriveVaultKey, encryptRecord, decryptRecord } from './crypto.js';
 import { accountCategories, firestoreCollections, normalizeAccount, scoreAccount, riskLevel, recommendationsFor, dashboardSummary } from './recoveryEngine.js';
+import { createApiClient } from './services/api.js';
+import { createAuditEvent } from './services/audit.js';
+import { createBackupManifest } from './services/backup.js';
+import { currentDeviceSnapshot } from './services/devices.js';
+import { defaultSecurityPolicies } from './services/enterprise.js';
+import { buildActivityEvent, buildNotification, buildSecurityScoreDocument, userScopedPath } from './services/liveData.js';
 
 const demoAccounts = [
   { name: 'Google', handle: 'keith.harrison@gmail.com', status: 'Secure', color: '#4285f4', category: 'Email', phone: '+1 (415) 555-0184', email: 'keith.harrison@gmail.com', recoveryEmail: 'backup@secureswitch.app', recoveryPhone: '+1 (415) 555-0184', backupCodes: '8 encrypted codes', trustedContacts: 'Alicia Harrison', authenticator: '1Password', ready: true },
@@ -24,6 +30,10 @@ const familyMembers = [
   { name: 'Mom', score: 81, note: 'Needs backup code refresh' },
   { name: 'Brother', score: 68, note: 'Missing trusted contact' },
   { name: 'Grandma', score: 34, note: '⚠ No recovery phone' }
+];
+const demoOrganizations = [
+  { id: 'family', name: 'Family Vault', role: 'Owner', members: 4, vaults: 4, devices: 9, accounts: 24, auditLogs: 18, recoveryPolicies: 7, securityScore: 82, permission: 'Full access', activity: 'Mom refreshed backup codes' },
+  { id: 'studio', name: 'Picasso Designs', role: 'Admin', members: 8, vaults: 8, devices: 21, accounts: 64, auditLogs: 42, recoveryPolicies: 11, securityScore: 88, permission: 'Manage workspace', activity: 'Slack recovery policy reviewed' }
 ];
 const accountTemplates = ['Google', 'Apple', 'Microsoft', 'GitHub', 'Instagram', 'Facebook', 'X', 'Coinbase', 'Amazon', 'Discord', 'Dropbox', 'PayPal', 'Steam', 'More...', 'Custom Account'];
 const providerCatalog = { Google: ['#4285f4', 'G', 'Email'], Apple: ['#f8fafc', '', 'Email'], Microsoft: ['#00a4ef', 'M', 'Cloud'], GitHub: ['#8b949e', 'GH', 'Business'], Instagram: ['#e4405f', 'IG', 'Social'], Facebook: ['#1877f2', 'f', 'Social'], X: ['#111827', '𝕏', 'Social'], Coinbase: ['#0052ff', 'CB', 'Crypto'], Amazon: ['#ff9900', 'A', 'Shopping'], Discord: ['#5865f2', 'D', 'Gaming'], Dropbox: ['#0061ff', 'DB', 'Cloud'], PayPal: ['#003087', 'P', 'Banking'], Steam: ['#171a21', 'S', 'Gaming'], 'More...': ['#2bb8ff', '+', 'Custom'] };
@@ -776,124 +786,6 @@ const recoveryPlaybooks = {
   'Social media hacked': ['Start platform recovery', 'Secure recovery email', 'Revoke connected apps', 'Update MFA', 'Capture incident timeline']
 };
 const onboardingSteps = ['Understand SecureSwitch', 'Add first account', 'Add recovery email and phone', 'Add backup codes', 'Add trusted contact', 'Get first recovery score'];
-let React;
-let root;
-
-const state = { user: null, auth: null, db: null, firebase: null, vaultKey: null, mode: 'login', accounts: demoAccounts.map(normalizeAccount), selectedRecovery: '+1 (415) 555-0184', switchOld: '+1 (415) 555-0184', switchNew: '+1 (628) 555-0149', blackoutArmed: false, emergencyActive: false, scanComplete: false, aiStep: 0, timelineFilter: 'All', simulatorScenario: 'My phone was stolen', simulatorRan: false, activeProfile: null, vaultUnlocked: false, selectedVaultCategory: 'Recovery Emails', assistantPrompt: 'My phone was stolen', assistantStep: 0, emergencyScenario: 'Phone Stolen', recoveryWizardScenario: 'Phone stolen', recoveryWizardStep: 0, onboardingStep: 0, accountSearch: '', accountCategory: 'All', editingAccountId: '', loading: false, authError: '', dataError: '', toast: 'Ready' };
-const h = (...args) => React.createElement(...args);
-
-function hasFirebaseConfig() { return Object.values(firebaseConfig).every(Boolean); }
-function setState(patch) { Object.assign(state, patch); render(); }
-function toast(message) { setState({ toast: message }); window.setTimeout(() => setState({ toast: '' }), 2200); }
-
-async function loadFirebase() {
-  if (!hasFirebaseConfig()) return;
-  const [{ initializeApp }, authModule, firestore] = await Promise.all([
-    import('https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js'),
-    import('https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js'),
-    import('https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js')
-  ]);
-  const app = initializeApp(firebaseConfig);
-  state.auth = authModule.getAuth(app);
-  await authModule.setPersistence(state.auth, authModule.browserLocalPersistence);
-  state.db = firestore.getFirestore(app);
-  state.firebase = { ...authModule, ...firestore };
-  authModule.onAuthStateChanged(state.auth, (user) => setState({ user }));
-}
-
-async function submitAuth(event) {
-  event.preventDefault();
-  if (!state.auth) return toast('Add Firebase config to enable real auth');
-  const email = event.currentTarget.email.value;
-  const password = event.currentTarget.password.value;
-  setState({ loading: true, authError: '' });
-  try {
-    const credential = state.mode === 'signup'
-      ? await state.firebase.createUserWithEmailAndPassword(state.auth, email, password)
-      : await state.firebase.signInWithEmailAndPassword(state.auth, email, password);
-    if (state.mode === 'signup' && credential.user) await state.firebase.sendEmailVerification(credential.user);
-    toast(state.mode === 'signup' ? 'Account created. Verification email sent.' : 'Signed in securely');
-  } catch (error) {
-    setState({ authError: error.message || 'Authentication failed' });
-    toast('Authentication needs attention');
-  } finally {
-    setState({ loading: false });
-  }
-}
-
-async function unlockVault(event) {
-  event.preventDefault();
-  if (!state.user || !state.db) return toast('Sign in and configure Firebase first');
-  const profileRef = state.firebase.doc(state.db, 'users', state.user.uid);
-  const profileSnap = await state.firebase.getDoc(profileRef);
-  const salt = profileSnap.exists() ? profileSnap.data().vaultSalt : null;
-  const derived = await deriveVaultKey(event.currentTarget.passphrase.value, salt);
-  if (!salt) await state.firebase.setDoc(profileRef, { vaultSalt: derived.salt, email: state.user.email }, { merge: true });
-  state.vaultKey = derived.key;
-  state.firebase.onSnapshot(state.firebase.collection(state.db, 'users', state.user.uid, 'accounts'), async (snapshot) => {
-    const records = [];
-    for (const doc of snapshot.docs) records.push(normalizeAccount({ id: doc.id, ...(await decryptRecord(state.vaultKey, doc.data())) }));
-    if (records.length) setState({ accounts: records });
-  });
-  toast('Encrypted vault unlocked');
-}
-
-async function saveAccount(event) {
-  event.preventDefault();
-  const form = event.currentTarget;
-  setState({ loading: true, dataError: '' });
-  if (!form.name.value.trim()) return setState({ dataError: 'Service name is required', loading: false });
-  if (form.email.value && !form.email.value.includes('@')) return setState({ dataError: 'Recovery email must be valid', loading: false });
-  const record = normalizeAccount({
-    id: state.editingAccountId || undefined,
-    name: form.name.value,
-    handle: form.handle.value,
-    category: form.category.value,
-    recoveryEmail: form.email.value,
-    recoveryPhone: form.phone.value,
-    backupCodes: form.codes.value,
-    trustedContacts: form.contacts.value,
-    authenticator: form.authenticator.value,
-    passkeyStatus: form.passkey.value,
-    deviceVerification: form.device.value,
-    lastReviewed: form.reviewed.value,
-    status: 'Review',
-    color: '#2bb8ff'
-  });
-  try {
-    if (state.vaultKey && state.user && state.db && state.editingAccountId) {
-      await state.firebase.setDoc(state.firebase.doc(state.db, 'users', state.user.uid, 'accounts', record.id), await encryptRecord(state.vaultKey, record));
-      toast(`${record.name} updated encrypted`);
-    } else if (state.vaultKey && state.user && state.db) {
-      await state.firebase.addDoc(state.firebase.collection(state.db, 'users', state.user.uid, 'accounts'), await encryptRecord(state.vaultKey, record));
-      toast(`${record.name} saved encrypted`);
-    } else {
-      const accounts = state.editingAccountId ? state.accounts.map((account) => account.id === state.editingAccountId ? record : account) : [record, ...state.accounts];
-      setState({ accounts, editingAccountId: '' });
-      toast(`${record.name} ${state.editingAccountId ? 'updated' : 'added locally'}`);
-    }
-    form.reset();
-  } catch (error) {
-    setState({ dataError: error.message || 'Account could not be saved' });
-    toast('Account save failed');
-  } finally {
-    setState({ loading: false });
-  }
-}
-
-function editAccount(account) { setState({ editingAccountId: account.id }); setTimeout(() => document.getElementById('account-form')?.scrollIntoView({ behavior: 'smooth' }), 0); }
-async function deleteAccount(accountId) {
-  const account = state.accounts.find((item) => item.id === accountId);
-  setState({ accounts: state.accounts.filter((item) => item.id !== accountId) });
-  if (state.user && state.db && state.vaultKey) {
-    try {
-      await state.firebase.deleteDoc(state.firebase.doc(state.db, 'users', state.user.uid, 'accounts', accountId));
-    } catch (error) {
-      setState({ dataError: error.message || 'Account could not be deleted' });
-    }
-  }
-  toast(`${account?.name || 'Account'} deleted`);
-}
 function filteredAccounts() {
   const query = state.accountSearch.toLowerCase();
   return state.accounts.filter((account) => (state.accountCategory === 'All' || account.category === state.accountCategory) && [account.name, account.handle, account.recoveryEmail, account.category].join(' ').toLowerCase().includes(query));

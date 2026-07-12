@@ -1,6 +1,12 @@
 import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 import { accountCategories, firestoreCollections, normalizeAccount, scoreAccount, riskLevel, recommendationsFor, dashboardSummary } from '../src/recoveryEngine.js';
+import { createApiClient } from '../src/services/api.js';
+import { createAuditEvent } from '../src/services/audit.js';
+import { createBackupManifest } from '../src/services/backup.js';
+import { currentDeviceSnapshot } from '../src/services/devices.js';
+import { defaultSecurityPolicies } from '../src/services/enterprise.js';
+import { buildActivityEvent, buildNotification, buildSecurityScoreDocument, userScopedPath } from '../src/services/liveData.js';
 
 let source = await readFile('src/app.js', 'utf8');
 source = source
@@ -29,6 +35,15 @@ const context = {
   riskLevel,
   recommendationsFor,
   dashboardSummary,
+  createApiClient,
+  createAuditEvent,
+  createBackupManifest,
+  currentDeviceSnapshot,
+  defaultSecurityPolicies,
+  buildActivityEvent,
+  buildNotification,
+  buildSecurityScoreDocument,
+  userScopedPath,
 };
 vm.createContext(context);
 vm.runInContext(`${source}\nReact = ReactMock; globalThis.__tree = App();`, context, { filename: 'src/app.js' });
