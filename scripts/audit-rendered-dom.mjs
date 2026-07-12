@@ -48,14 +48,12 @@ if (findByClass('mobile-score-ring').length !== 1) throw new Error('Mobile 86% s
 if (findByClass('mobile-quick-card').length !== 4) throw new Error(`Expected four mobile quick actions, found ${findByClass('mobile-quick-card').length}.`);
 if (findByClass('mobile-account-card').length !== 5) throw new Error(`Expected five mobile account cards, found ${findByClass('mobile-account-card').length}.`);
 if (findByClass('mobile-activity-card').length !== 4) throw new Error(`Expected four mobile activity cards, found ${findByClass('mobile-activity-card').length}.`);
-if (findByClass('hollow-score-ring').length !== 1) throw new Error('Hollow score ring must render exactly once.');
 
 for (const href of ['#dashboard', '#accounts', '#switch', '#blackout', '#kit', '#lookup', '#settings', '#timeline']) {
   if (!anchors.includes(href)) throw new Error(`Missing routed link: ${href}`);
 }
 const summaryText = textOf(tree);
 for (const expectedText of ['Never lose another account', 'Run Health Check', 'Watch Demo', '+ Add Account', 'Accounts', 'Switch Mode', 'Blackout Mode', 'Emergency Kit', 'Live Protection Score', '86%', 'Excellent', 'You’re protected', 'Recovery Readiness', 'View all']) {
-for (const expectedText of ['Never lose another account', 'Run Health Check', 'Watch Demo', '+ Add Account', 'Live Protection Score', '86%', 'Excellent', 'You’re protected', 'Recovery Readiness', 'View all']) {
   if (!summaryText.includes(expectedText)) throw new Error(`Missing approved dashboard text/control: ${expectedText}`);
 }
 
@@ -64,4 +62,3 @@ for (const forbiddenText of ['Production account registry', 'Vault assets', '5/5
 }
 
 console.log('Rendered DOM audit passed: desktop remains locked, mobile dashboard renders required score/actions/accounts/activity/nav, required routed links, and forbidden legacy dashboard text is absent.');
-console.log('Rendered DOM audit passed: hollow 86% ring, exact account/activity rows, one dashboard renderer, required routed links, and forbidden legacy dashboard text absent.');

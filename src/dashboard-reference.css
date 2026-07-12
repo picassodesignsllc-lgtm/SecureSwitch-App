@@ -102,8 +102,9 @@ html, body {
     gap: 10px !important;
     min-height: 88px !important;
   }
-  .shortcut { min-height: 88px !important; height: 88px !important; padding: 12px 14px !important; border-radius: 14px !important; overflow: hidden !important; }
-  .shortcut small, .account-row small, .activity small { overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
+  .shortcut { min-height: 88px; height: 88px; padding: 12px 14px; border-radius: 14px; overflow: hidden; }
+  .shortcut small { white-space: normal; word-break: normal; overflow-wrap: normal; hyphens: none; }
+  .account-row small, .activity small { overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
 
   .lower-grid {
     display: grid !important;
@@ -156,7 +157,7 @@ html, body {
   .dashboard[data-route="dashboard"] { display: grid !important; grid-template-columns: minmax(0, 1fr) !important; gap: 14px !important; overflow: visible !important; }
   .right-protection-panel { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; width: 100% !important; max-width: none !important; position: static !important; }
   .hero { height: 330px !important; min-height: 330px !important; grid-template-columns: minmax(0,1fr) 240px !important; overflow: hidden !important; }
-  .shortcut-grid, .lower-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .shortcut-grid, .lower-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 768px) {
@@ -177,8 +178,8 @@ html, body {
   .hero-actions button { width: 100% !important; }
   .hero .premium-vault { transform: none !important; transform-origin: center !important; max-height: 240px !important; overflow: hidden !important; }
   .hero .vault-assets, .hero .vault-detail { display: none !important; }
-  .shortcut-grid, .lower-grid, .right-protection-panel { display: grid !important; grid-template-columns: 1fr !important; gap: 10px !important; width: 100% !important; max-width: none !important; }
-  .shortcut { min-height: 78px !important; height: auto !important; }
+  .shortcut-grid, .lower-grid, .right-protection-panel { display: grid; grid-template-columns: 1fr; gap: 10px; width: 100%; max-width: none; }
+  .shortcut { min-height: 78px; height: auto; }
   .account-row { grid-template-columns: 36px minmax(0,1fr) auto !important; }
   .account-row .account-actions { display: none !important; }
 }
@@ -268,11 +269,11 @@ html, body {
   .vault-body { filter: drop-shadow(0 0 36px rgba(56,189,248,.30)) !important; }
   .vault-glow-ring { box-shadow: 0 0 42px rgba(45,128,255,.82), inset 0 0 42px rgba(45,128,255,.22) !important; }
 
-  .shortcut-grid { gap: 13px !important; min-height: 94px !important; }
-  .shortcut { height: 94px !important; min-height: 94px !important; padding: 17px 18px !important; border-radius: 18px !important; border-color: rgba(191,219,254,.14) !important; box-shadow: 0 18px 52px rgba(2,6,23,.34), 0 8px 22px rgba(59,130,246,.10) !important; }
-  .shortcut > span { width: 44px !important; height: 44px !important; border-radius: 14px !important; }
-  .shortcut strong { font-size: .98rem !important; }
-  .shortcut small { font-size: .76rem !important; margin-top: 3px !important; }
+  .shortcut-grid { gap: 13px; min-height: 94px; }
+  .shortcut { height: 94px; min-height: 94px; padding: 17px 18px; border-radius: 18px; border-color: rgba(191,219,254,.14); box-shadow: 0 18px 52px rgba(2,6,23,.34), 0 8px 22px rgba(59,130,246,.10); }
+  .shortcut > span { width: 44px; height: 44px; border-radius: 14px; }
+  .shortcut strong { font-size: .98rem; }
+  .shortcut small { font-size: .76rem; margin-top: 3px; }
 
   .target-score-ring.hollow-score-ring { width: 184px !important; height: 184px !important; margin: 14px auto 16px !important; background: conic-gradient(from -90deg, #a78bfa 0deg, #38bdf8 var(--score), rgba(30,41,59,.88) var(--score), rgba(30,41,59,.88) 360deg) !important; box-shadow: inset 0 0 0 18px #07101f, 0 0 52px rgba(56,189,248,.34), 0 0 76px rgba(139,92,246,.26) !important; }
   .target-score-ring.hollow-score-ring::before { width: calc(100% - 36px); height: calc(100% - 36px); }
@@ -350,14 +351,14 @@ html, body {
   .vault-glow-ring { border-width: 4px !important; width: 86% !important; height: 60% !important; bottom: 9% !important; box-shadow: 0 0 58px rgba(45,128,255,.92), inset 0 0 54px rgba(45,128,255,.28) !important; }
   .vault-body { box-shadow: inset 0 2px 0 rgba(255,255,255,.16), inset -34px -28px 88px rgba(0,0,0,.52), 0 38px 96px rgba(0,0,0,.58), 0 0 92px rgba(56,189,248,.42) !important; }
 
-  .shortcut-grid { gap: 12px !important; min-height: 96px !important; grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
-  .shortcut { height: 96px !important; min-height: 96px !important; padding: 16px 14px !important; display: grid !important; grid-template-columns: 46px minmax(0, 1fr) 16px !important; align-items: center !important; column-gap: 14px !important; }
-  .shortcut > span { width: 46px !important; height: 46px !important; border-radius: 14px !important; flex-shrink: 0 !important; }
-  .shortcut > div { min-width: 0 !important; text-align: left !important; }
-  .shortcut strong { display: block !important; font-size: clamp(14px, 1vw, 16px) !important; line-height: 1.2 !important; white-space: nowrap !important; word-break: normal !important; overflow-wrap: normal !important; hyphens: none !important; overflow: hidden !important; text-overflow: ellipsis !important; }
-  .shortcut small { display: block !important; margin-top: 4px !important; text-align: left !important; white-space: nowrap !important; word-break: normal !important; overflow-wrap: normal !important; hyphens: none !important; overflow: hidden !important; text-overflow: ellipsis !important; }
-  .shortcut .premium-svg-icon { width: 1.35em !important; height: 1.35em !important; }
-  .shortcut b { width: 16px !important; padding-left: 0 !important; justify-self: end !important; text-align: right !important; }
+  .shortcut-grid { gap: 12px; min-height: 96px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .shortcut { height: 96px; min-height: 96px; padding: 14px 12px; display: grid; grid-template-columns: 42px minmax(0, 1fr) 14px; align-items: center; column-gap: 12px; }
+  .shortcut > span { width: 42px; height: 42px; border-radius: 14px; flex-shrink: 0; }
+  .shortcut > div { min-width: 0; max-width: 100%; text-align: left; }
+  .shortcut strong { display: block; min-height: 34px; font-size: 13px; line-height: 17px; white-space: normal; word-break: normal; overflow-wrap: normal; hyphens: none; overflow: visible; text-overflow: clip; }
+  .shortcut small { display: block; margin-top: 4px; text-align: left; white-space: nowrap; word-break: normal; overflow-wrap: normal; hyphens: none; overflow: visible; text-overflow: clip; }
+  .shortcut .premium-svg-icon { width: 1.3em; height: 1.3em; }
+  .shortcut b { width: 14px; padding-left: 0; justify-self: end; text-align: right; }
 
   .lower-grid { gap: 16px !important; }
   .lower-grid > .panel { padding: 20px !important; }
