@@ -78,3 +78,51 @@ for (const requiredFlow of ['DemoModeBanner', 'OnboardingPanel', 'RecoveryWizard
 }
 
 console.log('Layout verification passed: target dashboard, focused right rail, readable account cards, and product states are guarded.');
+
+// Desktop viewport guard for the approved 1440x900 dashboard. This is intentionally
+// static because CI does not ship a browser engine; it fails when the consolidated
+// dashboard contract drifts back to the oversized PR #41 layout.
+const desktopViewport = { width: 1440, height: 900 };
+const sidebarWidth = 260;
+const centerShellPaddingY = 24;
+const topActionsHeight = 42;
+const topActionsMargin = 8;
+const desktopHeroHeight = 352;
+const desktopShortcutHeight = 78;
+const desktopLowerHeight = 252;
+const desktopGap = 12;
+const estimatedDocumentHeight = centerShellPaddingY + topActionsHeight + topActionsMargin + desktopHeroHeight + desktopGap + desktopShortcutHeight + desktopGap + desktopLowerHeight;
+if (estimatedDocumentHeight > desktopViewport.height) {
+  throw new Error(`1440x900 dashboard height regression: estimated document height ${estimatedDocumentHeight}px exceeds ${desktopViewport.height}px.`);
+}
+
+const activeDesktopRules = css.slice(css.indexOf('/* Approved dashboard reference layout'));
+for (const required of [
+  '--ref-sidebar: 260px',
+  '--ref-right-rail: 370px',
+  'position: fixed !important',
+  'width: var(--ref-sidebar) !important',
+  'height: 100vh !important',
+  '.dashboard[data-route="dashboard"] { grid-template-columns:',
+  '.dashboard[data-route="dashboard"] .main-column.app-page-shell { display: contents !important; }',
+  '.dashboard[data-route="dashboard"] .dashboard-side { grid-column: 2 !important; grid-row: 2 / span 3 !important; align-self: start !important; }'
+]) {
+  if (!activeDesktopRules.includes(required)) throw new Error(`Missing 1440x900 desktop layout guard: ${required}`);
+}
+
+for (const forbiddenDesktopHeight of ['height: 448px !important', 'min-height: 448px !important', 'height: 346px !important', 'min-height: 346px !important', 'min-height: 500px !important']) {
+  if (activeDesktopRules.includes(forbiddenDesktopHeight)) throw new Error(`Consolidated dashboard still preserves oversized desktop height: ${forbiddenDesktopHeight}`);
+}
+
+const dashboardHomeMatch = app.match(/function DashboardHome\(\) \{[\s\S]*?\n\}/)?.[0] ?? '';
+for (const requiredSection of ['h(Hero)', 'h(FeatureShortcuts)', 'h(DashboardAccountsPreview)', 'h(Activity)', 'h(RightProtectionPanel)']) {
+  if (!dashboardHomeMatch.includes(requiredSection)) throw new Error(`DashboardHome missing approved section: ${requiredSection}`);
+}
+if (dashboardHomeMatch.includes('h(CompanyLogoGrid)') || dashboardHomeMatch.includes('h(DashboardUtilities)')) {
+  throw new Error('DashboardHome must keep CompanyLogoGrid and DashboardUtilities off the homepage.');
+}
+
+const desktopDashboardWidth = desktopViewport.width - sidebarWidth - 36;
+if (desktopDashboardWidth < 1110) throw new Error('1440px desktop width cannot support center workspace plus right rail.');
+
+console.log(`1440x900 desktop viewport verification passed: estimated dashboard document height ${estimatedDocumentHeight}px, fixed sidebar, center workspace, and right rail stay in the three-column layout.`);

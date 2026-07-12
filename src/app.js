@@ -2236,11 +2236,28 @@ function DashboardUtilities() {
 function DashboardFallback() {
   return [h('div', { className: 'desktop-top-grid' }, h(Hero)), h(FeatureShortcuts), h('div', { className: 'lower-grid dashboard-home-grid target-lower-grid' }, h(DashboardAccountsPreview), h(Activity))];
 }
+function RightProtectionPanel() {
+  return h('aside', { className: 'dashboard-side', 'aria-label': 'Protection status' },
+    h('section', { className: 'right-protection-panel glass' },
+      h(ProtectionScore),
+      h(ProtectedStatus),
+      h(QuickActions),
+      h('section', { className: 'readiness-card glass' },
+        h('p', { className: 'eyebrow' }, 'Recovery Readiness'),
+        h('div', { className: 'readiness-line' }, h('span', { style: { width: `${averageScore()}%` } })),
+        h('strong', null, `${averageScore()}%`),
+        h('small', null, averageScore() >= 80 ? 'You’re ready for the unexpected. Keep it up!' : 'Review required before your next emergency.')
+      )
+    )
+  );
+}
+
 function DashboardHome() {
   return [
     h('div', { className: 'desktop-top-grid' }, h(Hero)),
     h(FeatureShortcuts),
-    h('div', { className: 'lower-grid dashboard-home-grid target-lower-grid' }, h(DashboardAccountsPreview), h(Activity))
+    h('div', { className: 'lower-grid dashboard-home-grid target-lower-grid' }, h(DashboardAccountsPreview), h(Activity)),
+    h(RightProtectionPanel)
   ];
 }
 
@@ -2291,9 +2308,10 @@ function PageContent() {
 }
 
 function Dashboard() {
-  return h('main', { className: 'dashboard page-transition', 'data-route': currentRoute() },
-    h('div', { className: 'main-column app-page-shell' }, h(TopActions), h(PageContent), currentRoute() !== 'dashboard' && h(DemoModeBanner)),
-    h('aside', { className: 'dashboard-side' }, h('section', { className: 'right-protection-panel glass' }, h(ProtectionScore), h(ProtectedStatus), h(QuickActions), h('section', { className: 'readiness-card glass' }, h('p', { className: 'eyebrow' }, 'Recovery Readiness'), h('div', { className: 'readiness-line' }, h('span', { style: { width: `${averageScore()}%` } })), h('strong', null, `${averageScore()}%`), h('small', null, averageScore() >= 80 ? 'You’re ready for the unexpected. Keep it up!' : 'Review required before your next emergency.'))))
+  const route = currentRoute();
+  return h('main', { className: 'dashboard page-transition', 'data-route': route },
+    h('div', { className: 'main-column app-page-shell' }, h(TopActions), h(PageContent), route !== 'dashboard' && h(DemoModeBanner)),
+    route !== 'dashboard' && h(RightProtectionPanel)
   );
 }
 
