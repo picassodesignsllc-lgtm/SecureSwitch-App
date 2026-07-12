@@ -33,6 +33,13 @@ for (const required of ['h(TopActions)', 'h(Hero)', 'h(Shortcuts)', 'h(Accounts)
   if (!dashboardBody.includes(required)) throw new Error(`Dashboard missing approved widget: ${required}`);
 }
 
+
+for (const declaration of ['demoAccounts', 'activity', 'timelineEvents', 'familyMembers']) {
+  const matches = app.match(new RegExp(String.raw`^const ${declaration}\b`, 'gm')) ?? [];
+  if (matches.length !== 1) throw new Error(`Expected one top-level ${declaration} declaration, found ${matches.length}`);
+}
+
+
 for (const route of ["'dashboard'", "'accounts'", "'switch'", "'blackout'", "'kit'", "'lookup'", "'settings'"]) {
   if (!app.includes(route)) throw new Error(`Required routed link is missing: ${route}`);
 }

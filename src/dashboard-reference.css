@@ -394,3 +394,66 @@ html, body {
   .safe-shell { transform: scale(.78) rotateY(-18deg) rotateX(6deg); }
   .score-ring-shell { width: 168px; height: 168px; }
 }
+
+/* Lightweight premium interactions for the existing dashboard visuals. */
+@media (hover: hover) {
+  .sidebar nav a,
+  .shortcut,
+  .quick-row,
+  .top-actions button,
+  .hero-actions button,
+  .lower-grid > .panel,
+  .right-protection-panel > * {
+    transition: border-color .18s var(--ease), box-shadow .18s var(--ease), background .18s var(--ease), color .18s var(--ease);
+  }
+
+  .sidebar nav a:hover,
+  .shortcut:hover,
+  .quick-row:hover,
+  .top-actions button:hover,
+  .hero-actions button:hover {
+    border-color: rgba(100, 154, 255, .36) !important;
+    box-shadow: 0 14px 32px rgba(20, 78, 210, .18), inset 0 1px 0 rgba(255,255,255,.08) !important;
+  }
+
+  .shortcut:hover > span,
+  .quick-row:hover span:first-child,
+  .activity:hover > span:first-child {
+    filter: saturate(1.08) brightness(1.06);
+  }
+}
+
+.safe-door { animation: safeDoorGlow 3.8s ease-in-out infinite alternate; }
+.safe-floor-glow { animation: safeFloorPulse 4.6s ease-in-out infinite alternate; }
+.score-ring-shell { animation: scoreRingSettle .7s ease-out both; }
+
+@keyframes safeDoorGlow {
+  from { box-shadow: 0 0 0 3px rgba(33,95,255,.13), 0 0 18px rgba(31,151,255,.68), inset 0 0 20px rgba(26,119,255,.18), inset -16px -18px 30px rgba(0,0,0,.42); }
+  to { box-shadow: 0 0 0 3px rgba(33,95,255,.22), 0 0 30px rgba(31,151,255,.95), inset 0 0 28px rgba(26,119,255,.26), inset -16px -18px 30px rgba(0,0,0,.42); }
+}
+
+@keyframes safeFloorPulse {
+  from { opacity: .72; transform: rotateX(66deg) rotateZ(-4deg) scale(.98); }
+  to { opacity: .96; transform: rotateX(66deg) rotateZ(-4deg) scale(1.03); }
+}
+
+@keyframes scoreRingSettle {
+  from { opacity: .75; transform: scale(.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .safe-door,
+  .safe-floor-glow,
+  .score-ring-shell,
+  .sidebar nav a,
+  .shortcut,
+  .quick-row,
+  .top-actions button,
+  .hero-actions button,
+  .lower-grid > .panel,
+  .right-protection-panel > * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

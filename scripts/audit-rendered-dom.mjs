@@ -29,6 +29,7 @@ const textOf = (node) => typeof node === 'string' || typeof node === 'number' ? 
 const anchors = []; walk(tree, (node) => { if (node.type === 'a' && node.props?.href) anchors.push(node.props.href); });
 
 if (findByClass('dashboard').length !== 1) throw new Error('Dashboard must render exactly once.');
+if (findByClass('sidebar').length !== 1) throw new Error('Sidebar must render exactly once.');
 if (findByClass('main-column').length !== 1) throw new Error('Center workspace must render exactly once.');
 if (findByClass('right-protection-panel').length !== 1) throw new Error('Right protection rail must render exactly once.');
 if (findByClass('hero').length !== 1) throw new Error('Hero must render exactly once.');
