@@ -72,7 +72,8 @@ const iconPaths = {
   chevron: ['M9 18l6-6-6-6'],
   lock: ['M7 11V8a5 5 0 0 1 10 0v3', 'M5 11h14v10H5z'],
   mail: ['M4 5h16v14H4z', 'M4 7l8 6 8-6'],
-  scan: ['M4 7V4h3', 'M17 4h3v3', 'M20 17v3h-3', 'M7 20H4v-3', 'M8 12h8']
+  scan: ['M4 7V4h3', 'M17 4h3v3', 'M20 17v3h-3', 'M7 20H4v-3', 'M8 12h8'],
+  fingerprint: ['M12 11a3 3 0 0 1 3 3c0 2-1 4-1 6', 'M8.5 14a3.5 3.5 0 0 1 7 0c0 1.4-.2 2.7-.7 4', 'M6 13.5a6 6 0 0 1 12 0c0 1.8-.2 3.6-.8 5.5', 'M4 16a8 8 0 0 1 16 0', 'M10 19c.4-1.2.5-2.7.5-4.5a1.5 1.5 0 0 1 3 0c0 2.1-.2 3.9-.8 5.5']
 };
 function Icon({ name, className = 'ui-icon', title = '' }) {
   const paths = iconPaths[name] || iconPaths.shield;
@@ -875,6 +876,7 @@ function AuthCard() {
 function VaultHeroVisual() {
   return h('section', { className: 'premium-vault safe-visual', 'aria-label': 'Premium digital combination safe' },
     h('div', { className: 'safe-floor-glow', 'aria-hidden': true }),
+    h('div', { className: 'safe-particles', 'aria-hidden': true }, Array.from({ length: 8 }).map((_, index) => h('i', { key: index, style: { '--particle': index } }))),
     h('div', { className: 'safe-shell', 'aria-hidden': true },
       h('div', { className: 'safe-side' }),
       h('div', { className: 'safe-top' }),
@@ -888,7 +890,8 @@ function VaultHeroVisual() {
           h('span', { className: 'safe-dial-marker marker-three' })
         ),
         h('span', { className: 'safe-handle' }),
-        h('span', { className: 'safe-keypad' })
+        h('span', { className: 'safe-fingerprint' }, h(Icon, { name: 'fingerprint' })),
+        h('span', { className: 'safe-keypad' }, Array.from({ length: 9 }).map((_, index) => h('i', { key: index })))
       )
     )
   );
@@ -901,7 +904,7 @@ function ProtectionScore() {
   return h('aside', { className: 'floating-score glass', 'aria-label': 'Live Protection Score' },
     h('p', { className: 'eyebrow score-title' }, 'Live Protection Score'),
     h('div', { className: 'score-ring-shell', style: { '--score': `${liveProtectionScore() * 3.6}deg` } },
-      h('div', { className: 'score-ring-center' }, h(Icon, { name: 'shieldCheck', className: 'score-shield-icon' }), h('strong', null, `${liveProtectionScore()}%`), h('span', null, 'Excellent'))
+      h('div', { className: 'score-ring-center' }, h('span', { className: 'score-status-orb', 'aria-hidden': true }), h(Icon, { name: 'shieldCheck', className: 'score-shield-icon' }), h('strong', null, `${liveProtectionScore()}%`), h('span', null, 'Excellent'))
     ),
     h('dl', null, h('div', null, h('dt', null, 'Accounts'), h('dd', null, '50')), h('div', null, h('dt', null, 'Review'), h('dd', null, '9')), h('div', null, h('dt', null, 'Plan'), h('dd', null, '3m')))
   );
@@ -929,6 +932,11 @@ function AccountLogo({ account }) {
   if (name === 'coinbase') return h('span', { className: 'brand-mark coinbase-logo', title: 'Coinbase' }, h('span', null, 'C'), fallback);
   if (name === 'amazon') return h('span', { className: 'brand-mark amazon-logo', title: 'Amazon' }, h('span', null, 'a'), h('i', null), fallback);
   if (name === 'slack') return h('span', { className: 'brand-mark slack-logo', title: 'Slack' }, ['blue', 'green', 'yellow', 'red'].map((part) => h('i', { key: part, className: part })), fallback);
+  if (name === 'microsoft') return h('span', { className: 'brand-mark microsoft-logo', title: 'Microsoft' }, ['red', 'green', 'blue', 'yellow'].map((part) => h('i', { key: part, className: part })), fallback);
+  if (name === 'apple') return h('span', { className: 'brand-mark apple-logo', title: 'Apple' }, h('span', null), fallback);
+  if (name === 'facebook') return h('span', { className: 'brand-mark facebook-logo', title: 'Facebook' }, h('span', null, 'f'), fallback);
+  if (name === 'discord') return h('span', { className: 'brand-mark discord-logo', title: 'Discord' }, h('span', null), fallback);
+  if (name === 'paypal') return h('span', { className: 'brand-mark paypal-logo', title: 'PayPal' }, h('span', null, 'P'), fallback);
   return fallback;
 }
 

@@ -457,3 +457,68 @@ html, body {
     transition: none !important;
   }
 }
+
+/* Final premium polish: richer brand marks, safer vault details, and glass depth without layout changes. */
+.glass,
+.panel,
+.hero,
+.shortcut,
+.floating-score,
+.protected,
+.quick-panel,
+.readiness-panel {
+  background-image: linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.018)) !important;
+  box-shadow: 0 20px 52px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.075) !important;
+}
+
+.microsoft-logo { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 2px; padding: 8px; background: #0b1220; }
+.microsoft-logo i { border-radius: 1px; }
+.microsoft-logo .red { background: #f25022; }
+.microsoft-logo .green { background: #7fba00; }
+.microsoft-logo .blue { background: #00a4ef; }
+.microsoft-logo .yellow { background: #ffb900; }
+.apple-logo { background: linear-gradient(145deg, #f8fafc, #94a3b8); }
+.apple-logo > span:first-child { width: 18px; height: 21px; border-radius: 48% 48% 45% 45%; background: #020617; position: relative; }
+.apple-logo > span:first-child::before { content: ''; position: absolute; width: 8px; height: 5px; border-radius: 999px; background: #020617; right: 1px; top: -5px; transform: rotate(-28deg); }
+.apple-logo > span:first-child::after { content: ''; position: absolute; width: 7px; height: 9px; border-radius: 50%; background: #f8fafc; right: -3px; top: 6px; }
+.facebook-logo { background: linear-gradient(135deg, #1877f2, #0b5ed7); color: #fff; font: 900 28px/1 Inter, sans-serif; align-items: end; padding-bottom: 3px; }
+.discord-logo { background: linear-gradient(135deg, #5865f2, #404eed); }
+.discord-logo > span:first-child { width: 22px; height: 15px; border-radius: 9px 9px 7px 7px; background: #fff; position: relative; }
+.discord-logo > span:first-child::before,
+.discord-logo > span:first-child::after { content: ''; position: absolute; width: 4px; height: 4px; top: 6px; border-radius: 50%; background: #5865f2; }
+.discord-logo > span:first-child::before { left: 5px; }
+.discord-logo > span:first-child::after { right: 5px; }
+.paypal-logo { background: linear-gradient(135deg, #003087, #009cde); color: #fff; font: 900 24px/1 Inter, sans-serif; font-style: italic; }
+
+.safe-particles { position: absolute; inset: 0; pointer-events: none; }
+.safe-particles i { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: rgba(125, 191, 255, .9); box-shadow: 0 0 12px rgba(91, 145, 255, .85); left: calc(14% + (var(--particle) * 10%)); top: calc(18% + ((var(--particle) % 3) * 19%)); animation: safeParticleFloat 5s ease-in-out infinite; animation-delay: calc(var(--particle) * -420ms); }
+.safe-fingerprint { position: absolute; right: 21px; top: 45px; width: 26px; height: 32px; border-radius: 9px; display: grid; place-items: center; color: #83d7ff; background: linear-gradient(180deg, rgba(44,118,255,.24), rgba(5,12,27,.82)); border: 1px solid rgba(100,205,255,.42); box-shadow: inset 0 0 14px rgba(59,130,246,.22), 0 0 18px rgba(59,130,246,.22); }
+.safe-fingerprint .ui-icon { width: 18px; height: 18px; stroke-width: 1.6; }
+.safe-keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; padding: 5px; }
+.safe-keypad i { width: 3px; height: 3px; border-radius: 50%; background: rgba(186,230,253,.76); box-shadow: 0 0 7px rgba(56,189,248,.72); }
+.safe-shell::after { content: ''; position: absolute; inset: 12px 28px auto 16px; height: 34px; border-radius: 999px; background: linear-gradient(100deg, rgba(255,255,255,.18), transparent 72%); transform: rotate(-11deg); pointer-events: none; }
+
+.score-ring-shell::after { content: ''; position: absolute; inset: -5px; border-radius: 50%; border: 1px solid rgba(104,139,255,.28); filter: drop-shadow(0 0 14px rgba(71,126,255,.42)); animation: scorePulse 2.8s ease-in-out infinite; }
+.score-status-orb { width: 7px; height: 7px; border-radius: 50%; background: #5ee77f; box-shadow: 0 0 14px rgba(94,231,127,.76); }
+.toast.show { animation: notificationFade .24s ease-out both; }
+
+@keyframes safeParticleFloat {
+  0%, 100% { opacity: .18; transform: translate3d(0, 5px, 0); }
+  50% { opacity: .8; transform: translate3d(5px, -9px, 0); }
+}
+@keyframes scorePulse {
+  0%, 100% { opacity: .26; transform: scale(.99); }
+  50% { opacity: .58; transform: scale(1.025); }
+}
+@keyframes notificationFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .safe-particles i,
+  .score-ring-shell::after,
+  .toast.show {
+    animation: none !important;
+  }
+}

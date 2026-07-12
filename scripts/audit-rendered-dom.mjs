@@ -57,6 +57,9 @@ for (const placeholder of ['☾', '♧', '▦', '♙', '⇄', '⌾', '▣', '⌕
   if (renderedText.includes(placeholder)) throw new Error(`Rendered dashboard contains placeholder icon: ${placeholder}`);
 }
 if (findByClass('score-ring-shell').length !== 1) throw new Error('Protection score must render as a progress ring.');
+for (const safeDetail of ['safe-door', 'safe-dial', 'safe-fingerprint', 'safe-keypad', 'safe-particles']) {
+  if (findByClass(safeDetail).length !== 1) throw new Error(`Missing premium safe detail: ${safeDetail}`);
+}
 for (const logoClass of ['google-logo', 'instagram-logo', 'coinbase-logo', 'amazon-logo', 'slack-logo']) {
   if (findByClass(logoClass).length !== 1) throw new Error(`Missing polished account logo: ${logoClass}`);
 }
