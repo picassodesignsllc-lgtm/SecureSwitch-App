@@ -6989,521 +6989,18 @@ a,
   display: grid !important;
 }
 
-/* Phase 50 — Match approved dashboard design reference (UI only) */
+/* Approved dashboard reference layout — consolidated active rules. */
 :root {
   --ref-sidebar: 260px;
+  --ref-center: 850px;
   --ref-right-rail: 370px;
   --ref-gap: 14px;
   --ref-card: rgba(7, 14, 30, .78);
   --ref-border: rgba(109, 124, 170, .22);
   --ref-blue: #2f80ff;
   --ref-purple: #6d4cff;
-  --ref-radius: 18px;
 }
 
-.app-shell {
-  grid-template-columns: var(--ref-sidebar) minmax(0, 1fr) !important;
-  background: #020711 !important;
-}
-
-.sidebar {
-  width: var(--ref-sidebar) !important;
-  padding: 26px 18px 0 !important;
-  background: linear-gradient(180deg, rgba(3, 8, 20, .99), rgba(4, 10, 22, .985)) !important;
-  border-right: 1px solid rgba(114, 132, 178, .22) !important;
-}
-
-.content-shell {
-  margin-left: var(--ref-sidebar) !important;
-  padding: 15px 24px 22px !important;
-}
-
-.dashboard {
-  max-width: 1236px !important;
-  grid-template-columns: minmax(0, 850px) var(--ref-right-rail) !important;
-  gap: 14px !important;
-  margin: 0 auto !important;
-}
-
-.main-column,
-.app-page-shell,
-.dashboard-side,
-.right-protection-panel {
-  gap: 14px !important;
-}
-
-.top-actions {
-  min-height: 46px !important;
-  height: 46px !important;
-  align-items: center !important;
-  gap: 14px !important;
-  margin-bottom: 13px !important;
-}
-
-.top-actions button {
-  height: 42px !important;
-  min-height: 42px !important;
-  min-width: 52px !important;
-  border-radius: 16px !important;
-  padding: 0 15px !important;
-  background: rgba(7, 14, 30, .78) !important;
-  border-color: rgba(114, 132, 178, .24) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.055) !important;
-}
-
-.top-actions .add-account {
-  min-width: 144px !important;
-  border-radius: 10px !important;
-  background: linear-gradient(135deg, #356bff, #3f41ff 58%, #6c4cff) !important;
-  box-shadow: 0 18px 36px rgba(54, 90, 255, .26), inset 0 1px 0 rgba(255,255,255,.24) !important;
-}
-
-.brand {
-  height: 74px !important;
-  gap: 13px !important;
-  margin-bottom: 24px !important;
-  align-items: center !important;
-}
-
-.logo {
-  width: 58px !important;
-  height: 58px !important;
-  border-radius: 24px !important;
-}
-
-.brand-wordmark {
-  font-size: 1.17rem !important;
-  line-height: 1 !important;
-  letter-spacing: -.045em !important;
-}
-
-.brand b {
-  position: absolute;
-  left: 84px;
-  top: 72px;
-  height: 20px;
-  padding: 0 9px !important;
-  font-size: .68rem !important;
-  border-radius: 999px !important;
-}
-
-.sidebar nav {
-  gap: 8px !important;
-}
-
-.sidebar nav a {
-  min-height: 50px !important;
-  padding: 0 14px !important;
-  gap: 14px !important;
-  border-radius: 9px !important;
-  font-size: .96rem !important;
-  font-weight: 620 !important;
-  color: rgba(226, 232, 240, .84) !important;
-}
-
-.sidebar nav a.active {
-  background: linear-gradient(95deg, rgba(47, 128, 255, .66), rgba(42, 72, 144, .28)) !important;
-  border-color: rgba(80, 144, 255, .24) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.09), 0 14px 32px rgba(37, 99, 235, .14) !important;
-}
-
-.nav-glyph {
-  width: 22px !important;
-  height: 22px !important;
-  font-size: 1.07rem !important;
-}
-
-.go-pro {
-  margin-top: auto !important;
-  margin-bottom: 74px !important;
-  padding: 22px 20px !important;
-  border-radius: 18px !important;
-  background: linear-gradient(145deg, rgba(8, 14, 31, .92), rgba(10, 16, 35, .76)) !important;
-  border-color: rgba(95, 111, 255, .28) !important;
-}
-
-.profile {
-  min-height: 96px !important;
-  margin: 0 -18px !important;
-  padding: 18px 20px !important;
-  border-radius: 0 !important;
-  border-inline: 0 !important;
-  border-bottom: 0 !important;
-}
-
-.hero {
-  height: 448px !important;
-  min-height: 448px !important;
-  grid-template-columns: minmax(0, 1fr) 350px !important;
-  gap: 24px !important;
-  padding: 38px 48px 36px 52px !important;
-  border-radius: 14px !important;
-  border-color: rgba(71, 83, 171, .50) !important;
-  background:
-    radial-gradient(circle at 82% 55%, rgba(27, 84, 255, .42), transparent 20rem),
-    radial-gradient(circle at 52% 110%, rgba(59, 73, 255, .18), transparent 24rem),
-    linear-gradient(145deg, rgba(15, 17, 48, .94), rgba(4, 10, 24, .94)) !important;
-  box-shadow: 0 22px 62px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.055) !important;
-}
-
-.hero-copy-panel {
-  max-width: 570px !important;
-  gap: 18px !important;
-}
-
-.hero .eyebrow {
-  font-size: .78rem !important;
-  letter-spacing: .12em !important;
-  color: #35b5ff !important;
-}
-
-.hero h1 {
-  max-width: 570px !important;
-  font-size: clamp(4.25rem, 5.15vw, 5.35rem) !important;
-  line-height: .885 !important;
-  letter-spacing: -.075em !important;
-}
-
-.hero p:not(.eyebrow) {
-  max-width: 520px !important;
-  font-size: 1rem !important;
-  line-height: 1.55 !important;
-}
-
-.hero-actions {
-  gap: 12px !important;
-  margin-top: 8px !important;
-}
-
-.hero-actions button {
-  height: 48px !important;
-  min-height: 48px !important;
-  min-width: 180px !important;
-  border-radius: 9px !important;
-  font-size: .93rem !important;
-}
-
-.hero-actions button:not(.primary) {
-  min-width: 172px !important;
-  background: rgba(10, 16, 33, .74) !important;
-  border-color: rgba(148, 163, 184, .28) !important;
-}
-
-.hero .premium-vault {
-  width: 350px !important;
-  justify-self: end !important;
-  filter: drop-shadow(0 34px 58px rgba(0,0,0,.42));
-}
-
-.hero .vault-stage {
-  width: 350px !important;
-  max-width: 350px !important;
-  aspect-ratio: 1.06 !important;
-}
-
-.hero .vault-body {
-  width: 78% !important;
-  height: 72% !important;
-  border-radius: 30px !important;
-  transform: perspective(860px) rotateY(-20deg) rotateX(8deg) translateY(-4px) !important;
-  background: linear-gradient(135deg, #213866 0%, #081229 48%, #0a142b 100%) !important;
-  box-shadow: inset 0 2px 0 rgba(255,255,255,.16), inset -28px -24px 74px rgba(0,0,0,.54), 0 30px 70px rgba(0,0,0,.52), 0 0 44px rgba(47,128,255,.20) !important;
-}
-
-.hero .vault-door {
-  inset: 11% !important;
-  border-radius: 22px !important;
-}
-
-.hero .vault-wheel {
-  width: 31% !important;
-  left: 34% !important;
-  top: 34% !important;
-}
-
-.hero .vault-glow-ring {
-  width: 84% !important;
-  height: 50% !important;
-  bottom: 8% !important;
-  box-shadow: 0 0 28px rgba(47,128,255,.66), inset 0 0 34px rgba(47,128,255,.16) !important;
-}
-
-.target-shortcuts {
-  margin-top: 0 !important;
-  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  gap: 12px !important;
-}
-
-.target-shortcut-card {
-  min-height: 96px !important;
-  padding: 17px 18px !important;
-  border-radius: 13px !important;
-  background: rgba(7, 14, 30, .78) !important;
-  border-color: var(--ref-border) !important;
-}
-
-.target-shortcut-card > span {
-  width: 42px !important;
-  height: 42px !important;
-  border-radius: 11px !important;
-}
-
-.target-shortcut-card strong {
-  font-size: .92rem !important;
-}
-
-.target-shortcut-card small {
-  font-size: .78rem !important;
-}
-
-.lower-grid,
-.dashboard-home-grid,
-.target-lower-grid {
-  grid-template-columns: minmax(0, 1.34fr) minmax(318px, .84fr) !important;
-  gap: 12px !important;
-}
-
-.target-accounts-card,
-.activity-panel {
-  min-height: 346px !important;
-  padding: 18px 20px !important;
-  border-radius: 13px !important;
-  background: rgba(7, 14, 30, .78) !important;
-  border-color: var(--ref-border) !important;
-}
-
-.target-card-head,
-.activity-panel .panel-head {
-  height: 32px !important;
-  margin-bottom: 8px !important;
-}
-
-.target-card-head .eyebrow,
-.activity-panel .eyebrow,
-.quick-panel .eyebrow,
-.readiness-card .eyebrow,
-.score-title {
-  color: #f8fafc !important;
-  font-size: .72rem !important;
-  letter-spacing: .08em !important;
-}
-
-.target-card-head a,
-.activity-panel .panel-head a {
-  font-size: .78rem !important;
-  color: #6f8cff !important;
-}
-
-.target-account-row {
-  min-height: 55px !important;
-  grid-template-columns: 40px minmax(0, 1fr) auto auto 16px !important;
-  padding: 10px 0 !important;
-  gap: 12px !important;
-}
-
-.target-account-row .account-meta-chip:nth-of-type(n + 2) {
-  display: none !important;
-}
-
-.target-account-row .app-icon {
-  width: 40px !important;
-  height: 40px !important;
-  border-radius: 10px !important;
-}
-
-.target-account-row b {
-  min-width: 66px !important;
-  height: 25px !important;
-  font-size: .72rem !important;
-}
-
-.target-account-row .account-meta-chip {
-  height: 25px !important;
-  max-width: 94px !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-}
-
-.activity {
-  min-height: 58px !important;
-  grid-template-columns: 40px minmax(0, 1fr) 56px !important;
-  padding: 10px 0 !important;
-}
-
-.activity > span {
-  width: 40px !important;
-  height: 40px !important;
-  border-radius: 10px !important;
-  background: rgba(47, 128, 255, .18) !important;
-  color: #57b7ff !important;
-}
-
-.activity strong {
-  font-size: .9rem !important;
-}
-
-.activity small,
-.activity time {
-  font-size: .78rem !important;
-}
-
-.right-protection-panel {
-  gap: 14px !important;
-}
-
-.protection-panel-card,
-.protected,
-.quick-panel,
-.readiness-card {
-  border-radius: 14px !important;
-  background: rgba(7, 14, 30, .78) !important;
-  border-color: var(--ref-border) !important;
-  box-shadow: 0 22px 58px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.055) !important;
-}
-
-.protection-panel-card {
-  min-height: 500px !important;
-  padding: 24px 19px 20px !important;
-}
-
-.target-score-ring {
-  width: 206px !important;
-  height: 206px !important;
-  margin: 18px auto 18px !important;
-}
-
-.target-score-ring strong {
-  font-size: 3.3rem !important;
-}
-
-.target-score-stats {
-  gap: 12px !important;
-}
-
-.target-score-stats article {
-  min-height: 102px !important;
-  padding: 16px 14px !important;
-  border-radius: 12px !important;
-}
-
-.target-score-stats strong {
-  font-size: 1.5rem !important;
-}
-
-.protected {
-  min-height: 88px !important;
-  padding: 16px !important;
-  border-radius: 13px !important;
-}
-
-.quick-panel {
-  padding: 18px !important;
-  gap: 10px !important;
-}
-
-.quick-row {
-  min-height: 46px !important;
-  height: 46px !important;
-  grid-template-columns: 32px minmax(0, 1fr) auto !important;
-  padding: 0 12px !important;
-  border-radius: 9px !important;
-  font-size: .89rem !important;
-}
-
-.quick-row span {
-  width: 32px !important;
-  height: 32px !important;
-  border-radius: 10px !important;
-}
-
-.readiness-card {
-  padding: 18px !important;
-  min-height: 128px !important;
-}
-
-.readiness-line {
-  height: 8px !important;
-  margin-top: 8px !important;
-}
-
-.desktop-utility-grid {
-  margin-top: 0 !important;
-  opacity: .92;
-}
-
-@media (min-width: 1281px) {
-  .right-protection-panel {
-    position: sticky !important;
-    top: 15px !important;
-  }
-}
-
-@media (max-width: 1280px) {
-  .dashboard {
-    max-width: 100% !important;
-    grid-template-columns: 1fr !important;
-  }
-  .right-protection-panel {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-  .protection-panel-card {
-    min-height: auto !important;
-  }
-}
-
-@media (max-width: 1040px) {
-  .hero {
-    height: auto !important;
-    min-height: 0 !important;
-    grid-template-columns: 1fr !important;
-    text-align: center !important;
-  }
-  .hero-copy-panel {
-    justify-items: center !important;
-    max-width: 720px !important;
-  }
-  .hero h1,
-  .hero p:not(.eyebrow) {
-    text-align: center !important;
-  }
-  .hero .premium-vault {
-    justify-self: center !important;
-  }
-}
-
-@media (max-width: 680px) {
-  .content-shell {
-    padding: 12px 12px calc(92px + env(safe-area-inset-bottom)) !important;
-  }
-  .hero {
-    padding: 28px 18px !important;
-    border-radius: 18px !important;
-  }
-  .hero h1 {
-    font-size: clamp(3rem, 13vw, 4rem) !important;
-  }
-  .hero-actions button {
-    min-width: 0 !important;
-    width: 100% !important;
-  }
-  .target-shortcuts,
-  .lower-grid,
-  .dashboard-home-grid,
-  .target-lower-grid,
-  .right-protection-panel {
-    grid-template-columns: 1fr !important;
-  }
-}
-
-/* Phase 50 account metadata guard: keep the primary updated chip visible, hide only extra dashboard chips. */
-.target-account-row .account-meta-chip {
-  display: inline-flex !important;
-}
-.target-account-row .account-meta-chip:nth-of-type(n + 3) {
-  display: none !important;
-}
-
-/* Urgent Phase 3 rollback/fix — lock reference layout without responsive overflow. */
 html,
 body,
 #root,
@@ -7515,93 +7012,377 @@ body,
 
 *,
 *::before,
-*::after {
-  box-sizing: border-box;
+*::after { box-sizing: border-box; }
+
+.app-shell {
+  display: grid !important;
+  grid-template-columns: var(--ref-sidebar) minmax(0, 1fr) !important;
+  min-height: 100vh !important;
+  background: #020711 !important;
 }
 
-.dashboard,
+.sidebar {
+  position: fixed !important;
+  inset: 0 auto 0 0 !important;
+  width: var(--ref-sidebar) !important;
+  height: 100vh !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) auto auto !important;
+  padding: 26px 18px 0 !important;
+  background: linear-gradient(180deg, rgba(3, 8, 20, .99), rgba(4, 10, 22, .985)) !important;
+  border-right: 1px solid rgba(114, 132, 178, .22) !important;
+  overflow: hidden !important;
+}
+
+.brand {
+  height: 74px !important;
+  gap: 13px !important;
+  margin-bottom: 24px !important;
+  align-items: center !important;
+  position: relative !important;
+}
+.logo { width: 58px !important; height: 58px !important; border-radius: 24px !important; }
+.brand-wordmark { font-size: 1.17rem !important; line-height: 1 !important; letter-spacing: -.045em !important; }
+.brand b {
+  position: absolute !important;
+  left: 68px !important;
+  top: 48px !important;
+  height: 20px !important;
+  padding: 0 9px !important;
+  font-size: .68rem !important;
+  border-radius: 999px !important;
+}
+.sidebar nav { align-content: start !important; gap: 8px !important; }
+.sidebar nav a {
+  min-height: 50px !important;
+  padding: 0 14px !important;
+  gap: 14px !important;
+  border-radius: 9px !important;
+  font-size: .96rem !important;
+  font-weight: 620 !important;
+  color: rgba(226, 232, 240, .84) !important;
+}
+.sidebar nav a.active {
+  background: linear-gradient(95deg, rgba(47, 128, 255, .66), rgba(42, 72, 144, .28)) !important;
+  border-color: rgba(80, 144, 255, .24) !important;
+}
+.nav-glyph { width: 22px !important; height: 22px !important; font-size: 1.07rem !important; }
+.go-pro {
+  margin: 16px 4px 42px !important;
+  padding: 22px 20px !important;
+  border-radius: 18px !important;
+  background: linear-gradient(145deg, rgba(8, 14, 31, .92), rgba(10, 16, 35, .76)) !important;
+  border-color: rgba(95, 111, 255, .28) !important;
+}
+.profile {
+  min-height: 96px !important;
+  margin: 0 -18px !important;
+  padding: 18px 20px !important;
+  border-radius: 0 !important;
+  border-inline: 0 !important;
+  border-bottom: 0 !important;
+}
+
+.content-shell {
+  margin-left: var(--ref-sidebar) !important;
+  padding: 15px 24px 22px !important;
+  min-width: 0 !important;
+}
+.dashboard {
+  width: min(1234px, calc(100vw - var(--ref-sidebar) - 48px)) !important;
+  max-width: 1234px !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, calc(100% - var(--ref-right-rail) - var(--ref-gap))) var(--ref-right-rail) !important;
+  gap: var(--ref-gap) !important;
+  margin: 0 auto !important;
+  align-items: start !important;
+}
 .main-column,
 .app-page-shell,
+.dashboard-side,
+.right-protection-panel,
 .desktop-top-grid,
 .target-shortcuts,
 .lower-grid,
 .dashboard-home-grid,
 .target-lower-grid,
-.dashboard-side,
-.right-protection-panel,
 .hero,
 .panel,
 .glass,
 .target-account-row,
 .activity,
-.quick-row {
-  min-width: 0 !important;
+.quick-row { min-width: 0 !important; }
+.main-column, .app-page-shell, .dashboard-side, .right-protection-panel { gap: 14px !important; }
+.dashboard-side { position: static !important; }
+.right-protection-panel {
+  width: var(--ref-right-rail) !important;
+  max-width: var(--ref-right-rail) !important;
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 14px !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
 }
 
-@media (min-width: 1540px) {
-  .sidebar {
-    position: fixed !important;
-    inset: 0 auto 0 0 !important;
-    width: 260px !important;
-  }
-  .content-shell {
-    margin-left: 260px !important;
-  }
-  .dashboard {
-    width: 1234px !important;
-    max-width: 1234px !important;
-    grid-template-columns: 850px 370px !important;
-  }
+.top-actions {
+  min-height: 46px !important;
+  height: 46px !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  gap: 14px !important;
+  margin-bottom: 13px !important;
+}
+.global-search,
+.top-actions button:first-of-type:is(:not([aria-label])) { display: none !important; }
+.top-actions button {
+  height: 42px !important;
+  min-height: 42px !important;
+  min-width: 52px !important;
+  border-radius: 16px !important;
+  padding: 0 15px !important;
+  background: rgba(7, 14, 30, .78) !important;
+  border-color: rgba(114, 132, 178, .24) !important;
+}
+.notification-action { position: relative !important; }
+.notification-action b {
+  position: absolute !important;
+  top: -7px !important;
+  right: -4px !important;
+  min-width: 18px !important;
+  height: 18px !important;
+  display: grid !important;
+  place-items: center !important;
+  border-radius: 999px !important;
+  background: #ef334b !important;
+  color: #fff !important;
+  font-size: .68rem !important;
+}
+.top-actions .add-account {
+  min-width: 144px !important;
+  border-radius: 10px !important;
+  background: linear-gradient(135deg, #356bff, #3f41ff 58%, #6c4cff) !important;
 }
 
-@media (min-width: 1181px) and (max-width: 1539px) {
-  .sidebar {
-    position: fixed !important;
-    inset: 0 auto 0 0 !important;
-    width: 260px !important;
-  }
-  .content-shell {
-    margin-left: 260px !important;
-    padding-inline: 18px !important;
-  }
-  .dashboard {
-    width: min(1234px, calc(100vw - 260px - 36px)) !important;
-    max-width: calc(100vw - 260px - 36px) !important;
-    grid-template-columns: minmax(0, calc(100% - 384px)) 370px !important;
-  }
+.hero {
+  height: 448px !important;
+  min-height: 448px !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 350px !important;
+  gap: 24px !important;
+  padding: 38px 32px 36px 52px !important;
+  border-radius: 14px !important;
+  border-color: rgba(71, 83, 171, .50) !important;
+  background:
+    radial-gradient(circle at 82% 55%, rgba(27, 84, 255, .38), transparent 20rem),
+    radial-gradient(circle at 52% 110%, rgba(59, 73, 255, .18), transparent 24rem),
+    linear-gradient(145deg, rgba(15, 17, 48, .94), rgba(4, 10, 24, .94)) !important;
+  overflow: hidden !important;
+}
+.hero-copy-panel { max-width: 570px !important; gap: 18px !important; align-self: center !important; }
+.hero .eyebrow { font-size: .78rem !important; letter-spacing: .12em !important; color: #35b5ff !important; }
+.hero h1 {
+  max-width: 570px !important;
+  font-size: clamp(4.25rem, 5.15vw, 5.35rem) !important;
+  line-height: .885 !important;
+  letter-spacing: -.075em !important;
+}
+.hero h1 span { color: transparent !important; background: linear-gradient(135deg, #3aa2ff, #7461ff); -webkit-background-clip: text; background-clip: text; }
+.hero p:not(.eyebrow) { max-width: 520px !important; font-size: 1rem !important; line-height: 1.55 !important; }
+.hero-actions { gap: 12px !important; margin-top: 8px !important; }
+.hero-actions button { height: 48px !important; min-height: 48px !important; min-width: 180px !important; border-radius: 9px !important; font-size: .93rem !important; }
+.hero-actions button:not(.primary) { min-width: 172px !important; background: rgba(10, 16, 33, .74) !important; border-color: rgba(148, 163, 184, .28) !important; }
+.hero .premium-vault { width: 350px !important; justify-self: end !important; align-self: center !important; filter: drop-shadow(0 34px 58px rgba(0,0,0,.42)); }
+.hero .vault-stage,
+.hero .vault-assets,
+.hero .vault-detail,
+.hero .v2-vault-stats { display: none !important; }
+.hero .v2-vault-cube { width: 310px !important; height: 270px !important; margin: 0 auto !important; }
+
+.target-shortcuts {
+  margin-top: 0 !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+}
+.target-shortcut-card {
+  min-height: 96px !important;
+  height: 96px !important;
+  padding: 17px 18px !important;
+  border-radius: 13px !important;
+  background: var(--ref-card) !important;
+  border-color: var(--ref-border) !important;
+}
+.target-shortcut-card > span { width: 42px !important; height: 42px !important; border-radius: 11px !important; }
+.target-shortcut-card strong { font-size: .92rem !important; }
+.target-shortcut-card small { font-size: .78rem !important; line-height: 1.35 !important; }
+
+.lower-grid,
+.dashboard-home-grid,
+.target-lower-grid {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.34fr) minmax(318px, .84fr) !important;
+  gap: 12px !important;
+}
+.target-accounts-card,
+.activity-panel {
+  height: 346px !important;
+  min-height: 346px !important;
+  padding: 18px 20px !important;
+  border-radius: 13px !important;
+  background: var(--ref-card) !important;
+  border-color: var(--ref-border) !important;
+  overflow: hidden !important;
+}
+.target-card-head,
+.activity-panel .panel-head { height: 32px !important; margin-bottom: 8px !important; }
+.target-card-head .eyebrow,
+.activity-panel .eyebrow,
+.quick-panel .eyebrow,
+.readiness-card .eyebrow,
+.score-title { color: #f8fafc !important; font-size: .72rem !important; letter-spacing: .08em !important; }
+.target-card-head a,
+.activity-panel .panel-head a { font-size: .78rem !important; color: #6f8cff !important; }
+.target-account-row {
+  min-height: 55px !important;
+  display: grid !important;
+  grid-template-columns: 40px minmax(0, 1fr) auto 16px !important;
+  padding: 10px 0 !important;
+  gap: 12px !important;
+  align-items: center !important;
+}
+.target-account-row .account-meta-chip { display: none !important; }
+.target-account-row .app-icon { width: 40px !important; height: 40px !important; border-radius: 10px !important; }
+.target-account-row b { min-width: 66px !important; height: 25px !important; font-size: .72rem !important; }
+.activity { min-height: 58px !important; grid-template-columns: 40px minmax(0, 1fr) 56px !important; padding: 10px 0 !important; }
+.activity > span { width: 40px !important; height: 40px !important; border-radius: 10px !important; background: rgba(47, 128, 255, .18) !important; color: #57b7ff !important; }
+.activity strong { font-size: .9rem !important; }
+.activity small,
+.activity time { font-size: .78rem !important; }
+
+.protection-panel-card,
+.protected,
+.quick-panel,
+.readiness-card {
+  border-radius: 14px !important;
+  background: var(--ref-card) !important;
+  border-color: var(--ref-border) !important;
+  box-shadow: 0 22px 58px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.055) !important;
+}
+.protection-panel-card { min-height: 500px !important; padding: 24px 19px 20px !important; }
+.target-score-ring { width: 206px !important; height: 206px !important; margin: 18px auto 18px !important; }
+.target-score-ring strong { font-size: 3.3rem !important; }
+.target-score-stats { gap: 12px !important; }
+.target-score-stats article { min-height: 102px !important; padding: 16px 14px !important; border-radius: 12px !important; }
+.target-score-stats strong { font-size: 1.5rem !important; }
+.protected { min-height: 88px !important; padding: 16px !important; }
+.quick-panel { padding: 18px !important; gap: 10px !important; }
+.quick-row { min-height: 46px !important; height: 46px !important; grid-template-columns: 32px minmax(0, 1fr) auto !important; padding: 0 12px !important; border-radius: 9px !important; font-size: .89rem !important; }
+.quick-row span { width: 32px !important; height: 32px !important; border-radius: 10px !important; }
+.readiness-card { padding: 18px !important; min-height: 128px !important; }
+.readiness-line { height: 8px !important; margin-top: 8px !important; }
+.desktop-utility-grid,
+.company-logo-grid { display: none !important; }
+
+.ai-copilot {
+  position: fixed !important;
+  right: 18px !important;
+  bottom: calc(18px + env(safe-area-inset-bottom)) !important;
+  z-index: 40 !important;
+  width: auto !important;
+  pointer-events: none !important;
+}
+.ai-copilot-trigger {
+  width: 110px !important;
+  min-width: 110px !important;
+  height: 42px !important;
+  padding: 0 12px !important;
+  border-radius: 999px !important;
+  pointer-events: auto !important;
+}
+.ai-copilot-panel {
+  pointer-events: auto !important;
+  width: min(420px, calc(100vw - 32px)) !important;
+  max-height: min(620px, calc(100vh - 92px)) !important;
+  overflow: auto !important;
 }
 
-@media (min-width: 1181px) {
-  .dashboard {
-    gap: 14px !important;
-  }
+
+@media (min-width: 1280px) and (max-height: 940px) {
+  html,
+  body { overflow-y: hidden !important; }
+  .content-shell { padding-block: 12px 14px !important; }
+  .top-actions { height: 42px !important; min-height: 42px !important; margin-bottom: 10px !important; }
+  .top-actions button { height: 38px !important; min-height: 38px !important; }
   .hero {
-    width: 100% !important;
-    height: 448px !important;
-    min-height: 448px !important;
-    grid-template-columns: minmax(0, 1fr) minmax(300px, 350px) !important;
+    height: 365px !important;
+    min-height: 365px !important;
+    padding: 28px 24px 26px 36px !important;
+    grid-template-columns: minmax(0, 1fr) minmax(210px, 260px) !important;
   }
-  .hero-copy-panel,
-  .hero h1,
-  .hero p:not(.eyebrow) {
-    min-width: 0 !important;
-  }
-  .hero .premium-vault,
-  .hero .vault-stage {
-    width: min(350px, 100%) !important;
-    max-width: 350px !important;
-  }
-  .right-protection-panel {
-    width: 370px !important;
-    max-width: 370px !important;
-  }
+  .hero-copy-panel { gap: 13px !important; }
+  .hero h1 { font-size: clamp(3.25rem, 3.75vw, 4.05rem) !important; line-height: .9 !important; }
+  .hero p:not(.eyebrow) { font-size: .94rem !important; line-height: 1.45 !important; max-width: 480px !important; }
+  .hero-actions { margin-top: 4px !important; }
+  .hero-actions button { height: 42px !important; min-height: 42px !important; min-width: 164px !important; }
+  .hero .premium-vault { width: min(260px, 100%) !important; }
+  .hero .v2-vault-cube { width: min(248px, 100%) !important; height: 216px !important; }
+  .target-shortcuts { gap: 10px !important; }
+  .target-shortcut-card { height: 76px !important; min-height: 76px !important; padding: 12px 14px !important; }
+  .target-shortcut-card > span { width: 36px !important; height: 36px !important; }
+  .target-shortcut-card strong { font-size: .86rem !important; }
+  .target-shortcut-card small { font-size: .72rem !important; }
+  .lower-grid,
+  .dashboard-home-grid,
+  .target-lower-grid { gap: 10px !important; }
+  .target-accounts-card,
+  .activity-panel { height: 260px !important; min-height: 260px !important; padding: 13px 18px !important; }
+  .target-card-head,
+  .activity-panel .panel-head { height: 26px !important; margin-bottom: 4px !important; }
+  .target-account-row { min-height: 42px !important; padding: 5px 0 !important; }
+  .target-account-row .app-icon { width: 34px !important; height: 34px !important; }
+  .activity { min-height: 48px !important; padding: 6px 0 !important; }
+  .activity > span { width: 34px !important; height: 34px !important; }
+  .protection-panel-card { min-height: 438px !important; padding: 18px 18px 16px !important; }
+  .target-score-ring { width: 172px !important; height: 172px !important; margin: 14px auto !important; }
+  .target-score-ring strong { font-size: 2.75rem !important; }
+  .target-score-stats article { min-height: 78px !important; padding: 12px !important; }
+  .protected { min-height: 72px !important; padding: 12px !important; }
+  .quick-panel { padding: 14px !important; gap: 8px !important; }
+  .quick-row { min-height: 40px !important; height: 40px !important; }
+  .readiness-card { min-height: 100px !important; padding: 14px !important; }
+  .sidebar { padding-top: 22px !important; }
+  .brand { height: 66px !important; margin-bottom: 18px !important; }
+  .sidebar nav a { min-height: 44px !important; }
+  .go-pro { margin-bottom: 28px !important; padding: 18px !important; }
+  .profile { min-height: 82px !important; padding-block: 14px !important; }
 }
 
-@media (max-width: 1180px) {
-  .app-shell {
-    display: block !important;
-    grid-template-columns: 1fr !important;
+@media (min-width: 1280px) {
+  .right-protection-panel { position: sticky !important; top: 15px !important; }
+}
+
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .content-shell { padding-inline: 14px !important; }
+  .dashboard {
+    width: calc(100vw - var(--ref-sidebar) - 28px) !important;
+    grid-template-columns: minmax(0, calc(100% - 324px)) 310px !important;
   }
+  .right-protection-panel { width: 310px !important; max-width: 310px !important; }
+  .hero { height: 390px !important; min-height: 390px !important; grid-template-columns: minmax(0, 1fr) 230px !important; padding: 30px 24px !important; }
+  .hero h1 { font-size: clamp(3.2rem, 5vw, 4.2rem) !important; }
+  .hero .premium-vault { width: 230px !important; }
+  .hero .v2-vault-cube { width: 220px !important; height: 210px !important; }
+  .target-shortcut-card { padding-inline: 12px !important; }
+  .lower-grid,
+  .dashboard-home-grid,
+  .target-lower-grid { grid-template-columns: 1fr !important; }
+}
+
+@media (max-width: 1023px) {
+  .app-shell { display: block !important; grid-template-columns: 1fr !important; }
   .sidebar {
     position: relative !important;
     inset: auto !important;
@@ -7611,175 +7392,53 @@ body,
     padding: 16px !important;
     border-right: 0 !important;
     border-bottom: 1px solid rgba(114, 132, 178, .22) !important;
+    overflow: visible !important;
   }
-  .brand {
-    height: auto !important;
-    margin-bottom: 14px !important;
-  }
-  .brand b {
-    position: static !important;
-  }
-  .sidebar nav {
-    display: grid !important;
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    gap: 8px !important;
-  }
-  .sidebar nav a {
-    min-width: 0 !important;
-    justify-content: center !important;
-  }
+  .brand { height: auto !important; margin-bottom: 14px !important; }
+  .brand b { position: static !important; }
+  .sidebar nav { display: grid !important; grid-template-columns: repeat(4, minmax(0, 1fr)) !important; gap: 8px !important; }
+  .sidebar nav a { min-width: 0 !important; justify-content: center !important; }
   .go-pro,
-  .profile {
-    display: none !important;
-  }
-  .content-shell {
-    margin-left: 0 !important;
-    width: 100% !important;
-    padding: 14px !important;
-  }
-  .dashboard {
-    width: 100% !important;
-    max-width: 100% !important;
-    grid-template-columns: 1fr !important;
-  }
-  .right-protection-panel {
-    width: 100% !important;
-    max-width: 100% !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-  .protection-panel-card {
-    grid-column: 1 / -1 !important;
-  }
-}
-
-@media (max-width: 860px) {
-  .sidebar nav {
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  }
-  .sidebar nav a {
-    min-height: 42px !important;
-    padding-inline: 10px !important;
-    font-size: .86rem !important;
-  }
-  .nav-glyph {
-    width: 20px !important;
-    height: 20px !important;
-  }
-  .top-actions {
-    display: grid !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    width: 100% !important;
-  }
-  .top-actions button,
-  .top-actions .add-account {
-    width: 100% !important;
-    min-width: 0 !important;
-  }
-  .hero {
-    width: 100% !important;
-    height: auto !important;
-    min-height: 0 !important;
-    grid-template-columns: 1fr !important;
-    padding: 28px 18px !important;
-    text-align: center !important;
-  }
-  .hero-copy-panel {
-    justify-items: center !important;
-    max-width: 100% !important;
-  }
+  .profile { display: none !important; }
+  .content-shell { margin-left: 0 !important; width: 100% !important; padding: 14px !important; }
+  .dashboard { width: 100% !important; max-width: 100% !important; grid-template-columns: 1fr !important; }
+  .right-protection-panel { width: 100% !important; max-width: 100% !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .protection-panel-card { grid-column: 1 / -1 !important; min-height: auto !important; }
+  .hero { height: auto !important; min-height: 0 !important; grid-template-columns: 1fr !important; padding: 28px 18px !important; text-align: center !important; }
+  .hero-copy-panel { justify-items: center !important; max-width: 100% !important; }
   .hero h1,
-  .hero p:not(.eyebrow) {
-    text-align: center !important;
-    max-width: 100% !important;
-  }
-  .hero h1 {
-    font-size: clamp(3rem, 12vw, 4.8rem) !important;
-  }
-  .hero .premium-vault,
-  .hero .vault-stage {
-    width: min(330px, 100%) !important;
-    justify-self: center !important;
-  }
-  .target-shortcuts,
+  .hero p:not(.eyebrow) { text-align: center !important; max-width: 100% !important; }
+  .hero h1 { font-size: clamp(3rem, 12vw, 4.8rem) !important; }
+  .hero .premium-vault { justify-self: center !important; width: min(330px, 100%) !important; }
+  .target-shortcuts { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
   .lower-grid,
   .dashboard-home-grid,
-  .target-lower-grid,
-  .desktop-utility-grid,
-  .right-protection-panel {
-    grid-template-columns: 1fr !important;
-  }
-  .protection-panel-card {
-    grid-column: auto !important;
-  }
+  .target-lower-grid { grid-template-columns: 1fr !important; }
 }
 
-@media (max-width: 560px) {
-  .content-shell {
-    padding: 12px 12px calc(92px + env(safe-area-inset-bottom)) !important;
-  }
-  .sidebar {
-    padding: 12px !important;
-  }
-  .sidebar nav {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
+@media (max-width: 680px) {
+  .content-shell { padding: 12px 12px calc(92px + env(safe-area-inset-bottom)) !important; }
+  .sidebar { padding: 12px !important; }
+  .sidebar nav { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
   .brand-wordmark,
-  .brand b {
-    display: none !important;
-  }
-  .top-actions {
-    grid-template-columns: 1fr 1fr !important;
-  }
-  .top-actions .add-account {
-    grid-column: 1 / -1 !important;
-  }
-  .hero {
-    padding: 24px 16px !important;
-    border-radius: 16px !important;
-  }
-  .hero h1 {
-    font-size: clamp(2.55rem, 15vw, 3.55rem) !important;
-    line-height: .92 !important;
-  }
-  .hero p:not(.eyebrow) {
-    font-size: .95rem !important;
-  }
-  .hero-actions {
-    width: 100% !important;
-  }
-  .hero-actions button {
-    width: 100% !important;
-    min-width: 0 !important;
-  }
+  .brand b { display: none !important; }
+  .top-actions { display: grid !important; grid-template-columns: 1fr 1fr !important; width: 100% !important; }
+  .top-actions .add-account { grid-column: 1 / -1 !important; width: 100% !important; }
+  .hero { padding: 24px 16px !important; border-radius: 16px !important; }
+  .hero h1 { font-size: clamp(2.55rem, 15vw, 3.55rem) !important; line-height: .92 !important; }
+  .hero p:not(.eyebrow) { font-size: .95rem !important; }
+  .hero-actions { width: 100% !important; }
+  .hero-actions button { width: 100% !important; min-width: 0 !important; }
   .hero .premium-vault,
-  .hero .vault-stage {
-    width: min(280px, 100%) !important;
-  }
-  .target-shortcut-card,
+  .hero .v2-vault-cube { width: min(250px, 100%) !important; height: 210px !important; }
+  .target-shortcuts,
+  .right-protection-panel { grid-template-columns: 1fr !important; }
+  .target-shortcut-card { height: auto !important; min-height: 84px !important; }
   .target-accounts-card,
-  .activity-panel,
-  .protection-panel-card,
-  .protected,
-  .quick-panel,
-  .readiness-card {
-    border-radius: 16px !important;
-  }
-  .target-account-row {
-    grid-template-columns: 40px minmax(0, 1fr) auto !important;
-  }
-  .target-account-row .account-meta-chip,
-  .target-account-row i {
-    display: none !important;
-  }
-  .account-primary small,
-  .target-account-row small {
-    max-width: 100% !important;
-  }
-  .activity {
-    grid-template-columns: 40px minmax(0, 1fr) auto !important;
-  }
-  .target-score-ring {
-    width: min(206px, 72vw) !important;
-    height: min(206px, 72vw) !important;
-  }
+  .activity-panel { height: auto !important; min-height: 0 !important; }
+  .target-account-row { grid-template-columns: 40px minmax(0, 1fr) auto 14px !important; }
+  .activity { grid-template-columns: 40px minmax(0, 1fr) auto !important; }
+  .target-score-ring { width: min(206px, 72vw) !important; height: min(206px, 72vw) !important; }
+  .ai-copilot { right: 12px !important; bottom: calc(12px + env(safe-area-inset-bottom)) !important; }
+  .ai-copilot-trigger { width: 92px !important; min-width: 92px !important; height: 38px !important; font-size: .78rem !important; }
 }

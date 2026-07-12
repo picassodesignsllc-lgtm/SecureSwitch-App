@@ -1053,23 +1053,18 @@ function Sidebar() {
   const links = [
     ['▦', 'Dashboard', 'dashboard'],
     ['♙', 'Accounts', 'accounts'],
-    ['▤', 'Recovery Center', 'recovery-center'],
-    ['⚑', 'Security Audit', 'security-audit'],
-    ['◉', 'Devices', 'devices'],
-    ['☷', 'Vault', 'secure-vault'],
+    ['⇄', 'Switch Mode', 'switch'],
+    ['⬟', 'Blackout Mode', 'blackout'],
     ['▣', 'Emergency Kit', 'kit'],
-    ['👪', 'Family', 'family-protection'],
-    ['◫', 'Organization', 'organization'],
-    ['◍', 'Dark Web', 'dark-web'],
-    ['◆', 'Premium', 'premium'],
+    ['⌕', 'Recovery Lookup', 'lookup'],
     ['⚙', 'Settings', 'settings']
   ];
   const route = currentRoute();
   return h('aside', { className: 'sidebar', 'aria-label': 'SecureSwitch navigation' },
     h('a', { className: 'brand', href: '#dashboard' }, h('span', { className: 'logo', 'aria-hidden': true }, '0'), h('span', { className: 'brand-wordmark' }, 'SecureSwitch'), h('b', null, 'PRO')),
     h('nav', null, links.map(([icon, label, id]) => h('a', { key: id, href: `#${id}`, className: route === id ? 'active' : '' }, h('span', { className: 'nav-glyph', 'aria-hidden': true }, icon), h('span', null, label)))),
-    h('article', { className: 'go-pro' }, h('p', { className: 'eyebrow' }, '✦ Premium'), h('p', null, 'Advanced monitoring, family protection, and priority recovery.'), h('button', { className: 'primary', onClick: () => location.hash = 'premium' }, 'View Plans')),
-    h('footer', { className: 'profile' }, h('span', null, 'KH'), h('div', null, h('strong', null, 'Keith Harrison'), h('small', null, 'Protected workspace')), h('i', null, '⌄'))
+    h('article', { className: 'go-pro' }, h('p', { className: 'eyebrow' }, '✦ Go Pro'), h('p', null, 'Unlock unlimited accounts, advanced monitoring, and priority recovery.'), h('button', { className: 'primary', onClick: () => location.hash = 'premium' }, 'Upgrade Now')),
+    h('footer', { className: 'profile' }, h('span', null, 'KH'), h('div', null, h('strong', null, 'Keith Harrison'), h('small', null, 'keith@secureswitch.app')), h('i', null, '⌄'))
   );
 }
 
@@ -1124,21 +1119,15 @@ function VaultHeroVisual() {
 }
 
 function Hero() {
-  const accounts = safeAccounts();
-  const score = averageScore();
-  const lastReviewed = accounts.map((account) => account.lastReviewed).filter(Boolean).sort().pop() || 'Today';
   return h('section', { className: 'hero glass v2-hero', id: 'dashboard' },
     h('div', { className: 'hero-copy-panel' },
-      h('p', { className: 'eyebrow' }, '✦ SecureSwitch Command Center'),
-      h('h1', null, state.user ? `Hello ${firstName()}` : 'Never lose another account ', !state.user && h('span', null, 'again.')),
-      h('p', null, 'A compact recovery command center for accounts, devices, vault health, and protection status.'),
-      h('div', { className: 'hero-actions' }, h('button', { className: 'primary', onClick: runHealthScan }, 'Run Health Check'), h('button', { onClick: () => toast('Demo walkthrough coming soon') }, 'Watch Demo'))
+      h('p', { className: 'eyebrow' }, '✦ POLISHED SAAS MVP'),
+      h('h1', null, 'Never lose', h('br'), 'another account', h('br'), h('span', null, 'again.')),
+      h('p', null, 'SecureSwitch protects your logins, recovery options, and digital identity before disaster strikes.'),
+      h('div', { className: 'hero-actions' }, h('button', { className: 'primary', onClick: runHealthScan }, '⬟ Run Health Check'), h('button', { onClick: () => toast('Demo walkthrough coming soon') }, '▷ Watch Demo'))
     ),
-    h('div', { className: 'premium-vault v2-vault-hero', 'aria-label': 'Secure vault summary' },
-      h('div', { className: 'v2-vault-cube', 'aria-hidden': true }, h('span'), h('i')),
-      h('div', { className: 'v2-vault-stats' },
-        [['Score', `${score}%`], ['Accounts', accounts.length], ['Last Review', lastReviewed]].map(([label, value]) => h('article', { key: label }, h('strong', null, value), h('span', null, label)))
-      )
+    h('div', { className: 'premium-vault v2-vault-hero', 'aria-label': 'Secure vault illustration' },
+      h('div', { className: 'v2-vault-cube', 'aria-hidden': true }, h('span'), h('i'))
     )
   );
 }
@@ -2069,20 +2058,13 @@ function RecoveryWizardMVP() {
 }
 
 function TopActions() {
-  const results = globalSearchResults();
   return h('header', { className: 'top-actions' },
-    h('div', { className: 'global-search' },
-      h('input', { value: state.globalSearch, onChange: (event) => setState({ globalSearch: event.target.value }), placeholder: 'Search everything…', 'aria-label': 'Global search' }),
-      results.length > 0 && h('div', { className: 'search-results glass' }, results.map((result) =>
-        h('a', { key: `${result.type}-${result.title || result.label}`, href: result.href || (result.type === 'Account' ? '#accounts' : '#settings') }, h('b', null, result.type), h('span', null, highlightMatch(result.title || result.label)), h('small', null, highlightMatch(result.detail)))
-      ))
-    ),
-    h('button', { onClick: () => setState({ commandPaletteOpen: true }) }, '⌘K'),
-    h('button', { onClick: () => toast('Theme toggle ready') }, '☾'),
-    h('button', { onClick: () => location.hash = 'notifications' }, '♧', h('b', null, unreadNotifications().length)),
+    h('button', { onClick: () => toast('Theme toggle ready'), 'aria-label': 'Toggle dark mode' }, '☾'),
+    h('button', { className: 'notification-action', onClick: () => location.hash = 'notifications', 'aria-label': 'Notifications' }, '♧', h('b', null, unreadNotifications().length)),
     h('button', { className: 'primary add-account', onClick: () => location.hash = 'accounts' }, '+ Add Account')
   );
 }
+
 
 function Shortcuts() { const cards = [['♙', 'Accounts', 'Manage and secure all your accounts', 'accounts'], ['⇄', 'Switch Mode', 'Change access in seconds', 'switch'], ['⌾', 'Blackout Mode', 'Lock down and hide your data', 'blackout'], ['▣', 'Emergency Kit', 'Access critical info anywhere', 'kit']]; return h('section', { className: 'shortcut-grid' }, cards.map(([icon, label, copy, id]) => h('a', { key: label, className: 'shortcut glass', href: `#${id}` }, h('span', null, icon), h('div', null, h('strong', null, label), h('small', null, copy)), h('b', null, '›')))); }
 
@@ -2212,19 +2194,15 @@ function DashboardAccountsPreview() {
   const accounts = names.map((name) => safeAccounts().find((account) => account.name === name)).filter(Boolean);
   return h('section', { className: 'panel glass target-accounts-card', id: 'accounts' }, h('div', { className: 'panel-head target-card-head' }, h('p', { className: 'eyebrow' }, 'Your Accounts'), h('a', { href: '#accounts' }, 'View all')), accounts.map((account) => {
     const review = scoreFor(account) < 80;
-    const deviceCount = account.deviceVerification === 'Trusted' ? 2 : account.deviceVerification ? 1 : 0;
-    const mfa = account.passkeyStatus || account.authenticator || 'Missing';
     return h('a', { key: account.id || account.name, href: '#account-detail', className: 'target-account-row', onClick: () => setState({ selectedAccountId: account.id }) },
       h('span', { className: `app-icon brand-icon brand-${brandSlug(account.name)}`, style: { '--brand-color': account.color } }, brandMark(account.name)),
       h('div', { className: 'account-primary' }, h('strong', null, account.name), h('small', null, account.handle || account.recoveryEmail)),
       h('b', { className: review ? 'review' : 'secure' }, review ? 'Review' : 'Secure'),
-      h('span', { className: 'account-meta-chip' }, `Updated ${account.lastReviewed || 'Today'}`),
-      h('span', { className: 'account-meta-chip' }, `${deviceCount} devices`),
-      h('span', { className: 'account-meta-chip' }, mfa),
       h('i', null, '›')
     );
   }));
 }
+
 function CompanyLogoGrid() {
   const accounts = safeAccounts().slice(0, 14);
   return h('section', { className: 'company-logo-grid glass', 'aria-label': 'Protected companies' },
@@ -2256,15 +2234,14 @@ function DashboardUtilities() {
 }
 
 function DashboardFallback() {
-  return [h('div', { className: 'desktop-top-grid' }, h(Hero)), h(FeatureShortcuts), h('div', { className: 'lower-grid dashboard-home-grid target-lower-grid' }, h(DashboardAccountsPreview), h(Activity)), h(DashboardUtilities)];
+  return [h('div', { className: 'desktop-top-grid' }, h(Hero)), h(FeatureShortcuts), h('div', { className: 'lower-grid dashboard-home-grid target-lower-grid' }, h(DashboardAccountsPreview), h(Activity))];
 }
 function DashboardHome() {
-  try {
-    return [h('div', { className: 'desktop-top-grid' }, h(Hero)), h(FeatureShortcuts), h(CompanyLogoGrid), h('div', { className: 'lower-grid dashboard-home-grid target-lower-grid' }, h(DashboardAccountsPreview), h(Activity)), h(DashboardUtilities)];
-  } catch (error) {
-    console.error('Dashboard render recovered with demo fallback', error);
-    return h(DashboardFallback);
-  }
+  return [
+    h('div', { className: 'desktop-top-grid' }, h(Hero)),
+    h(FeatureShortcuts),
+    h('div', { className: 'lower-grid dashboard-home-grid target-lower-grid' }, h(DashboardAccountsPreview), h(Activity))
+  ];
 }
 
 
