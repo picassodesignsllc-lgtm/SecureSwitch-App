@@ -63,8 +63,12 @@ for (const text of ['Run Health Check', 'Watch Demo', '+ Add Account', 'View all
   if (!app.includes(text)) throw new Error(`Required clickable control missing: ${text}`);
 }
 
-for (const forbidden of ['solid-pie-score', 'pie-score', 'word-break: break-all', '<'.repeat(7), '='.repeat(7), '>'.repeat(7)]) {
+for (const forbidden of ['solid-pie-score', 'pie-score', 'word-break: break-all', 'overflow-wrap: anywhere', 'dashboard[data-route=\"dashboard\"] { transform: scale', 'dashboard[data-route="dashboard"] { transform: scale', '<'.repeat(7), '='.repeat(7), '>'.repeat(7)]) {
   if (css.includes(forbidden) || app.includes(forbidden)) throw new Error(`Forbidden regression marker remains: ${forbidden}`);
 }
 
-console.log('Layout verification passed: desktop rail, viewport height, no dashboard duplicates, required routes, and compact rows are guarded.');
+for (const required of ['.shortcut strong', 'white-space: nowrap', 'hyphens: none', '.activity time { width: 72px', '.account-row { min-height: 54px']) {
+  if (!css.includes(required)) throw new Error(`Missing desktop defect-repair guard: ${required}`);
+}
+
+console.log('Layout verification passed: desktop rail, shortcut typography, account/activity rows, mobile tokens, required routes, and compact rows are guarded.');

@@ -1481,7 +1481,7 @@ button:active::after, .quick-row:active::after { width: 220px; height: 220px; op
   width: 100% !important;
   min-width: 0;
   max-width: none !important;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
 }
 .hero {
   min-height: 620px;
@@ -1527,7 +1527,7 @@ button:active::after, .quick-row:active::after { width: 220px; height: 220px; op
 .cyber-widget,
 .mini-ring-card {
   min-width: 120px;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
   word-break: normal;
 }
 .dashboard-side .activity-panel,
@@ -1729,7 +1729,7 @@ button:active::after, .quick-row:active::after { width: 220px; height: 220px; op
   width: 100%;
   min-width: 0;
   overflow: hidden;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
 }
 .dashboard-side .quick-panel,
 .dashboard-side .protected,
@@ -1937,7 +1937,7 @@ button:active::after, .quick-row:active::after { width: 220px; height: 220px; op
   display: block;
   margin-top: 10px;
   font-size: clamp(1.2rem, 2vw, 2rem);
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
 }
 @media (max-width: 620px) {
   .account-toolbar {
@@ -2079,7 +2079,7 @@ button:active::after, .quick-row:active::after { width: 220px; height: 220px; op
 .vault-asset small,
 .vault-asset b,
 .vault-asset li {
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
 }
 .vault-asset:hover,
 .vault-asset:focus-visible {
@@ -2194,7 +2194,7 @@ button:active::after, .quick-row:active::after { width: 220px; height: 220px; op
   display: block;
   white-space: normal;
   word-break: normal;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
   line-height: 1.35;
 }
 .account-row .app-icon {
@@ -3099,7 +3099,7 @@ select {
 .threat-row small {
   white-space: normal !important;
   word-break: normal !important;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
 }
 @media (max-width: 1280px) {
   .dashboard {

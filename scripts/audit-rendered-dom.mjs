@@ -54,6 +54,7 @@ for (const href of ['#dashboard', '#accounts', '#switch', '#blackout', '#kit', '
   if (!anchors.includes(href)) throw new Error(`Missing routed link: ${href}`);
 }
 const summaryText = textOf(tree);
+for (const expectedText of ['Never lose another account', 'Run Health Check', 'Watch Demo', '+ Add Account', 'Accounts', 'Switch Mode', 'Blackout Mode', 'Emergency Kit', 'Live Protection Score', '86%', 'Excellent', 'You’re protected', 'Recovery Readiness', 'View all']) {
 for (const expectedText of ['Never lose another account', 'Run Health Check', 'Watch Demo', '+ Add Account', 'Live Protection Score', '86%', 'Excellent', 'You’re protected', 'Recovery Readiness', 'View all']) {
   if (!summaryText.includes(expectedText)) throw new Error(`Missing approved dashboard text/control: ${expectedText}`);
 }
