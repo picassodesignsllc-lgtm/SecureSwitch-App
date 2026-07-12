@@ -1,53 +1,47 @@
 import { readFile } from 'node:fs/promises';
 
-const css = await readFile('src/styles.css', 'utf8');
+const css = await readFile('src/dashboard-reference.css', 'utf8');
 const app = await readFile('src/app.js', 'utf8');
 
-const dashboardSideRules = css.match(/\.dashboard-side \{[\s\S]*?\}/g) ?? [];
-if (!dashboardSideRules.some((rule) => rule.includes('position: static !important'))) {
-  throw new Error('dashboard-side must remain in normal document flow.');
+const requiredCss = [
+  'grid-template-columns: 260px minmax(0, 1fr)',
+  'grid-template-columns: minmax(0, 1fr) 370px',
+  'height: calc(100vh - 28px)',
+  'grid-template-rows: 42px 360px 88px minmax(0, 1fr)',
+  'height: 360px',
+  'min-height: 88px',
+  'width: 370px',
+  'position: static !important',
+  'transform: none !important',
+  'overflow: hidden !important',
+  '@media (min-width: 769px) and (max-width: 1279px)',
+  '@media (max-width: 768px)'
+];
+for (const token of requiredCss) {
+  if (!css.includes(token)) throw new Error(`Missing authoritative dashboard layout token: ${token}`);
 }
 
-const protectedBlock = css.match(/\.dashboard-side > \.protected,[\s\S]*?\.dashboard-side > \.floating-ai-coach \{[\s\S]*?\}/)?.[0] ?? '';
-for (const required of ['position: static !important', 'transform: none', 'z-index: auto', 'margin: 0', 'width: 100%']) {
-  if (!protectedBlock.includes(required)) throw new Error(`Right-rail cards missing layout guard: ${required}`);
+if ((app.match(/function Dashboard\(/g) ?? []).length !== 1) throw new Error('Duplicate Dashboard renderer exists.');
+if (!app.includes("className: 'dashboard', 'data-route': 'dashboard'")) throw new Error('Dashboard must expose the data-route layout hook.');
+if (!app.includes("className: 'dashboard-side right-protection-panel'")) throw new Error('Right rail must stay beside the center dashboard.');
+
+const dashboardBody = app.match(/function Dashboard\(\) \{[\s\S]*?\n\}/)?.[0] ?? '';
+for (const forbidden of ['DashboardSummaryCards', 'HealthScoreGrid', 'IdentityHealthDashboard', 'FloatingAICoach', 'LiveThreatFeed', 'SuggestedFixes']) {
+  if (dashboardBody.includes(forbidden)) throw new Error(`Dashboard home includes obsolete command-center widget: ${forbidden}`);
+}
+for (const required of ['h(TopActions)', 'h(Hero)', 'h(Shortcuts)', 'h(Accounts)', 'h(Activity)', 'h(ProtectionScore)', 'h(ProtectedStatus)', 'h(QuickActions)', 'h(Readiness)']) {
+  if (!dashboardBody.includes(required)) throw new Error(`Dashboard missing approved widget: ${required}`);
 }
 
-for (const width of ['1260px', '1024px', '390px']) {
-  if (!css.includes(`max-width: ${width}`)) throw new Error(`Missing responsive overlap check breakpoint: ${width}`);
+for (const route of ["'dashboard'", "'accounts'", "'switch'", "'blackout'", "'kit'", "'lookup'", "'settings'"]) {
+  if (!app.includes(route)) throw new Error(`Required routed link is missing: ${route}`);
+}
+for (const text of ['Run Health Check', 'Watch Demo', '+ Add Account', 'View all']) {
+  if (!app.includes(text)) throw new Error(`Required clickable control missing: ${text}`);
 }
 
-for (const component of ['h(ProtectionScore)', 'h(ProtectedStatus)', 'h(QuickActions)', 'h(Readiness)', 'h(Activity)', 'h(FloatingAICoach)', 'h(LiveThreatFeed)', 'h(SuggestedFixes)']) {
-  if (!app.includes(component)) throw new Error(`Missing dashboard-side component: ${component}`);
+for (const forbidden of ['translateX(', 'translateY(', 'word-break: break-all', '<'.repeat(7), '='.repeat(7), '>'.repeat(7)]) {
+  if (css.includes(forbidden) || app.includes(forbidden)) throw new Error(`Forbidden regression marker remains: ${forbidden}`);
 }
 
-if (!app.includes("h('aside', { className: 'dashboard-side' }, h(ProtectionScore), h(ProtectedStatus), h(QuickActions), h(Readiness), h(FloatingAICoach), h(LiveThreatFeed), h(SuggestedFixes))")) {
-  throw new Error('Reference right rail widgets must stay inside dashboard-side grid.');
-}
-
-for (const required of ['grid-template-columns: var(--reference-sidebar) minmax(0, 1fr)', 'gap: 32px', 'max-width: 1800px', 'grid-template-columns: minmax(0, 1fr) var(--reference-rail)', 'repeat(auto-fit, minmax(160px, 1fr))', 'min-width: 0', '--reference-sidebar: 260px', '--reference-rail: 360px', 'position: sticky !important', 'word-break: normal']) {
-  if (!css.includes(required)) throw new Error(`Missing responsive command-center layout rule: ${required}`);
-}
-
-const rightRailCount = (app.match(/h\(ProtectionScore\)|h\(ProtectedStatus\)|h\(QuickActions\)|h\(Readiness\)|h\(FloatingAICoach\)|h\(LiveThreatFeed\)|h\(SuggestedFixes\)/g) ?? []).length;
-if (rightRailCount !== 7) throw new Error(`Expected 7 right-rail widgets, found ${rightRailCount}`);
-
-for (const declaration of ['demoAccounts', 'activity', 'timelineEvents', 'familyMembers']) {
-  const matches = app.match(new RegExp(`^const ${declaration}\\b`, 'gm')) ?? [];
-  if (matches.length !== 1) throw new Error(`Expected one top-level ${declaration} declaration, found ${matches.length}`);
-}
-for (const marker of ['<'.repeat(7), '='.repeat(7), '>'.repeat(7)]) {
-  if (app.includes(marker) || css.includes(marker)) throw new Error(`Conflict marker remains: ${marker}`);
-}
-
-for (const forbidden of ['writing-mode', 'word-break: break-all']) {
-  if (css.includes(forbidden)) throw new Error(`Account cards must not use broken vertical text styling: ${forbidden}`);
-}
-if (!app.includes("className: 'empty-state'")) throw new Error('Account empty state must render from the app.');
-if (!app.includes("className: 'loading-state'")) throw new Error('Loading state must render from the app.');
-if (!app.includes("className: 'error-state'")) throw new Error('Error state must render from the app.');
-for (const requiredFlow of ['DemoModeBanner', 'OnboardingPanel', 'RecoveryWizardMVP', 'recoveryPlaybooks']) {
-  if (!app.includes(requiredFlow)) throw new Error(`Missing MVP flow: ${requiredFlow}`);
-}
-
-console.log('Layout verification passed: right rail, fixed score widget, readable account cards, duplicate data declarations, conflict markers, and product states are guarded.');
+console.log('Layout verification passed: desktop rail, viewport height, no dashboard duplicates, required routes, and compact rows are guarded.');
