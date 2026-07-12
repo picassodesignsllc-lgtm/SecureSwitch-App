@@ -53,6 +53,36 @@ function onboardingKey(user = state.user) { return `secureswitch:onboarded:${use
 function onboardingSeen(user = null) { try { return localStorage.getItem(onboardingKey(user)) === 'yes'; } catch { return false; } }
 function rememberOnboarding(user = null) { try { localStorage.setItem(onboardingKey(user || state.user), 'yes'); } catch { /* Ignore private browsing storage failures. */ } }
 
+
+const iconPaths = {
+  dashboard: ['M3 3h7v7H3z', 'M14 3h7v7h-7z', 'M14 14h7v7h-7z', 'M3 14h7v7H3z'],
+  account: ['M20 21a8 8 0 0 0-16 0', 'M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10z'],
+  switch: ['M16 3h5v5', 'M21 3l-7 7', 'M8 21H3v-5', 'M3 21l7-7'],
+  shield: ['M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'],
+  kit: ['M10 6V5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v1', 'M4 7h16v13H4z', 'M12 11v5', 'M9.5 13.5h5'],
+  search: ['M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z', 'M21 21l-4.3-4.3'],
+  settings: ['M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z', 'M19.4 15a1.7 1.7 0 0 0 .34 1.88l.05.06a2 2 0 0 1-2.83 2.83l-.06-.05A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 1.55V21a2 2 0 0 1-4 0v-.08A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.88.34l-.06.05a2 2 0 0 1-2.83-2.83l.05-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 0 1 0-4h.08A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.88l-.05-.06a2 2 0 0 1 2.83-2.83l.06.05A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.55V3a2 2 0 0 1 4 0v.08A1.7 1.7 0 0 0 15 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.05a2 2 0 0 1 2.83 2.83l-.05.06A1.7 1.7 0 0 0 19.4 9c.36.62.96 1 1.55 1H21a2 2 0 0 1 0 4h-.08A1.7 1.7 0 0 0 19.4 15z'],
+  moon: ['M21 12.8A8.5 8.5 0 1 1 11.2 3 6.5 6.5 0 0 0 21 12.8z'],
+  bell: ['M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9', 'M13.7 21a2 2 0 0 1-3.4 0'],
+  shieldCheck: ['M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z', 'M9 12l2 2 4-4'],
+  key: ['M21 2l-2 2', 'M15.5 7.5l2 2', 'M14 9l-6.5 6.5', 'M7.5 15.5A4 4 0 1 1 2 21a4 4 0 0 1 5.5-5.5z'],
+  users: ['M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2', 'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z', 'M22 21v-2a4 4 0 0 0-3-3.87', 'M16 3.13a4 4 0 0 1 0 7.75'],
+  plus: ['M12 5v14', 'M5 12h14'],
+  play: ['M8 5v14l11-7z'],
+  chevron: ['M9 18l6-6-6-6'],
+  lock: ['M7 11V8a5 5 0 0 1 10 0v3', 'M5 11h14v10H5z'],
+  mail: ['M4 5h16v14H4z', 'M4 7l8 6 8-6'],
+  scan: ['M4 7V4h3', 'M17 4h3v3', 'M20 17v3h-3', 'M7 20H4v-3', 'M8 12h8']
+};
+function Icon({ name, className = 'ui-icon', title = '' }) {
+  const paths = iconPaths[name] || iconPaths.shield;
+  return h('svg', { className, viewBox: '0 0 24 24', 'aria-hidden': title ? undefined : true, role: title ? 'img' : undefined, focusable: false },
+    title && h('title', null, title),
+    paths.map((d) => h('path', { key: d, d }))
+  );
+}
+function ChevronIcon() { return h(Icon, { name: 'chevron', className: 'ui-icon chevron-icon' }); }
+
 const state = { user: null, auth: null, db: null, firebase: null, firebaseReady: false, vaultKey: null, mode: 'login', userProfile: null, accounts: demoAccounts.map(normalizeAccount), recoveryMethods: [], trustedContacts: [], backupCodes: [], securityAlerts: [], recoveryTimeline: timelineEvents, emergencyKits: [], settings: {}, selectedRecovery: '+1 (415) 555-0184', switchOld: '+1 (415) 555-0184', switchNew: '+1 (628) 555-0149', blackoutArmed: false, emergencyActive: false, emergencyRecoveryActive: false, scanComplete: false, aiStep: 0, timelineFilter: 'All', simulatorScenario: 'My phone was stolen', simulatorRan: false, activeProfile: null, vaultUnlocked: false, selectedVaultCategory: 'Recovery Emails', assistantPrompt: 'My phone was stolen', assistantStep: 0, emergencyScenario: 'Phone Stolen', recoveryWizardScenario: 'Phone stolen', recoveryWizardStep: 0, accountSearch: '', accountCategory: 'All', accountRiskFilter: 'All', accountStatusFilter: 'All', accountSort: 'Risk', accountDensity: 'compact', deviceSearch: '', devicePlatformFilter: 'All', deviceRiskFilter: 'All', deviceTrustFilter: 'All', deviceStatusFilter: 'All', deviceSort: 'Last seen', deviceDensity: 'compact', recoverySearch: '', recoveryStatusFilter: 'All', recoveryRiskFilter: 'All', recoveryPasskeyFilter: 'All', recoveryMfaFilter: 'All', recoveryCategoryFilter: 'All', recoverySort: 'Readiness', recoveryDensity: 'compact', editingAccountId: '', loading: false, authError: '', dataError: '', exportStatus: '', importStatus: '', onboardingOpen: !onboardingSeen(), onboardingStep: 0, onboardingProtection: 'Advanced', onboardingAccounts: ['Google', 'Apple', 'Instagram'], vaultCreating: false, onboardingComplete: false, globalSearch: '', settingsSearch: '', notificationSearch: '', notificationFilter: 'All', notificationCategory: 'All Activity', notificationDateFilter: 'All', notificationUnreadOnly: false, notificationPinnedOnly: false, notificationSort: 'Newest', notificationDensity: 'compact', selectedNotificationId: '', pinnedNotifications: [], archivedNotifications: [], rememberMe: true, notificationsRead: [], notifications: [], activityFeed: [], recoveryContacts: [], securityScores: [], adminVisible: false, organizations: demoOrganizations, selectedOrgRole: 'Member', inviteEmail: '', productTourStep: 0, commandPaletteOpen: false, selectedAccountId: '', expandedAccountId: '', accountDetailTab: 'Overview', auditRan: false, auditReport: '', upgradeModal: '', route: (location.hash || '#dashboard').replace('#', '') || 'dashboard', reportType: 'Recovery Report', waitlistStatus: '', waitlistReferral: '', importSource: 'CSV', isOffline: typeof navigator !== 'undefined' ? !navigator.onLine : false, securityEvents: [], auditEvents: [], devices: [], subscriptionPlan: 'free', backupStatus: 'Automatic encrypted backups ready', toast: 'Ready', aiCopilotOpen: false, aiCopilotQuestion: 'What should I fix first?', aiCopilotAnswer: '', dismissedFixes: [], expandedTimelineId: '', pageLoading: false, successPulse: '', commandIndex: 0, selectedOrganizationId: 'family', enterpriseInvitations: [], approvalWorkflows: [], enterprisePolicies: defaultSecurityPolicies(), enterpriseAuditLog: [], dashboardWidgetOrder: (() => { try { return JSON.parse(localStorage.getItem('secureswitch:dashboard-widgets')) || ['Executive Score', 'Accounts', 'Activity']; } catch { return ['Executive Score', 'Accounts', 'Activity']; } })(), notificationStatusFilter: 'All', runtimeMode: (() => { try { return localStorage.getItem('secureswitch:runtime-mode') || 'auto'; } catch { return 'auto'; } })() };
 const h = (...args) => React.createElement(...args);
 function EmptyState({ icon = '◌', title, description, action, onAction, secondaryAction, onSecondaryAction }) { return h('div', { className: 'empty-state premium-empty-state' }, h('span', { className: 'empty-illustration' }, icon), h('strong', null, title), h('p', null, description), h('div', { className: 'empty-actions' }, action && h('button', { className: 'primary', onClick: onAction }, action), secondaryAction && h('button', { className: 'ghost', onClick: onSecondaryAction }, secondaryAction))); }
@@ -827,16 +857,14 @@ function runHealthScan() { setState({ scanComplete: true }); toast(`Recovery Hea
 
 function Sidebar() {
   const links = [
-    ['▦', 'Dashboard', 'dashboard'], ['♙', 'Accounts', 'accounts'], ['⇄', 'Switch Mode', 'switch'],
-    ['⌾', 'Blackout Mode', 'blackout'], ['▣', 'Emergency Kit', 'kit'], ['⌕', 'Recovery Lookup', 'lookup'], ['⚙', 'Settings', 'settings'],
-    ['✦', 'Health Scan', 'scan'], ['◌', 'Identity Health', 'identity-health'], ['↳', 'Timeline', 'timeline'],
-    ['◇', 'Recovery Coach', 'recovery-coach'], ['⌁', 'Simulator', 'simulator'], ['♡', 'Family Mode', 'family']
+    ['dashboard', 'Dashboard', 'dashboard'], ['account', 'Accounts', 'accounts'], ['switch', 'Switch Mode', 'switch'],
+    ['shield', 'Blackout Mode', 'blackout'], ['kit', 'Emergency Kit', 'kit'], ['search', 'Recovery Lookup', 'lookup'], ['settings', 'Settings', 'settings']
   ];
   return h('aside', { className: 'sidebar', 'aria-label': 'SecureSwitch navigation' },
-    h('a', { className: 'brand', href: '#dashboard' }, h('span', { className: 'logo', 'aria-hidden': true }, '0'), h('span', { className: 'brand-wordmark' }, 'SecureSwitch'), h('b', null, 'PRO')),
-    h('nav', null, links.map(([icon, label, id]) => h('a', { key: id, href: `#${id}`, className: id === 'dashboard' ? 'active' : '' }, h('span', { className: 'nav-glyph', 'aria-hidden': true }, icon), h('span', null, label)))),
-    h('article', { className: 'go-pro' }, h('p', { className: 'eyebrow' }, '✦ Go Pro'), h('p', null, 'Unlock unlimited accounts, advanced monitoring, and priority recovery.'), h('button', { className: 'primary', onClick: () => toast('Go Pro coming soon') }, 'Upgrade Now')),
-    h('footer', { className: 'profile' }, h('span', null, 'KH'), h('div', null, h('strong', null, 'Keith Harrison'), h('small', null, 'keith@secureswitch.app')), h('i', null, '⌄'))
+    h('a', { className: 'brand', href: '#dashboard' }, h('span', { className: 'logo', 'aria-hidden': true }, h(Icon, { name: 'shieldCheck', className: 'brand-logo-icon' })), h('span', { className: 'brand-wordmark' }, 'SecureSwitch'), h('b', null, 'PRO')),
+    h('nav', null, links.map(([icon, label, id]) => h('a', { key: id, href: `#${id}`, className: currentRoute() === id ? 'active' : '' }, h('span', { className: 'nav-glyph', 'aria-hidden': true }, h(Icon, { name: icon })), h('span', null, label)))),
+    h('article', { className: 'go-pro' }, h('p', { className: 'eyebrow' }, 'Go Pro'), h('p', null, 'Unlock unlimited accounts, advanced monitoring, and priority recovery.'), h('button', { className: 'primary', onClick: () => toast('Go Pro coming soon') }, 'Upgrade Now')),
+    h('footer', { className: 'profile' }, h('span', null, 'KH'), h('div', null, h('strong', null, 'Keith Harrison'), h('small', null, 'keith@secureswitch.app')), h('i', null, h(ChevronIcon)))
   );
 }
 
@@ -845,58 +873,68 @@ function AuthCard() {
 }
 
 function VaultHeroVisual() {
-  const assets = [
-    ['Recovery Emails', 'Protected', 'Jun 29', '2 addresses'], ['Phone Numbers', 'Verified', 'Jun 28', '3 numbers'], ['Authenticator Apps', 'Hardware-ready', 'Jun 27', '1Password + YubiKey'],
-    ['Backup Codes', 'Sealed', 'Jun 25', '24 codes'], ['Passkeys', 'Synced', 'Jun 26', '6 passkeys'], ['Crypto Wallets', 'Cold backup', 'Jun 22', '2 wallets'],
-    ['Trusted Contacts', 'Ready', 'Jun 20', '4 contacts'], ['Emergency Documents', 'Locked', 'Jun 12', '5 files'], ['Devices', 'Trusted', 'Jun 19', '7 devices'], ['SIM Cards', 'Carrier-ready', 'Jun 18', '2 SIMs']
-  ];
-  const selected = assets.find(([name]) => name === state.selectedVaultCategory) || assets[0];
-  return h('section', { className: `premium-vault ${state.vaultUnlocked ? 'unlocked' : 'locked'}`, 'aria-label': 'Interactive encrypted recovery center' },
-    h('button', { className: 'vault-stage', onClick: () => { setState({ vaultUnlocked: !state.vaultUnlocked }); toast(state.vaultUnlocked ? 'Digital vault locked' : 'Digital vault unlocked'); }, 'aria-pressed': state.vaultUnlocked },
-      h('span', { className: 'vault-glow-ring', 'aria-hidden': true }),
-      h('span', { className: 'vault-light-sweep', 'aria-hidden': true }),
-      h('span', { className: 'vault-unlock-burst', 'aria-hidden': true }, Array.from({ length: 10 }).map((_, index) => h('i', { key: index, style: { '--burst': index } }))),
-      h('span', { className: 'vault-particles', 'aria-hidden': true }, Array.from({ length: 12 }).map((_, index) => h('i', { key: index, style: { '--p': index } }))),
-      h('span', { className: 'vault-body', 'aria-hidden': true },
-        h('span', { className: 'vault-door' }, h('span', { className: 'vault-reflection' }), h('span', { className: 'vault-wheel' }), h('span', { className: 'vault-keypad' }, Array.from({ length: 9 }).map((_, index) => h('i', { key: index }))), h('span', { className: 'vault-fingerprint' }), h('span', { className: 'vault-shield' }, '⬟'), h('span', { className: 'vault-lock' }, state.vaultUnlocked ? '🔓' : '🔒')),
-        h('span', { className: 'vault-interior' }, selected[0])
-      ),
-      h('span', { className: 'vault-caption' }, state.vaultUnlocked ? `${selected[0]} unlocked` : 'Click to unlock encrypted vault')
-    ),
-    h('div', { className: 'vault-assets', 'aria-live': 'polite' }, assets.map(([name, status, date, detail]) => h('button', { key: name, className: `vault-asset ${state.selectedVaultCategory === name ? 'active' : ''}`, onClick: () => setState({ selectedVaultCategory: name, vaultUnlocked: true }) }, h('span', { className: 'asset-status' }), h('strong', null, name), h('small', null, detail), h('ul', null, ['AES-256', 'Verified', 'Encrypted', `Last Updated ${date}`, 'Recovery Ready', 'Backup Verified'].map((item) => h('li', { key: item }, '✓ ', item))), h('b', null, status), h('i', null, state.selectedVaultCategory === name ? '🔓' : '🔒')))),
-    h('article', { className: 'vault-detail glass' }, h('p', { className: 'eyebrow' }, 'Open Category'), h('h3', null, selected[0]), h('p', null, `${selected[3]} secured with AES-256 encryption, verification metadata, and recovery-ready backup status.`))
+  return h('section', { className: 'premium-vault safe-visual', 'aria-label': 'Premium digital combination safe' },
+    h('div', { className: 'safe-floor-glow', 'aria-hidden': true }),
+    h('div', { className: 'safe-shell', 'aria-hidden': true },
+      h('div', { className: 'safe-side' }),
+      h('div', { className: 'safe-top' }),
+      h('div', { className: 'safe-door' },
+        h('div', { className: 'safe-door-glow' }),
+        h('div', { className: 'safe-dial' },
+          h('span', { className: 'safe-dial-ring' }),
+          h('span', { className: 'safe-dial-core' }),
+          h('span', { className: 'safe-dial-marker marker-one' }),
+          h('span', { className: 'safe-dial-marker marker-two' }),
+          h('span', { className: 'safe-dial-marker marker-three' })
+        ),
+        h('span', { className: 'safe-handle' }),
+        h('span', { className: 'safe-keypad' })
+      )
+    )
   );
 }
-
 function Hero() {
-  return h('section', { className: 'hero glass', id: 'dashboard' }, h('div', { className: 'hero-copy-panel' }, h('p', { className: 'eyebrow' }, '✦ Polished SaaS MVP'), h('h1', null, 'Never lose another account ', h('span', null, 'again.')), h('p', null, 'SecureSwitch protects your logins, recovery options, and digital identity before disaster strikes.'), h('div', { className: 'hero-actions' }, h('button', { className: 'primary', onClick: runHealthScan }, 'Run Health Check'), h('button', { onClick: () => toast('Demo walkthrough coming soon') }, 'Watch Demo'))), h(VaultHeroVisual));
+  return h('section', { className: 'hero glass', id: 'dashboard' }, h('div', { className: 'hero-copy-panel' }, h('p', { className: 'eyebrow' }, 'Polished SaaS MVP'), h('h1', null, 'Never lose another account ', h('span', null, 'again.')), h('p', null, 'SecureSwitch protects your logins, recovery options, and digital identity before disaster strikes.'), h('div', { className: 'hero-actions' }, h('button', { className: 'primary', onClick: runHealthScan }, h(Icon, { name: 'shieldCheck' }), 'Run Health Check'), h('button', { onClick: () => toast('Demo walkthrough coming soon') }, h(Icon, { name: 'play' }), 'Watch Demo'))), h(VaultHeroVisual));
 }
 
 function ProtectionScore() {
   return h('aside', { className: 'floating-score glass', 'aria-label': 'Live Protection Score' },
-    h('div', null, h('p', { className: 'eyebrow score-title' }, 'Live Protection Score'), h('strong', null, `${liveProtectionScore()}%`), h('span', null, 'Excellent')),
-    h('div', { className: 'mini-score-ring', style: { '--score': `${liveProtectionScore() * 3.6}deg` } }),
+    h('p', { className: 'eyebrow score-title' }, 'Live Protection Score'),
+    h('div', { className: 'score-ring-shell', style: { '--score': `${liveProtectionScore() * 3.6}deg` } },
+      h('div', { className: 'score-ring-center' }, h(Icon, { name: 'shieldCheck', className: 'score-shield-icon' }), h('strong', null, `${liveProtectionScore()}%`), h('span', null, 'Excellent'))
+    ),
     h('dl', null, h('div', null, h('dt', null, 'Accounts'), h('dd', null, '50')), h('div', null, h('dt', null, 'Review'), h('dd', null, '9')), h('div', null, h('dt', null, 'Plan'), h('dd', null, '3m')))
   );
 }
-
 function ProtectedStatus() {
-  return h('article', { className: 'protected glass' }, h('span', { className: 'check-orb' }, '▣'), h('div', null, h('h3', null, 'You’re protected'), h('p', null, 'Great job! Keep your recovery methods up to date.')), h('b', null, '›'));
+  return h('article', { className: 'protected glass' }, h('span', { className: 'check-orb' }, h(Icon, { name: 'lock' })), h('div', null, h('h3', null, 'You’re protected'), h('p', null, 'Great job! Keep your recovery methods up to date.')), h('b', null, h(ChevronIcon)));
 }
 
 function QuickActions() {
   const actions = [
-    ['＋', 'Add New Account', () => location.hash = 'accounts'],
-    ['▣', 'Run Health Check', runHealthScan],
-    ['⌁', 'Generate Backup Codes', () => toast('Backup code workflow prepared')],
-    ['♟', 'View Recovery Contacts', () => location.hash = 'kit']
+    ['plus', 'Add New Account', () => location.hash = 'accounts'],
+    ['shieldCheck', 'Run Health Check', runHealthScan],
+    ['key', 'Generate Backup Codes', () => toast('Backup code workflow prepared')],
+    ['users', 'View Recovery Contacts', () => location.hash = 'kit']
   ];
-  return h('section', { className: 'quick-panel glass' }, h('p', { className: 'eyebrow' }, 'Quick Actions'), actions.map(([icon, label, action]) => h('button', { key: label, className: 'quick-row', onClick: action }, h('span', null, icon), label, h('b', null, '›'))));
+  return h('section', { className: 'quick-panel glass' }, h('p', { className: 'eyebrow' }, 'Quick Actions'), actions.map(([icon, label, action]) => h('button', { key: label, className: 'quick-row', onClick: action }, h('span', null, h(Icon, { name: icon })), label, h('b', null, h(ChevronIcon)))));
+}
+
+
+function AccountLogo({ account }) {
+  const name = String(account.name || '').toLowerCase();
+  const fallback = h('span', { className: 'logo-fallback' }, (account.name || 'A')[0]);
+  if (name === 'google') return h('span', { className: 'brand-mark google-logo', title: 'Google' }, h('span', null, 'G'), fallback);
+  if (name === 'instagram') return h('span', { className: 'brand-mark instagram-logo', title: 'Instagram' }, h('span', null), fallback);
+  if (name === 'coinbase') return h('span', { className: 'brand-mark coinbase-logo', title: 'Coinbase' }, h('span', null, 'C'), fallback);
+  if (name === 'amazon') return h('span', { className: 'brand-mark amazon-logo', title: 'Amazon' }, h('span', null, 'a'), h('i', null), fallback);
+  if (name === 'slack') return h('span', { className: 'brand-mark slack-logo', title: 'Slack' }, ['blue', 'green', 'yellow', 'red'].map((part) => h('i', { key: part, className: part })), fallback);
+  return fallback;
 }
 
 function AccountCard({ account }) {
   const score = scoreFor(account);
-  return h('article', { className: 'account-row' }, h('span', { className: 'app-icon', style: { background: account.color } }, account.name[0]), h('div', null, h('strong', null, account.name), h('small', null, `${account.handle || account.recoveryEmail} · ${account.category} · Reviewed ${account.lastReviewed}`)), h('b', { className: score < 80 ? 'review' : 'secure' }, `${score}% · ${riskLevel(account)} risk`), h('div', { className: 'account-actions' }, h('button', { onClick: () => editAccount(account) }, 'Edit'), h('button', { onClick: () => deleteAccount(account.id) }, 'Delete')));
+  return h('article', { className: 'account-row' }, h('span', { className: 'app-icon' }, h(AccountLogo, { account })), h('div', null, h('strong', null, account.name), h('small', null, `${account.handle || account.recoveryEmail} · ${account.category} · Reviewed ${account.lastReviewed}`)), h('b', { className: score < 80 ? 'review' : 'secure' }, `${score}% · ${riskLevel(account)} risk`), h('div', { className: 'account-actions' }, h('button', { onClick: () => editAccount(account) }, 'Edit'), h('button', { onClick: () => deleteAccount(account.id) }, 'Delete')));
 }
 
 function Accounts() {
@@ -968,7 +1006,7 @@ function WeeklyReport() { return h('section', { className: 'panel glass report-p
 function RecoveryInsights() { return h('section', { className: 'panel glass insights-panel' }, h('p', { className: 'eyebrow' }, 'Recovery Insights'), h('h2', null, 'What to fix next'), h('ul', null, [`${oldPhoneAccounts().length} accounts using an old phone number.`, `${state.accounts.filter((account) => !account.trustedContacts).length} accounts missing trusted contacts.`, `${duplicatedRecoveryEmails()} recovery emails are duplicated.`, 'One banking account has no backup codes.', 'Estimated repair time: 7 minutes.'].map((item) => h('li', { key: item }, item))), h('button', { className: 'primary', onClick: runHealthScan }, 'Fix Everything')); }
 function IdentityDNA() { const axes = ['Authentication', 'Recovery', 'Privacy', 'Backups', 'Passkeys', 'Emergency', 'Security', 'Family']; return h('section', { className: 'panel glass dna-panel' }, h('p', { className: 'eyebrow' }, 'Identity DNA'), h('h2', null, 'Overall Identity Health'), h('div', { className: 'dna-orbit' }, axes.map((axis, index) => h('span', { key: axis, style: { '--i': index } }, axis)))); }
 function RecoveryMap() { return h('section', { className: 'panel glass recovery-map' }, h('p', { className: 'eyebrow' }, 'Recovery Map'), h('h2', null, 'Interactive account recovery profiles'), state.accounts.map((account) => h('button', { className: 'map-row', key: account.name, onClick: () => setState({ activeProfile: account.name }) }, h('strong', null, account.name), h('span', null, `${scoreFor(account)}% health`), h('span', null, account.phone || 'No phone'), h('span', null, account.recoveryEmail || account.email || 'No email'), h('span', null, account.backupCodes ? 'Backup codes' : 'Missing codes'), h('b', null, scoreFor(account) > 79 ? 'Low risk' : 'High risk'))), state.activeProfile && h('p', { className: 'muted' }, `${state.activeProfile} profile opened: phone, recovery email, backup codes, passkeys, authenticator, trusted contacts, and risk level are ready for review.`)); }
-function Activity() { return h('section', { className: 'panel glass activity-panel' }, h('div', { className: 'panel-head' }, h('p', { className: 'eyebrow' }, 'Recent Activity'), h('a', { href: '#timeline' }, 'View all')), activity.map((item) => { const [title, service, time] = item.split(' — '); return h('article', { className: 'activity', key: item }, h('span', null, title.includes('Password') ? '▣' : title.includes('email') ? '✉' : title.includes('scanned') ? '⌗' : '⌁'), h('div', null, h('strong', null, title), h('small', null, service)), h('time', null, time)); })); }
+function Activity() { return h('section', { className: 'panel glass activity-panel' }, h('div', { className: 'panel-head' }, h('p', { className: 'eyebrow' }, 'Recent Activity'), h('a', { href: '#timeline' }, 'View all')), activity.map((item) => { const [title, service, time] = item.split(' — '); return h('article', { className: 'activity', key: item }, h('span', null, h(Icon, { name: title.includes('Password') ? 'lock' : title.includes('email') ? 'mail' : title.includes('scanned') ? 'scan' : 'key' })), h('div', null, h('strong', null, title), h('small', null, service)), h('time', null, time)); })); }
 function Readiness() { return h('section', { className: 'panel glass readiness-panel' }, h('div', { className: 'panel-head' }, h('p', { className: 'eyebrow' }, 'Recovery Readiness'), h('strong', null, `${liveProtectionScore()}%`)), h('div', { className: 'progress' }, h('span', { style: { width: `${liveProtectionScore()}%` } })), h('p', null, 'You’re ready for the unexpected. Keep it up!')); }
 function Settings() { return h('section', { className: 'panel glass', id: 'settings' }, h('p', { className: 'eyebrow' }, 'Settings'), h('h2', null, 'Workspace preferences'), ['Dark Mode', 'Notifications', 'Cloud Sync', 'Export Vault', 'Import Vault', 'Emergency PIN', 'Biometric Lock'].map((item) => h('label', { key: item }, h('input', { type: 'checkbox', defaultChecked: true }), item))); }
 
@@ -987,9 +1025,9 @@ function RecoveryWizardMVP() {
   return h('section', { className: 'panel glass recovery-wizard-panel', id: 'recovery-wizard' }, h('div', { className: 'panel-head' }, h('div', null, h('p', { className: 'eyebrow' }, 'Recovery Wizard MVP'), h('h2', null, 'Emergency checklist with progress')), h('strong', null, `${state.recoveryWizardStep + 1}/${steps.length}`)), h('div', { className: 'wizard-scenarios' }, scenarios.map((scenario) => h('button', { key: scenario, className: state.recoveryWizardScenario === scenario ? 'active' : '', onClick: () => setState({ recoveryWizardScenario: scenario, recoveryWizardStep: 0 }) }, scenario))), h('ol', { className: 'wizard-checklist' }, steps.map((step, index) => h('li', { key: step, className: index <= state.recoveryWizardStep ? 'done' : '' }, h('span', null, index < state.recoveryWizardStep ? '✓' : index + 1), h('div', null, h('strong', null, step), h('small', null, index === state.recoveryWizardStep ? 'Current step' : index < state.recoveryWizardStep ? 'Completed' : 'Pending'))))), h('button', { className: 'primary', onClick: () => setState({ recoveryWizardStep: Math.min(state.recoveryWizardStep + 1, steps.length - 1) }) }, 'Mark step complete'));
 }
 
-function TopActions() { return h('header', { className: 'top-actions' }, h('button', { onClick: () => toast('Theme toggle ready') }, '☾'), h('button', { onClick: () => toast('3 recovery alerts') }, '♧', h('b', null, '3')), h('button', { className: 'primary add-account', onClick: () => location.hash = 'accounts' }, '+ Add Account')); }
+function TopActions() { return h('header', { className: 'top-actions' }, h('button', { onClick: () => toast('Theme toggle ready'), 'aria-label': 'Toggle dark mode' }, h(Icon, { name: 'moon' })), h('button', { onClick: () => toast('3 recovery alerts'), 'aria-label': 'Notifications' }, h(Icon, { name: 'bell' }), h('b', null, '3')), h('button', { className: 'primary add-account', onClick: () => location.hash = 'accounts' }, h(Icon, { name: 'plus' }), 'Add Account')); }
 
-function Shortcuts() { const cards = [['♙', 'Accounts', 'Manage and secure all your accounts', 'accounts'], ['⇄', 'Switch Mode', 'Change access in seconds', 'switch'], ['⌾', 'Blackout Mode', 'Lock down and hide your data', 'blackout'], ['▣', 'Emergency Kit', 'Access critical info anywhere', 'kit']]; return h('section', { className: 'shortcut-grid' }, cards.map(([icon, label, copy, id]) => h('a', { key: label, className: 'shortcut glass', href: `#${id}` }, h('span', null, icon), h('div', null, h('strong', null, label), h('small', null, copy)), h('b', null, '›')))); }
+function Shortcuts() { const cards = [['account', 'Accounts', 'Manage and secure all your accounts', 'accounts'], ['switch', 'Switch Mode', 'Change access in seconds', 'switch'], ['shield', 'Blackout Mode', 'Lock down and hide your data', 'blackout'], ['kit', 'Emergency Kit', 'Access critical info anywhere', 'kit']]; return h('section', { className: 'shortcut-grid' }, cards.map(([icon, label, copy, id]) => h('a', { key: label, className: `shortcut shortcut-${id} glass`, href: `#${id}` }, h('span', null, h(Icon, { name: icon })), h('div', null, h('strong', null, label), h('small', null, copy)), h('b', null, h(ChevronIcon))))); }
 
 function HealthScoreGrid() {
   const summary = dashboardSummary(state.accounts);
@@ -1038,10 +1076,16 @@ function FloatingAICoach() {
 }
 
 function Dashboard() {
-  return h('main', { className: 'dashboard' },
-    h('div', { className: 'main-column' }, h(TopActions), h(Hero), h(Shortcuts), h('div', { className: 'lower-grid' }, h(Accounts), h(Activity)), h(DemoModeBanner), h(OnboardingPanel), h(DashboardSummaryCards), h(HealthScoreGrid), h(IdentityHealthDashboard), h(HealthScan), h(EmergencyButton), h(RecoveryWizardMVP), h(RecoveryCoach), h(EmergencySimulator), h(RecoveryTimeline), h(FamilyMode), h(WeeklyReport), h(RecoveryInsights), h(IdentityDNA), h(RecoveryMap), h(AccountForm), h(SwitchMode), h(BlackoutMode), h(EmergencyKit), h(RecoveryLookup), h(Settings)),
-    h('aside', { className: 'dashboard-side' }, h(ProtectionScore), h(ProtectedStatus), h(QuickActions), h(Readiness), h(FloatingAICoach), h(LiveThreatFeed), h(SuggestedFixes))
+  return h('main', { className: 'dashboard', 'data-route': 'dashboard' },
+    h('div', { className: 'main-column' }, h(TopActions), h(Hero), h(Shortcuts), h('div', { className: 'lower-grid' }, h(Accounts), h(Activity))),
+    h('aside', { className: 'dashboard-side right-protection-panel' }, h(ProtectionScore), h(ProtectedStatus), h(QuickActions), h(Readiness))
   );
+}
+
+function RoutePage() {
+  const route = currentRoute();
+  const pages = { accounts: h(Accounts), switch: h(SwitchMode), blackout: h(BlackoutMode), kit: h(EmergencyKit), lookup: h(RecoveryLookup), settings: h(Settings), scan: h(HealthScan), timeline: h(RecoveryTimeline) };
+  return h('main', { className: 'route-page', 'data-route': route }, pages[route] || h(Dashboard));
 }
 
 function SyncAndAuthPanel() {
@@ -1059,8 +1103,8 @@ function App() {
   return h('div', { className: 'app-shell' },
     h(Sidebar),
     h('section', { className: 'content-shell' },
-      h(Dashboard),
-      h(SyncAndAuthPanel),
+      currentRoute() === 'dashboard' ? h(Dashboard) : h(RoutePage),
+      currentRoute() === 'dashboard' ? null : h(SyncAndAuthPanel),
       h('div', { className: 'toast ' + (state.toast ? 'show' : ''), role: 'status', 'aria-live': 'polite' }, state.toast)
     )
   );

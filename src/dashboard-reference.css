@@ -1,724 +1,396 @@
 /* SecureSwitch approved dashboard layout lock.
-   This file loads after styles.css and intentionally owns the dashboard layout. */
+   This file loads after styles.css and is the single authoritative dashboard layout. */
 
-.dashboard[data-route="dashboard"] {
-  display: block !important;
-  width: 100% !important;
-  max-width: none !important;
-  margin: 0 !important;
-  overflow: visible !important;
+html, body {
+  width: 100%;
+  max-width: 100%;
 }
 
-.dashboard[data-route="dashboard"] > .main-column {
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) 340px !important;
-  grid-template-areas:
-    "actions actions"
-    "hero rail"
-    "shortcuts rail"
-    "lower rail" !important;
-  column-gap: 14px !important;
-  row-gap: 12px !important;
-  width: 100% !important;
-  max-width: 1260px !important;
-  margin: 0 auto !important;
-  min-width: 0 !important;
-  align-items: start !important;
-}
+@media (min-width: 1280px) {
+  html, body, #root { height: 100%; overflow: hidden; }
 
-.dashboard[data-route="dashboard"] .top-actions {
-  grid-area: actions !important;
-  height: 42px !important;
-  min-height: 42px !important;
-  margin: 0 !important;
-  gap: 10px !important;
-  justify-content: flex-end !important;
-}
-
-.dashboard[data-route="dashboard"] .desktop-top-grid {
-  grid-area: hero !important;
-  min-width: 0 !important;
-}
-
-.dashboard[data-route="dashboard"] .hero {
-  height: 365px !important;
-  min-height: 365px !important;
-  grid-template-columns: minmax(0, 1fr) 250px !important;
-  align-items: center !important;
-  gap: 18px !important;
-  padding: 28px 34px !important;
-  border-radius: 16px !important;
-  overflow: hidden !important;
-  background:
-    radial-gradient(circle at 82% 52%, rgba(47,128,255,.30), transparent 17rem),
-    linear-gradient(145deg, rgba(13,18,48,.96), rgba(3,9,23,.98)) !important;
-}
-
-.dashboard[data-route="dashboard"] .hero-copy-panel {
-  align-content: center !important;
-  gap: 12px !important;
-  justify-items: start !important;
-  text-align: left !important;
-}
-
-.dashboard[data-route="dashboard"] .hero h1 {
-  max-width: 500px !important;
-  margin: 0 !important;
-  font-size: clamp(3rem, 4.4vw, 4.5rem) !important;
-  line-height: .9 !important;
-  letter-spacing: -.072em !important;
-  text-align: left !important;
-}
-
-.dashboard[data-route="dashboard"] .hero p:not(.eyebrow) {
-  max-width: 500px !important;
-  margin: 0 !important;
-  font-size: .95rem !important;
-  line-height: 1.5 !important;
-  text-align: left !important;
-}
-
-.dashboard[data-route="dashboard"] .hero-actions {
-  width: auto !important;
-  margin-top: 2px !important;
-  gap: 10px !important;
-  display: flex !important;
-  flex-wrap: nowrap !important;
-}
-
-.dashboard[data-route="dashboard"] .hero-actions button {
-  min-height: 44px !important;
-  height: 44px !important;
-  padding: 0 20px !important;
-  border-radius: 10px !important;
-  white-space: nowrap !important;
-}
-
-.dashboard[data-route="dashboard"] .premium-vault.v2-vault-hero {
-  grid-template-columns: 1fr !important;
-  justify-items: center !important;
-  align-content: center !important;
-  min-height: 0 !important;
-}
-
-.dashboard[data-route="dashboard"] .v2-vault-cube {
-  width: 205px !important;
-  height: auto !important;
-  max-width: 100% !important;
-}
-
-.dashboard[data-route="dashboard"] .v2-vault-stats {
-  display: none !important;
-}
-
-.dashboard[data-route="dashboard"] .target-shortcuts {
-  grid-area: shortcuts !important;
-  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  gap: 10px !important;
-}
-
-.dashboard[data-route="dashboard"] .target-shortcut-card {
-  min-height: 82px !important;
-  height: 82px !important;
-  aspect-ratio: auto !important;
-  grid-template-columns: 38px minmax(0, 1fr) auto !important;
-  align-items: center !important;
-  align-content: center !important;
-  gap: 9px !important;
-  padding: 12px 14px !important;
-  border-radius: 14px !important;
-  overflow: hidden !important;
-}
-
-.dashboard[data-route="dashboard"] .target-shortcut-card > span {
-  grid-row: 1 / span 2 !important;
-  width: 38px !important;
-  height: 38px !important;
-}
-
-.dashboard[data-route="dashboard"] .target-shortcut-card strong,
-.dashboard[data-route="dashboard"] .target-shortcut-card small {
-  grid-column: 2 !important;
-  min-width: 0 !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-}
-
-.dashboard[data-route="dashboard"] .target-shortcut-card b {
-  grid-column: 3 !important;
-  grid-row: 1 / span 2 !important;
-  align-self: center !important;
-}
-
-.dashboard[data-route="dashboard"] .company-logo-grid,
-.dashboard[data-route="dashboard"] .desktop-utility-grid {
-  display: none !important;
-}
-
-.dashboard[data-route="dashboard"] .lower-grid,
-.dashboard[data-route="dashboard"] .dashboard-home-grid,
-.dashboard[data-route="dashboard"] .target-lower-grid {
-  grid-area: lower !important;
-  grid-template-columns: minmax(0, 1.15fr) minmax(280px, .85fr) !important;
-  gap: 10px !important;
-  min-width: 0 !important;
-}
-
-.dashboard[data-route="dashboard"] .target-accounts-card,
-.dashboard[data-route="dashboard"] .activity-panel {
-  height: 270px !important;
-  min-height: 270px !important;
-  padding: 14px 16px !important;
-  border-radius: 14px !important;
-  overflow: hidden !important;
-}
-
-.dashboard[data-route="dashboard"] .target-account-row {
-  min-height: 46px !important;
-  height: 46px !important;
-  grid-template-columns: 34px minmax(0, 1fr) auto 12px !important;
-  gap: 9px !important;
-  padding: 4px 0 !important;
-}
-
-.dashboard[data-route="dashboard"] .target-account-row .app-icon {
-  width: 34px !important;
-  height: 34px !important;
-}
-
-.dashboard[data-route="dashboard"] .target-account-row .account-meta-chip {
-  display: none !important;
-}
-
-.dashboard[data-route="dashboard"] .activity {
-  min-height: 48px !important;
-  height: 48px !important;
-  padding: 5px 0 !important;
-  overflow: hidden !important;
-}
-
-.dashboard[data-route="dashboard"] .right-protection-panel {
-  grid-area: rail !important;
-  position: sticky !important;
-  top: 12px !important;
-  display: grid !important;
-  grid-template-columns: 1fr !important;
-  gap: 10px !important;
-  width: 340px !important;
-  max-width: 340px !important;
-  min-width: 0 !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-  overflow: visible !important;
-}
-
-.dashboard[data-route="dashboard"] .protection-panel-card {
-  min-height: 0 !important;
-  padding: 16px !important;
-  border-radius: 14px !important;
-}
-
-.dashboard[data-route="dashboard"] .target-score-ring {
-  width: 150px !important;
-  height: 150px !important;
-  margin: 8px auto 10px !important;
-}
-
-.dashboard[data-route="dashboard"] .target-score-ring strong {
-  font-size: 2.5rem !important;
-}
-
-.dashboard[data-route="dashboard"] .target-score-stats {
-  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  gap: 8px !important;
-}
-
-.dashboard[data-route="dashboard"] .target-score-stats article {
-  min-width: 0 !important;
-  min-height: 66px !important;
-  height: 66px !important;
-  padding: 9px 6px !important;
-  text-align: center !important;
-}
-
-.dashboard[data-route="dashboard"] .protected,
-.dashboard[data-route="dashboard"] .quick-panel,
-.dashboard[data-route="dashboard"] .readiness-card {
-  border-radius: 14px !important;
-  min-height: 0 !important;
-}
-
-.dashboard[data-route="dashboard"] .protected {
-  padding: 12px !important;
-}
-
-.dashboard[data-route="dashboard"] .quick-panel {
-  gap: 6px !important;
-  padding: 12px !important;
-}
-
-.dashboard[data-route="dashboard"] .quick-row {
-  min-height: 38px !important;
-  height: 38px !important;
-  padding: 7px 10px !important;
-}
-
-.dashboard[data-route="dashboard"] .readiness-card {
-  padding: 12px !important;
-}
-
-@media (min-width: 1450px) {
-  .content-shell { padding-inline: 18px !important; }
-  .dashboard[data-route="dashboard"] > .main-column {
-    grid-template-columns: minmax(0, 850px) 370px !important;
-    max-width: 1234px !important;
-  }
-  .dashboard[data-route="dashboard"] .right-protection-panel {
-    width: 370px !important;
-    max-width: 370px !important;
-  }
-}
-
-@media (min-width: 1025px) and (max-width: 1279px) {
-  .content-shell { padding-inline: 12px !important; }
-  .dashboard[data-route="dashboard"] > .main-column {
-    grid-template-columns: minmax(0, 1fr) 300px !important;
-    column-gap: 10px !important;
-  }
-  .dashboard[data-route="dashboard"] .right-protection-panel {
-    width: 300px !important;
-    max-width: 300px !important;
-  }
-  .dashboard[data-route="dashboard"] .hero {
-    height: 350px !important;
-    min-height: 350px !important;
-    grid-template-columns: minmax(0, 1fr) 205px !important;
-    padding: 24px 26px !important;
-  }
-  .dashboard[data-route="dashboard"] .hero h1 {
-    font-size: clamp(2.7rem, 4.3vw, 3.8rem) !important;
-  }
-  .dashboard[data-route="dashboard"] .v2-vault-cube { width: 180px !important; }
-  .dashboard[data-route="dashboard"] .target-shortcut-card {
-    padding: 10px !important;
-  }
-  .dashboard[data-route="dashboard"] .target-shortcut-card small {
-    font-size: .68rem !important;
-  }
-}
-
-@media (max-width: 1024px) {
-  .dashboard[data-route="dashboard"] > .main-column {
+  .app-shell {
     display: grid !important;
-    grid-template-columns: 1fr !important;
-    grid-template-areas:
-      "actions"
-      "hero"
-      "shortcuts"
-      "lower"
-      "rail" !important;
-    gap: 12px !important;
-    max-width: none !important;
-  }
-  .dashboard[data-route="dashboard"] .right-protection-panel {
-    position: static !important;
-    width: 100% !important;
-    max-width: none !important;
-  }
-}
-
-@media (max-width: 768px) {
-  .content-shell { padding: 10px !important; }
-  .dashboard[data-route="dashboard"] > .main-column { gap: 10px !important; }
-
-  .dashboard[data-route="dashboard"] .top-actions {
-    height: auto !important;
+    grid-template-columns: 260px minmax(0, 1fr) !important;
+    width: 100vw !important;
+    height: 100vh !important;
     min-height: 0 !important;
-    display: grid !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    gap: 8px !important;
+    overflow: hidden !important;
+    gap: 14px !important;
+    padding: 0 !important;
   }
-
-  .dashboard[data-route="dashboard"] .top-actions > * {
-    min-width: 0 !important;
-    width: 100% !important;
-    height: 42px !important;
-  }
-
-  .dashboard[data-route="dashboard"] .hero {
-    height: auto !important;
-    min-height: 0 !important;
-    grid-template-columns: 1fr !important;
-    gap: 18px !important;
-    padding: 24px 20px !important;
-    text-align: center !important;
-  }
-
-  .dashboard[data-route="dashboard"] .hero-copy-panel {
-    justify-items: center !important;
-    gap: 12px !important;
-  }
-
-  .dashboard[data-route="dashboard"] .hero h1 {
-    max-width: 100% !important;
-    font-size: clamp(2.8rem, 13.5vw, 4rem) !important;
-    line-height: .88 !important;
-    text-align: center !important;
-  }
-
-  .dashboard[data-route="dashboard"] .hero p:not(.eyebrow) {
-    font-size: 1rem !important;
-    text-align: center !important;
-  }
-
-  .dashboard[data-route="dashboard"] .hero-actions {
-    width: 100% !important;
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-  }
-
-  .dashboard[data-route="dashboard"] .hero-actions button {
-    width: 100% !important;
-    height: 50px !important;
-  }
-
-  .dashboard[data-route="dashboard"] .premium-vault.v2-vault-hero {
-    min-height: 210px !important;
-  }
-
-  .dashboard[data-route="dashboard"] .v2-vault-cube {
-    width: 175px !important;
-  }
-
-  .dashboard[data-route="dashboard"] .target-shortcuts {
-    grid-template-columns: 1fr 1fr !important;
-    gap: 9px !important;
-  }
-
-  .dashboard[data-route="dashboard"] .target-shortcut-card {
-    height: 92px !important;
-    min-height: 92px !important;
-    grid-template-columns: 42px minmax(0, 1fr) auto !important;
-    padding: 12px !important;
-  }
-
-  .dashboard[data-route="dashboard"] .lower-grid,
-  .dashboard[data-route="dashboard"] .dashboard-home-grid,
-  .dashboard[data-route="dashboard"] .target-lower-grid {
-    grid-template-columns: 1fr !important;
-    gap: 10px !important;
-  }
-
-  .dashboard[data-route="dashboard"] .target-accounts-card,
-  .dashboard[data-route="dashboard"] .activity-panel {
-    height: auto !important;
-    min-height: 0 !important;
-    max-height: none !important;
-    padding: 14px !important;
-  }
-
-  .dashboard[data-route="dashboard"] .target-account-row {
-    height: 52px !important;
-    min-height: 52px !important;
-  }
-
-  .dashboard[data-route="dashboard"] .activity {
-    height: 58px !important;
-    min-height: 58px !important;
-    padding: 7px 0 !important;
-  }
-
-  .dashboard[data-route="dashboard"] .right-protection-panel {
-    gap: 10px !important;
-  }
-
-  .dashboard[data-route="dashboard"] .protection-panel-card {
-    padding: 15px !important;
-  }
-
-  .dashboard[data-route="dashboard"] .target-score-ring {
-    width: 150px !important;
-    height: 150px !important;
-  }
-
-  .dashboard[data-route="dashboard"] .quick-row {
-    height: 44px !important;
-    min-height: 44px !important;
-  }
-
-  .ai-copilot-trigger {
-    right: 12px !important;
-    bottom: 14px !important;
-    transform: scale(.9) !important;
-    transform-origin: right bottom !important;
-  }
-}
-
-@media (max-width: 430px) {
-  .dashboard[data-route="dashboard"] .target-shortcuts {
-    grid-template-columns: 1fr !important;
-  }
-  .dashboard[data-route="dashboard"] .target-shortcut-card {
-    height: 78px !important;
-    min-height: 78px !important;
-  }
-  .dashboard[data-route="dashboard"] .hero h1 {
-    font-size: clamp(2.65rem, 14vw, 3.6rem) !important;
-  }
-}
-
-/* Mobile and tablet dashboard layout: consolidated from mobile-reference-fix.css so dashboard-reference.css is the single authoritative dashboard stylesheet. */
-/* SecureSwitch mobile emergency correction — loaded last. */
-@media (max-width: 768px) {
-  html, body { width: 100% !important; overflow-x: hidden !important; }
-  .app-shell { display: block !important; min-height: 100vh !important; }
 
   .sidebar {
-    position: relative !important;
-    inset: auto !important;
-    width: 100% !important;
-    height: auto !important;
+    position: static !important;
+    width: 260px !important;
+    height: 100vh !important;
     min-height: 0 !important;
-    max-height: none !important;
-    padding: 12px !important;
-    display: block !important;
-    overflow: visible !important;
-    border-right: 0 !important;
-    border-bottom: 1px solid var(--line) !important;
+    padding: 18px 14px !important;
+    display: grid !important;
+    grid-template-rows: auto minmax(0, 1fr) auto auto !important;
+    gap: 14px !important;
+    overflow: hidden !important;
   }
-  .sidebar .brand,
-  .sidebar .go-pro,
-  .sidebar .profile { display: none !important; }
+
   .sidebar nav {
     display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 8px !important;
-    padding: 0 !important;
-    margin: 0 !important;
+    align-content: start !important;
+    gap: 7px !important;
+    overflow: hidden !important;
   }
-  .sidebar nav a {
-    min-height: 52px !important;
-    height: 52px !important;
-    padding: 0 12px !important;
-    gap: 10px !important;
-    border-radius: 12px !important;
-    font-size: .86rem !important;
-    line-height: 1.1 !important;
-  }
-  .nav-glyph { width: 20px !important; height: 20px !important; }
+
+  .sidebar nav a { min-height: 42px !important; padding: 0 12px !important; }
+  .go-pro { align-self: end !important; padding: 14px !important; }
+  .profile { min-height: 56px !important; padding: 10px !important; }
 
   .content-shell {
     margin-left: 0 !important;
-    width: 100% !important;
-    padding: 10px 12px 96px !important;
+    width: auto !important;
+    min-width: 0 !important;
+    height: 100vh !important;
+    padding: 14px 14px 14px 0 !important;
     overflow: hidden !important;
   }
+
   .dashboard[data-route="dashboard"] {
-    display: block !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 370px !important;
+    gap: 14px !important;
     width: 100% !important;
+    height: calc(100vh - 28px) !important;
     max-width: none !important;
     margin: 0 !important;
-  }
-  .dashboard[data-route="dashboard"] .main-column {
-    display: grid !important;
-    gap: 10px !important;
-    width: 100% !important;
+    overflow: hidden !important;
+    align-items: stretch !important;
+    transform: none !important;
   }
 
-  .dashboard[data-route="dashboard"] .top-actions {
-    position: static !important;
+  .dashboard[data-route="dashboard"] > .main-column {
+    display: grid !important;
+    grid-template-rows: 42px 360px 88px minmax(0, 1fr) !important;
+    gap: 10px !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+    transform: none !important;
+  }
+
+  .top-actions { height: 42px !important; min-height: 42px !important; justify-content: flex-end !important; gap: 10px !important; }
+  .top-actions button { height: 42px !important; min-height: 42px !important; padding: 0 14px !important; }
+
+  .hero {
+    height: 360px !important;
+    min-height: 360px !important;
+    padding: 28px 32px !important;
+    grid-template-columns: minmax(0, 1fr) 300px !important;
+    gap: 18px !important;
+    border-radius: 18px !important;
+    overflow: hidden !important;
+    transform: none !important;
+  }
+
+  .hero h1 { font-size: clamp(3.2rem, 4.6vw, 4.7rem) !important; line-height: .9 !important; max-width: 560px !important; }
+  .hero p:not(.eyebrow) { font-size: .98rem !important; line-height: 1.45 !important; max-width: 520px !important; }
+  .hero-actions { gap: 10px !important; flex-wrap: nowrap !important; }
+  .hero-actions button { height: 44px !important; min-height: 44px !important; border-radius: 10px !important; }
+  .hero .premium-vault { min-width: 0 !important; max-height: 300px !important; overflow: hidden !important; transform: scale(.72) !important; transform-origin: center !important; }
+  .hero .vault-assets, .hero .vault-detail { display: none !important; }
+
+  .shortcut-grid {
     display: grid !important;
     grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    gap: 8px !important;
-    width: 100% !important;
-    height: auto !important;
-    min-height: 0 !important;
-    margin: 0 !important;
-  }
-  .dashboard[data-route="dashboard"] .top-actions button,
-  .dashboard[data-route="dashboard"] .top-actions .add-account {
-    width: 100% !important;
-    min-width: 0 !important;
-    min-height: 44px !important;
-    height: 44px !important;
-    padding: 0 8px !important;
-    border-radius: 12px !important;
-    font-size: 0 !important;
-  }
-  .dashboard[data-route="dashboard"] .top-actions .add-account {
-    grid-column: span 2 !important;
-    font-size: .82rem !important;
-  }
-
-  .dashboard[data-route="dashboard"] .hero {
-    width: 100% !important;
-    height: auto !important;
-    min-height: 0 !important;
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-    gap: 22px !important;
-    padding: 26px 20px 30px !important;
-    text-align: center !important;
-    border-radius: 18px !important;
-  }
-  .dashboard[data-route="dashboard"] .hero-copy-panel {
-    display: grid !important;
-    justify-items: center !important;
-    gap: 14px !important;
-    text-align: center !important;
-  }
-  .dashboard[data-route="dashboard"] .hero h1 {
-    max-width: 100% !important;
-    font-size: clamp(3rem, 15vw, 4.25rem) !important;
-    line-height: .9 !important;
-    letter-spacing: -.075em !important;
-    text-align: center !important;
-  }
-  .dashboard[data-route="dashboard"] .hero p:not(.eyebrow) {
-    max-width: 32rem !important;
-    font-size: 1rem !important;
-    line-height: 1.5 !important;
-    text-align: center !important;
-  }
-  .dashboard[data-route="dashboard"] .hero-actions {
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-    width: 100% !important;
     gap: 10px !important;
+    min-height: 88px !important;
   }
-  .dashboard[data-route="dashboard"] .hero-actions button {
-    width: 100% !important;
-    min-height: 52px !important;
-    padding: 0 16px !important;
-  }
-  .dashboard[data-route="dashboard"] .premium-vault.v2-vault-hero {
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-    justify-items: center !important;
-    gap: 14px !important;
-    width: 100% !important;
-  }
-  .dashboard[data-route="dashboard"] .v2-vault-cube {
-    width: min(190px, 56vw) !important;
-  }
-  .dashboard[data-route="dashboard"] .v2-vault-stats {
-    display: grid !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    width: 100% !important;
-    gap: 8px !important;
-  }
-  .dashboard[data-route="dashboard"] .v2-vault-stats article {
-    min-height: 76px !important;
-    padding: 10px 6px !important;
-  }
+  .shortcut { min-height: 88px !important; height: 88px !important; padding: 12px 14px !important; border-radius: 14px !important; overflow: hidden !important; }
+  .shortcut small, .account-row small, .activity small { overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
 
-  .dashboard[data-route="dashboard"] .target-shortcuts {
+  .lower-grid {
     display: grid !important;
-    grid-template-columns: 1fr !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
     gap: 10px !important;
-  }
-  .dashboard[data-route="dashboard"] .target-shortcut-card {
-    width: 100% !important;
-    min-height: 92px !important;
-    height: auto !important;
-    aspect-ratio: auto !important;
-    display: grid !important;
-    grid-template-columns: 48px minmax(0, 1fr) auto !important;
-    grid-template-rows: auto auto !important;
-    align-items: center !important;
-    align-content: center !important;
-    gap: 4px 12px !important;
-    padding: 16px !important;
-  }
-  .dashboard[data-route="dashboard"] .target-shortcut-card > span {
-    width: 48px !important;
-    height: 48px !important;
-    grid-row: 1 / 3 !important;
-  }
-  .dashboard[data-route="dashboard"] .target-shortcut-card strong {
-    grid-column: 2 !important;
-    grid-row: 1 !important;
-    font-size: 1rem !important;
-  }
-  .dashboard[data-route="dashboard"] .target-shortcut-card small {
-    grid-column: 2 !important;
-    grid-row: 2 !important;
-    margin: 0 !important;
-  }
-  .dashboard[data-route="dashboard"] .target-shortcut-card b {
-    grid-column: 3 !important;
-    grid-row: 1 / 3 !important;
-  }
-
-  .dashboard[data-route="dashboard"] .lower-grid,
-  .dashboard[data-route="dashboard"] .dashboard-home-grid,
-  .dashboard[data-route="dashboard"] .target-lower-grid {
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-    gap: 10px !important;
-  }
-  .dashboard[data-route="dashboard"] .target-accounts-card,
-  .dashboard[data-route="dashboard"] .activity-panel {
     min-height: 0 !important;
-    height: auto !important;
+    overflow: hidden !important;
+  }
+  .lower-grid > .panel {
+    height: 100% !important;
+    min-height: 0 !important;
     padding: 14px !important;
+    border-radius: 14px !important;
+    overflow: hidden auto !important;
   }
-  .dashboard[data-route="dashboard"] .target-account-row {
-    min-height: 54px !important;
-    height: auto !important;
-    grid-template-columns: 40px minmax(0, 1fr) auto !important;
-  }
-  .dashboard[data-route="dashboard"] .target-account-row i,
-  .dashboard[data-route="dashboard"] .target-account-row .account-meta-chip { display: none !important; }
+  .account-toolbar { display: none !important; }
+  .account-row { min-height: 48px !important; grid-template-columns: 34px minmax(0, 1fr) auto !important; gap: 9px !important; padding: 6px 0 !important; }
+  .account-row .app-icon { width: 34px !important; height: 34px !important; }
+  .account-actions { display: none !important; }
+  .activity { min-height: 48px !important; grid-template-columns: 36px minmax(0, 1fr) auto !important; gap: 9px !important; padding: 6px 0 !important; }
 
-  .dashboard[data-route="dashboard"] .dashboard-side { margin-top: 10px !important; }
-  .dashboard[data-route="dashboard"] .right-protection-panel {
-    position: static !important;
+  .right-protection-panel {
     display: grid !important;
     grid-template-columns: 1fr !important;
+    grid-template-rows: auto auto minmax(0, auto) auto !important;
     gap: 10px !important;
-    width: 100% !important;
-    max-width: none !important;
-  }
-  .dashboard[data-route="dashboard"] .protection-panel-card,
-  .dashboard[data-route="dashboard"] .protected,
-  .dashboard[data-route="dashboard"] .quick-panel,
-  .dashboard[data-route="dashboard"] .readiness-card {
-    width: 100% !important;
+    width: 370px !important;
+    max-width: 370px !important;
+    min-width: 0 !important;
     min-height: 0 !important;
-    height: auto !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    position: static !important;
+    transform: none !important;
   }
-  .dashboard[data-route="dashboard"] .target-score-ring {
-    width: 172px !important;
-    height: 172px !important;
-  }
-  .dashboard[data-route="dashboard"] .target-score-stats {
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  }
-  .dashboard[data-route="dashboard"] .target-score-stats article {
-    min-height: 78px !important;
-    padding: 10px 6px !important;
-  }
-
-  .ai-copilot {
-    position: fixed !important;
-    right: 12px !important;
-    bottom: calc(14px + env(safe-area-inset-bottom)) !important;
-    z-index: 50 !important;
-  }
-  .ai-copilot-trigger {
-    min-height: 46px !important;
-    padding: 0 16px !important;
-    font-size: .82rem !important;
-  }
+  .right-protection-panel > * { position: static !important; transform: none !important; width: 100% !important; margin: 0 !important; }
+  .floating-score { padding: 16px !important; border-radius: 16px !important; }
+  .floating-score strong { font-size: 3rem !important; }
+  .floating-score .mini-score-ring { width: 128px !important; height: 128px !important; }
+  .floating-score dl { gap: 8px !important; }
+  .protected, .quick-panel, .readiness-panel { padding: 14px !important; border-radius: 16px !important; min-height: 0 !important; }
+  .quick-panel { gap: 7px !important; }
+  .quick-row { height: 40px !important; min-height: 40px !important; padding: 0 10px !important; }
 }
 
-@media (max-width: 390px) {
-  .sidebar nav a { font-size: .78rem !important; padding-inline: 9px !important; }
-  .dashboard[data-route="dashboard"] .hero h1 { font-size: 2.9rem !important; }
-  .dashboard[data-route="dashboard"] .v2-vault-stats { grid-template-columns: 1fr !important; }
+@media (min-width: 769px) and (max-width: 1279px) {
+  .app-shell { display: grid !important; grid-template-columns: 240px minmax(0, 1fr) !important; width: 100% !important; min-height: 100vh !important; overflow-x: hidden !important; }
+  .sidebar { position: static !important; width: 240px !important; height: 100vh !important; overflow: hidden !important; }
+  .content-shell { margin-left: 0 !important; padding: 14px !important; overflow-x: hidden !important; }
+  .dashboard[data-route="dashboard"] { display: grid !important; grid-template-columns: minmax(0, 1fr) !important; gap: 14px !important; overflow: visible !important; }
+  .right-protection-panel { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; width: 100% !important; max-width: none !important; position: static !important; }
+  .hero { height: 330px !important; min-height: 330px !important; grid-template-columns: minmax(0,1fr) 240px !important; overflow: hidden !important; }
+  .shortcut-grid, .lower-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+}
+
+@media (max-width: 768px) {
+  html, body { overflow-x: hidden !important; }
+  .app-shell { display: block !important; width: 100% !important; min-height: 100vh !important; overflow-x: hidden !important; }
+  .sidebar { position: relative !important; width: 100% !important; height: auto !important; padding: 12px !important; overflow: visible !important; border-right: 0 !important; border-bottom: 1px solid var(--line) !important; }
+  .sidebar .brand, .sidebar .go-pro, .sidebar .profile { display: none !important; }
+  .sidebar nav { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 8px !important; }
+  .sidebar nav a { min-height: 48px !important; padding: 0 10px !important; font-size: .82rem !important; }
+  .content-shell { margin-left: 0 !important; width: 100% !important; padding: 10px 12px 80px !important; overflow-x: hidden !important; }
+  .dashboard[data-route="dashboard"], .main-column { display: grid !important; grid-template-columns: 1fr !important; gap: 10px !important; width: 100% !important; overflow: visible !important; }
+  .top-actions { display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 8px !important; }
+  .top-actions button { width: 100% !important; min-width: 0 !important; }
+  .hero { height: auto !important; min-height: 0 !important; grid-template-columns: 1fr !important; padding: 24px 18px !important; text-align: center !important; overflow: hidden !important; }
+  .hero-copy-panel { justify-items: center !important; text-align: center !important; }
+  .hero h1 { font-size: clamp(2.7rem, 14vw, 3.7rem) !important; text-align: center !important; }
+  .hero-actions { display: grid !important; grid-template-columns: 1fr !important; width: 100% !important; }
+  .hero-actions button { width: 100% !important; }
+  .hero .premium-vault { transform: scale(.74) !important; transform-origin: center !important; max-height: 240px !important; overflow: hidden !important; }
+  .hero .vault-assets, .hero .vault-detail { display: none !important; }
+  .shortcut-grid, .lower-grid, .right-protection-panel { display: grid !important; grid-template-columns: 1fr !important; gap: 10px !important; width: 100% !important; max-width: none !important; }
+  .shortcut { min-height: 78px !important; height: auto !important; }
+  .account-row { grid-template-columns: 36px minmax(0,1fr) auto !important; }
+  .account-row .account-actions { display: none !important; }
+}
+
+/* Production visual polish: professional inline SVG iconography and premium safe/score assets. */
+.ui-icon {
+  width: 1.15em;
+  height: 1.15em;
+  display: inline-block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: 0 0 auto;
+}
+.chevron-icon { width: 16px; height: 16px; opacity: .82; }
+.brand-logo-icon { width: 30px; height: 30px; stroke-width: 2.3; }
+.logo {
+  display: inline-grid !important;
+  place-items: center !important;
+  color: #eaf3ff !important;
+  background: radial-gradient(circle at 35% 25%, #69c4ff, #2267ff 54%, #2c1c82) !important;
+  box-shadow: inset 0 1px 10px rgba(255,255,255,.25), 0 14px 34px rgba(52,105,255,.38) !important;
+}
+.nav-glyph { display: inline-grid !important; place-items: center !important; color: #c8d7f4 !important; }
+.sidebar nav a.active .nav-glyph { color: #ffffff !important; }
+.top-actions button, .hero-actions button, .quick-row { display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 9px !important; }
+.top-actions button:not(.add-account) { color: #dce7ff !important; }
+
+.shortcut > span {
+  position: relative;
+  display: inline-grid !important;
+  place-items: center !important;
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 12px !important;
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,.16) !important;
+  box-shadow: inset 0 1px 10px rgba(255,255,255,.18), 0 12px 26px rgba(0,0,0,.24) !important;
+  overflow: hidden !important;
+}
+.shortcut > span::before {
+  content: '';
+  position: absolute;
+  inset: 1px 1px auto 1px;
+  height: 45%;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255,255,255,.24), transparent);
+  pointer-events: none;
+}
+.shortcut > span .ui-icon { width: 20px; height: 20px; stroke-width: 2.25; z-index: 1; }
+.shortcut-accounts > span { background: linear-gradient(135deg, #2788ff, #3157f6) !important; box-shadow: inset 0 1px 10px rgba(255,255,255,.2), 0 12px 28px rgba(44,118,255,.32) !important; }
+.shortcut-switch > span { background: linear-gradient(135deg, #8b5cf6, #5b32d6) !important; box-shadow: inset 0 1px 10px rgba(255,255,255,.18), 0 12px 28px rgba(124,86,255,.28) !important; }
+.shortcut-blackout > span { background: linear-gradient(135deg, #ff4f64, #b91c34) !important; box-shadow: inset 0 1px 10px rgba(255,255,255,.16), 0 12px 28px rgba(244,63,94,.26) !important; }
+.shortcut-kit > span { background: linear-gradient(135deg, #fb923c, #c2410c) !important; box-shadow: inset 0 1px 10px rgba(255,255,255,.16), 0 12px 28px rgba(249,115,22,.24) !important; }
+.shortcut strong, .panel-head h2, .quick-row { font-size: .95rem !important; }
+.shortcut small, .account-row small, .activity small { font-size: .78rem !important; }
+
+.app-icon {
+  display: inline-grid !important;
+  place-items: center !important;
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 10px !important;
+  background: rgba(255,255,255,.06) !important;
+  border: 1px solid rgba(255,255,255,.12) !important;
+  overflow: hidden !important;
+}
+.brand-mark { position: relative; display: grid; place-items: center; width: 100%; height: 100%; border-radius: inherit; font-weight: 800; line-height: 1; }
+.logo-fallback { display: none; }
+.google-logo { background: #fff; font-size: 0; }
+.google-logo > span:first-child { font-size: 22px; font-weight: 800; font-family: Inter, sans-serif; background: conic-gradient(from -45deg, #4285f4 0 25%, #34a853 0 45%, #fbbc05 0 68%, #ea4335 0 83%, #4285f4 0); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.instagram-logo { background: radial-gradient(circle at 30% 105%, #feda75 0 24%, #fa7e1e 28%, #d62976 52%, #962fbf 74%, #4f5bd5 100%); }
+.instagram-logo > span:first-child { width: 18px; height: 18px; border: 2px solid #fff; border-radius: 6px; position: relative; }
+.instagram-logo > span:first-child::before { content: ''; position: absolute; width: 5px; height: 5px; border: 2px solid #fff; border-radius: 50%; left: 4px; top: 4px; }
+.instagram-logo > span:first-child::after { content: ''; position: absolute; width: 3px; height: 3px; background: #fff; border-radius: 50%; right: 2px; top: 2px; }
+.coinbase-logo { background: linear-gradient(135deg, #1652f0, #0a46e4); color: #fff; font-size: 24px; font-weight: 900; }
+.amazon-logo { background: #111827; color: #fff; font-size: 23px; font-weight: 800; font-family: Georgia, serif; }
+.amazon-logo i { position: absolute; width: 20px; height: 8px; border-bottom: 2px solid #ff9900; border-radius: 0 0 50% 50%; bottom: 6px; left: 8px; transform: rotate(-8deg); }
+.slack-logo { background: #101923; }
+.slack-logo i { position: absolute; width: 7px; height: 15px; border-radius: 6px; }
+.slack-logo .blue { background: #36c5f0; left: 9px; top: 6px; transform: rotate(90deg); }
+.slack-logo .green { background: #2eb67d; right: 9px; top: 6px; }
+.slack-logo .yellow { background: #ecb22e; left: 9px; bottom: 6px; }
+.slack-logo .red { background: #e01e5a; right: 9px; bottom: 6px; transform: rotate(90deg); }
+
+.safe-visual {
+  position: relative !important;
+  display: grid !important;
+  place-items: center !important;
+  min-height: 280px !important;
+  perspective: 900px !important;
+  transform: none !important;
+}
+.safe-floor-glow {
+  position: absolute;
+  width: 285px;
+  height: 96px;
+  bottom: 14px;
+  border: 2px solid rgba(46,105,255,.72);
+  border-radius: 50%;
+  filter: blur(.3px) drop-shadow(0 0 22px rgba(54,115,255,.72));
+  transform: rotateX(66deg) rotateZ(-4deg);
+  background: radial-gradient(ellipse at center, rgba(76,84,255,.22), transparent 62%);
+}
+.safe-shell {
+  position: relative;
+  width: 235px;
+  height: 225px;
+  transform: rotateY(-18deg) rotateX(6deg);
+  transform-style: preserve-3d;
+  filter: drop-shadow(0 34px 42px rgba(0,0,0,.42)) drop-shadow(0 0 28px rgba(24,111,255,.25));
+}
+.safe-shell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 30px;
+  background: linear-gradient(145deg, #13244c 0%, #071329 58%, #030816 100%);
+  border: 1px solid rgba(102,151,255,.34);
+  box-shadow: inset 18px 18px 36px rgba(255,255,255,.07), inset -24px -24px 38px rgba(0,0,0,.55);
+}
+.safe-side {
+  position: absolute;
+  width: 64px;
+  height: 205px;
+  right: -37px;
+  top: 12px;
+  border-radius: 0 28px 28px 0;
+  background: linear-gradient(120deg, #0b1835, #030817 72%);
+  transform: rotateY(74deg) translateZ(27px);
+  transform-origin: left center;
+  border: 1px solid rgba(72,107,194,.22);
+}
+.safe-top {
+  position: absolute;
+  height: 54px;
+  left: 20px;
+  right: -16px;
+  top: -28px;
+  border-radius: 26px 30px 8px 8px;
+  background: linear-gradient(160deg, rgba(46,69,132,.72), rgba(4,9,24,.92));
+  transform: rotateX(72deg);
+  transform-origin: bottom center;
+  border: 1px solid rgba(113,151,255,.24);
+}
+.safe-door {
+  position: absolute;
+  left: 30px;
+  top: 34px;
+  width: 145px;
+  height: 155px;
+  border-radius: 24px;
+  background: linear-gradient(145deg, #10234d, #061226 64%, #020712);
+  border: 2px solid rgba(55,174,255,.92);
+  box-shadow: 0 0 0 3px rgba(33,95,255,.16), 0 0 24px rgba(31,151,255,.88), inset 0 0 24px rgba(26,119,255,.22), inset -16px -18px 30px rgba(0,0,0,.42);
+}
+.safe-door-glow {
+  position: absolute;
+  inset: 7px;
+  border-radius: 18px;
+  border: 1px solid rgba(96,204,255,.28);
+  box-shadow: inset 0 0 18px rgba(44,140,255,.22);
+}
+.safe-dial {
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  left: 25px;
+  top: 42px;
+  border-radius: 50%;
+  background: conic-gradient(from 12deg, #dbeafe, #596987 12%, #111d3a 22%, #94a3b8 34%, #18213f 50%, #e0e7ff 64%, #26324f 82%, #dbeafe);
+  box-shadow: 0 0 22px rgba(38,102,255,.45), inset 0 0 8px rgba(255,255,255,.3);
+}
+.safe-dial-ring { position: absolute; inset: 8px; border-radius: 50%; background: radial-gradient(circle, #1c2b58 0 34%, #0b1530 36% 54%, transparent 56%), conic-gradient(#d8e4ff, #303b5a, #cbd5e1, #17213d, #e0e7ff); }
+.safe-dial-core { position: absolute; inset: 23px; border-radius: 50%; background: linear-gradient(145deg, #4b63a4, #0b1430); border: 1px solid rgba(219,234,254,.58); }
+.safe-dial-marker { position: absolute; left: 33px; top: 5px; width: 3px; height: 10px; border-radius: 3px; background: #eef6ff; transform-origin: 2px 30px; opacity: .78; }
+.marker-two { transform: rotate(120deg); } .marker-three { transform: rotate(240deg); }
+.safe-handle { position: absolute; width: 35px; height: 7px; border-radius: 999px; background: linear-gradient(90deg, #e5edff, #52607b 55%, #111a34); right: 16px; top: 76px; box-shadow: 0 0 10px rgba(147,197,253,.35); }
+.safe-keypad { position: absolute; width: 22px; height: 34px; border-radius: 7px; right: 24px; top: 98px; background: linear-gradient(180deg, rgba(83,113,181,.8), rgba(12,22,48,.9)); border: 1px solid rgba(147,197,253,.22); }
+
+.floating-score { text-align: center !important; }
+.score-title { text-align: left !important; letter-spacing: .14em !important; }
+.score-ring-shell {
+  position: relative;
+  width: 188px;
+  height: 188px;
+  margin: 14px auto 16px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: conic-gradient(from -90deg, #33a8ff 0deg, #6b5cff calc(var(--score) * .72), #8b5cf6 var(--score), rgba(32,42,68,.86) var(--score) 360deg);
+  box-shadow: 0 0 34px rgba(59,130,246,.32), inset 0 0 24px rgba(255,255,255,.08);
+}
+.score-ring-shell::before { content: ''; position: absolute; inset: 14px; border-radius: 50%; background: linear-gradient(145deg, #07111f, #020711); box-shadow: inset 0 0 32px rgba(0,0,0,.62); }
+.score-ring-center { position: relative; z-index: 1; display: grid; place-items: center; gap: 3px; }
+.score-ring-center strong { font-size: 2.9rem !important; letter-spacing: -.05em; line-height: 1; }
+.score-ring-center span { color: #5ee77f !important; font-weight: 700; font-size: .92rem; }
+.score-shield-icon { width: 18px; height: 18px; color: #5ee77f; stroke-width: 2.4; }
+.floating-score .mini-score-ring { display: none !important; }
+.floating-score dl .ui-icon { width: 16px; height: 16px; }
+.check-orb { color: #64f08a !important; display: inline-grid !important; place-items: center !important; }
+.quick-row span:first-child { display: inline-grid !important; place-items: center !important; color: #7aa2ff !important; }
+.activity > span:first-child { display: inline-grid !important; place-items: center !important; color: #78a6ff !important; }
+
+@media (min-width: 1280px) {
+  .hero .premium-vault.safe-visual { transform: none !important; max-height: 315px !important; }
+  .floating-score .score-ring-shell { width: 180px; height: 180px; margin-block: 10px 14px; }
+}
+@media (max-width: 768px) {
+  .hero .premium-vault.safe-visual { transform: none !important; max-height: 265px !important; min-height: 240px !important; }
+  .safe-shell { transform: scale(.78) rotateY(-18deg) rotateX(6deg); }
+  .score-ring-shell { width: 168px; height: 168px; }
 }
