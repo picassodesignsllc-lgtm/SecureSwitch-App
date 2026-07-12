@@ -33,6 +33,7 @@ if (findByClass('main-column').length !== 1) throw new Error('Center workspace m
 if (findByClass('right-protection-panel').length !== 1) throw new Error('Right protection rail must render exactly once.');
 if (findByClass('hero').length !== 1) throw new Error('Hero must render exactly once.');
 if (findByClass('premium-vault').length !== 1) throw new Error('Vault hero graphic must render exactly once.');
+if (findByClass('mobile-dashboard').length !== 1) throw new Error('Mobile dashboard prototype must render exactly once.');
 
 const rightRail = findByClass('right-protection-panel')[0];
 const rightRailNames = (rightRail.children ?? []).filter((child) => child && typeof child === 'object').map((child) => classList(child).find((cls) => ['floating-score', 'protected', 'quick-panel', 'readiness-panel'].includes(cls))).filter(Boolean);
@@ -42,6 +43,11 @@ if (JSON.stringify(rightRailNames) !== JSON.stringify(expectedRail)) throw new E
 if (findByClass('shortcut').length !== 4) throw new Error(`Expected four shortcut cards, found ${findByClass('shortcut').length}`);
 if (findByClass('account-row').length !== 5) throw new Error(`Expected exactly five account rows, found ${findByClass('account-row').length}.`);
 if (findByClass('activity').length !== 4) throw new Error(`Expected exactly four activity rows, found ${findByClass('activity').length}.`);
+if (findByClass('hollow-score-ring').length !== 1) throw new Error('Desktop hollow score ring must render exactly once.');
+if (findByClass('mobile-score-ring').length !== 1) throw new Error('Mobile 86% score ring must render exactly once.');
+if (findByClass('mobile-quick-card').length !== 4) throw new Error(`Expected four mobile quick actions, found ${findByClass('mobile-quick-card').length}.`);
+if (findByClass('mobile-account-card').length !== 5) throw new Error(`Expected five mobile account cards, found ${findByClass('mobile-account-card').length}.`);
+if (findByClass('mobile-activity-card').length !== 4) throw new Error(`Expected four mobile activity cards, found ${findByClass('mobile-activity-card').length}.`);
 if (findByClass('hollow-score-ring').length !== 1) throw new Error('Hollow score ring must render exactly once.');
 
 for (const href of ['#dashboard', '#accounts', '#switch', '#blackout', '#kit', '#lookup', '#settings', '#timeline']) {
@@ -56,4 +62,5 @@ for (const forbiddenText of ['Production account registry', 'Vault assets', '5/5
   if (summaryText.includes(forbiddenText)) throw new Error(`Forbidden dashboard text remains: ${forbiddenText}`);
 }
 
+console.log('Rendered DOM audit passed: desktop remains locked, mobile dashboard renders required score/actions/accounts/activity/nav, required routed links, and forbidden legacy dashboard text is absent.');
 console.log('Rendered DOM audit passed: hollow 86% ring, exact account/activity rows, one dashboard renderer, required routed links, and forbidden legacy dashboard text absent.');

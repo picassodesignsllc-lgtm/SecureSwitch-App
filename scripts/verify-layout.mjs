@@ -1,10 +1,19 @@
 import { readFile } from 'node:fs/promises';
 
-const css = await readFile('src/dashboard-reference.css', 'utf8');
+const dashboardCss = await readFile('src/dashboard-reference.css', 'utf8');
+const baseCss = await readFile('src/styles.css', 'utf8');
+const css = `${dashboardCss}
+${baseCss}`;
 const app = await readFile('src/app.js', 'utf8');
 
 const requiredCss = [
   'grid-template-columns: 260px minmax(0, 1fr)',
+  'grid-template-columns: minmax(0, 1fr) 370px',
+  'height: calc(100vh - 30px)',
+  'grid-template-rows: 48px 392px 96px minmax(0, 1fr)',
+  'height: 392px',
+  'min-height: 96px',
+  'width: 370px',
   'grid-template-columns: minmax(0, 1fr) 388px',
   'height: calc(100vh - 24px)',
   'grid-template-rows: 42px 376px 104px minmax(0, 1fr)',
@@ -15,7 +24,15 @@ const requiredCss = [
   'transform: none !important',
   'overflow: hidden !important',
   '@media (min-width: 769px) and (max-width: 1279px)',
-  '@media (max-width: 768px)'
+  '@media (max-width: 768px)',
+  'width: min(100%, 390px)',
+  'min-height: 844px',
+  '.mobile-bottom-nav',
+  '--ss-space-4',
+  '--ss-radius-card',
+  '--ss-shadow-card',
+  '--ss-gradient-primary',
+  '--ss-duration-base'
 ];
 for (const token of requiredCss) {
   if (!css.includes(token)) throw new Error(`Missing authoritative dashboard layout token: ${token}`);
@@ -25,6 +42,7 @@ if ((app.match(/function Dashboard\(/g) ?? []).length !== 1) throw new Error('Du
 if ((app.match(/function Accounts\(/g) ?? []).length !== 1) throw new Error('Duplicate account dashboard renderer exists.');
 if ((app.match(/function Activity\(/g) ?? []).length !== 1) throw new Error('Duplicate activity dashboard renderer exists.');
 if (!app.includes('hollow-score-ring')) throw new Error('Hollow score ring class is missing.');
+if (!app.includes('function MobileDashboard()')) throw new Error('Mobile dashboard renderer is missing.');
 if (!app.includes('function liveProtectionScore() { return 86; }')) throw new Error('Dashboard score must remain 86%.');
 if ((app.match(/h\(AccountCard/g) ?? []).length !== 2) throw new Error('Expected account cards only in dashboard and recovery lookup renderers.');
 if (!app.includes("className: 'dashboard', 'data-route': 'dashboard'")) throw new Error('Dashboard must expose the data-route layout hook.');

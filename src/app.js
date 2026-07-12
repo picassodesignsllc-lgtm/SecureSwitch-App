@@ -1067,8 +1067,41 @@ function FloatingAICoach() {
 }
 
 
+
+function MobileDashboard() {
+  const quickActions = [
+    ['plus', 'Add Account', '#accounts'],
+    ['scan', 'Health Check', '#scan'],
+    ['switch', 'Switch Mode', '#switch'],
+    ['kit', 'Emergency Kit', '#kit']
+  ];
+  const bottomNav = [
+    ['dashboard', 'Dashboard', '#dashboard'],
+    ['accounts', 'Accounts', '#accounts'],
+    ['switch', 'Switch', '#switch'],
+    ['lookup', 'Recovery', '#lookup'],
+    ['settings', 'Settings', '#settings']
+  ];
+  return h('section', { className: 'mobile-dashboard', 'aria-label': 'SecureSwitch mobile dashboard prototype' },
+    h('header', { className: 'mobile-app-bar' },
+      h('a', { className: 'mobile-brand', href: '#dashboard', 'aria-label': 'SecureSwitch dashboard' }, h('span', { className: 'logo', 'aria-hidden': true }), h('strong', null, 'SecureSwitch')),
+      h('div', { className: 'mobile-app-actions' }, h('button', { 'aria-label': 'Notifications' }, h(Icon, { name: 'bell' })), h('a', { className: 'mobile-avatar', href: '#settings', 'aria-label': 'Profile' }, 'K'))
+    ),
+    h('section', { className: 'mobile-score-card' },
+      h('div', { className: 'mobile-score-ring', style: { '--score': '309.6deg' } }, h('div', null, h('strong', null, '86%'), h('span', null, 'Excellent'))),
+      h('button', { className: 'primary mobile-primary-cta', onClick: runHealthScan }, 'Run Health Check')
+    ),
+    h('section', { className: 'mobile-section' }, h('div', { className: 'mobile-section-head' }, h('p', { className: 'eyebrow' }, 'Quick Actions')), h('div', { className: 'mobile-quick-grid' }, quickActions.map(([icon, label, href]) => h('a', { className: 'mobile-quick-card', href, key: label }, h('span', null, h(Icon, { name: icon })), h('strong', null, label), h('b', null, '›'))))),
+    h('section', { className: 'mobile-section' }, h('div', { className: 'mobile-section-head' }, h('p', { className: 'eyebrow' }, 'Accounts'), h('a', { href: '#accounts' }, 'View all')), h('div', { className: 'mobile-account-list' }, dashboardAccounts.map((account) => h('a', { className: 'mobile-account-card', href: '#accounts', key: account.name }, h(BrandLogo, { name: account.name }), h('div', null, h('strong', null, account.name), h('small', null, account.handle)), h('b', { className: account.status === 'Review' ? 'review' : 'secure' }, account.status), h('span', null, '›'))))),
+    h('section', { className: 'mobile-section' }, h('div', { className: 'mobile-section-head' }, h('p', { className: 'eyebrow' }, 'Recent Activity')), h('div', { className: 'mobile-timeline' }, activity.map((item) => { const [title, service, time] = item.split(' — '); return h('article', { className: 'mobile-activity-card', key: item }, h('span', null, h(Icon, { name: title.includes('Password') ? 'blackout' : title.includes('email') ? 'lookup' : title.includes('scanned') ? 'scan' : 'switch' })), h('div', null, h('strong', null, title), h('small', null, service)), h('time', null, time)); }))),
+    h('section', { className: 'mobile-readiness-card' }, h('div', { className: 'mobile-section-head' }, h('p', { className: 'eyebrow' }, 'Recovery Readiness'), h('strong', null, '86%')), h('div', { className: 'progress' }, h('span', { style: { width: '86%' } })), h('p', null, 'You’re ready for the unexpected.')),
+    h('nav', { className: 'mobile-bottom-nav', 'aria-label': 'Mobile dashboard navigation' }, bottomNav.map(([icon, label, href]) => h('a', { href, key: label, className: label === 'Dashboard' ? 'active' : '' }, h(Icon, { name: icon }), h('span', null, label))))
+  );
+}
+
 function Dashboard() {
   return h('main', { className: 'dashboard', 'data-route': 'dashboard' },
+    h(MobileDashboard),
     h('div', { className: 'main-column' }, h(TopActions), h(Hero), h(Shortcuts), h('div', { className: 'lower-grid' }, h(Accounts), h(Activity))),
     h('aside', { className: 'dashboard-side right-protection-panel' }, h(ProtectionScore), h(ProtectedStatus), h(QuickActions), h(Readiness))
   );
