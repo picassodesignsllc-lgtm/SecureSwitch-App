@@ -482,3 +482,43 @@ html, body {
   .mobile-bottom-nav a.active { color: #fff; }
   .mobile-bottom-nav svg { width: 20px; height: 20px; }
 }
+
+@media (max-width: 768px) {
+  .mobile-dashboard {
+    gap: 14px;
+    padding: 14px 14px 92px;
+    isolation: isolate;
+  }
+  .mobile-app-bar { min-height: 50px; }
+  .mobile-brand .logo { width: 42px !important; height: 42px !important; box-shadow: inset 0 -12px 24px rgba(2,6,23,.36), 0 16px 36px rgba(59,130,246,.42), 0 0 26px rgba(139,92,246,.24) !important; }
+  .mobile-app-actions button,
+  .mobile-avatar { width: 46px; height: 46px; border-radius: 17px; }
+  .mobile-score-card,
+  .mobile-section,
+  .mobile-readiness-card {
+    border-radius: 22px;
+    border-color: rgba(191,219,254,.12);
+    box-shadow: 0 18px 52px rgba(2,6,23,.36), 0 8px 20px rgba(59,130,246,.10);
+  }
+  .mobile-score-card { padding: 22px 18px 18px; gap: 14px; }
+  .mobile-score-ring { width: 176px !important; height: 176px !important; box-shadow: inset 0 0 0 18px #07101f, 0 0 54px rgba(56,189,248,.36), 0 0 78px rgba(139,92,246,.28) !important; }
+  .mobile-score-ring::before { width: calc(100% - 36px) !important; height: calc(100% - 36px) !important; }
+  .mobile-score-ring strong { font-size: 3.1rem !important; }
+  .mobile-primary-cta { height: 50px; min-height: 50px; }
+  .mobile-section,
+  .mobile-readiness-card { padding: 14px; }
+  .mobile-section-head { margin-bottom: 10px; min-height: 20px; }
+  .mobile-quick-grid { gap: 10px; }
+  .mobile-quick-card { min-height: 72px; padding: 12px; border-radius: 17px; }
+  .mobile-quick-card > span { width: 40px; height: 40px; }
+  .mobile-account-list,
+  .mobile-timeline { gap: 8px; }
+  .mobile-account-card { min-height: 54px; padding: 8px 10px; border-radius: 17px; }
+  .mobile-account-card .app-icon { width: 38px !important; height: 38px !important; }
+  .mobile-account-card b { margin-left: 4px; }
+  .mobile-activity-card { min-height: 58px; padding: 9px 10px; border-radius: 17px; }
+  .mobile-activity-card > span { width: 38px; height: 38px; }
+  .mobile-activity-card time { width: 46px; }
+  .mobile-readiness-card { gap: 10px; }
+  .mobile-bottom-nav { bottom: 12px; width: min(calc(100% - 20px), 370px); height: 64px; border-radius: 22px; }
+}
