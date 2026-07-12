@@ -1,6 +1,9 @@
 import { readFile } from 'node:fs/promises';
 
-const css = await readFile('src/dashboard-reference.css', 'utf8');
+const dashboardCss = await readFile('src/dashboard-reference.css', 'utf8');
+const baseCss = await readFile('src/styles.css', 'utf8');
+const css = `${dashboardCss}
+${baseCss}`;
 const app = await readFile('src/app.js', 'utf8');
 
 const requiredCss = [
@@ -18,7 +21,12 @@ const requiredCss = [
   '@media (max-width: 768px)',
   'width: min(100%, 390px)',
   'min-height: 844px',
-  '.mobile-bottom-nav'
+  '.mobile-bottom-nav',
+  '--ss-space-4',
+  '--ss-radius-card',
+  '--ss-shadow-card',
+  '--ss-gradient-primary',
+  '--ss-duration-base'
 ];
 for (const token of requiredCss) {
   if (!css.includes(token)) throw new Error(`Missing authoritative dashboard layout token: ${token}`);

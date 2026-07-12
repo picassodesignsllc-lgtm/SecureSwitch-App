@@ -3235,3 +3235,96 @@ button:hover, .shortcut:hover, .quick-row:hover, .account-row:hover, .activity:h
   background: conic-gradient(#34d399 0deg, #38bdf8 var(--score, var(--ring, 0deg)), #8b5cf6 var(--score, var(--ring, 0deg)), rgba(148,163,184,.14) 0), radial-gradient(circle, rgba(2,6,23,.98) 57%, transparent 58%);
   box-shadow: inset 0 0 30px rgba(2,6,23,.72), 0 0 42px rgba(56,189,248,.22), 0 0 70px rgba(139,92,246,.16);
 }
+
+/* SecureSwitch Design System v1 tokens and reusable component standards. */
+:root {
+  --ss-space-1: 4px;
+  --ss-space-2: 8px;
+  --ss-space-3: 12px;
+  --ss-space-4: 16px;
+  --ss-space-5: 20px;
+  --ss-space-6: 24px;
+  --ss-space-7: 28px;
+  --ss-space-8: 32px;
+  --ss-text-display: clamp(3.55rem, 5vw, 5rem);
+  --ss-text-title: 1.05rem;
+  --ss-text-body: .92rem;
+  --ss-text-meta: .82rem;
+  --ss-radius-card: 24px;
+  --ss-radius-control: 18px;
+  --ss-radius-row: 20px;
+  --ss-radius-icon: 16px;
+  --ss-radius-pill: 9999px;
+  --ss-border-subtle: rgba(191, 219, 254, .13);
+  --ss-border-muted: rgba(191, 219, 254, .11);
+  --ss-shadow-card: 0 20px 60px rgba(2, 6, 23, .38), 0 8px 24px rgba(59, 130, 246, .10);
+  --ss-shadow-control: 0 16px 38px rgba(2, 6, 23, .34);
+  --ss-shadow-ring: inset 0 0 0 19px #07101f, 0 0 58px rgba(56,189,248,.38), 0 0 84px rgba(139,92,246,.30);
+  --ss-duration-fast: 160ms;
+  --ss-duration-base: 220ms;
+  --ss-ease-standard: cubic-bezier(.2,.8,.2,1);
+  --ss-gradient-primary: linear-gradient(135deg, #356bff, #3f41ff 58%, #6c4cff);
+  --ss-gradient-glass: linear-gradient(145deg, rgba(15,23,42,.84), rgba(8,13,31,.66));
+  --ss-gradient-icon: linear-gradient(135deg, rgba(56,189,248,.18), rgba(139,92,246,.22));
+  --ss-glass-blur: blur(24px) saturate(1.18);
+  --ss-icon-md: 40px;
+  --ss-icon-lg: 44px;
+  --ss-tap-target: 48px;
+}
+
+.ss-card,
+.ss-modal,
+.ss-bottom-sheet,
+.ss-confirmation-dialog {
+  border: 1px solid var(--ss-border-subtle);
+  border-radius: var(--ss-radius-card);
+  background: var(--ss-gradient-glass);
+  box-shadow: var(--ss-shadow-card);
+  backdrop-filter: var(--ss-glass-blur);
+}
+
+.ss-button,
+.ss-button-primary,
+.ss-button-secondary,
+.primary,
+button.primary {
+  min-height: var(--ss-tap-target);
+  border-radius: var(--ss-radius-control);
+  transition: transform var(--ss-duration-base) var(--ss-ease-standard), border-color var(--ss-duration-base) var(--ss-ease-standard), box-shadow var(--ss-duration-base) var(--ss-ease-standard), background var(--ss-duration-base) var(--ss-ease-standard);
+}
+.ss-button-primary,
+.primary,
+button.primary { background: var(--ss-gradient-primary); }
+.ss-button-secondary { background: rgba(10,18,38,.72); border: 1px solid var(--ss-border-subtle); color: var(--text); }
+.ss-icon-button { width: var(--ss-tap-target); height: var(--ss-tap-target); border-radius: var(--ss-radius-control); display: grid; place-items: center; }
+.ss-button:focus-visible,
+.ss-button-primary:focus-visible,
+.ss-button-secondary:focus-visible,
+.ss-icon-button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible { outline: 2px solid rgba(125,211,252,.72); outline-offset: 3px; }
+.ss-button:disabled,
+.ss-button-primary:disabled,
+.ss-button-secondary:disabled,
+button:disabled { opacity: .52; cursor: not-allowed; transform: none; }
+
+.ss-section-header { min-height: var(--ss-space-6); display: flex; align-items: center; justify-content: space-between; gap: var(--ss-space-3); }
+.ss-status-pill,
+.status-pill,
+.risk-badge,
+.readiness-pill { border-radius: var(--ss-radius-pill); }
+.ss-progress,
+.progress { border-radius: var(--ss-radius-pill); overflow: hidden; }
+.ss-input,
+.ss-search,
+input,
+select,
+textarea { border-radius: var(--ss-radius-control); }
+.ss-account-row,
+.ss-activity-row,
+.ss-settings-row { border-radius: var(--ss-radius-row); min-height: 56px; }
+.ss-nav-item,
+.ss-bottom-nav-item { border-radius: var(--ss-radius-control); min-height: var(--ss-tap-target); }
+.ss-protection-score-card,
+.ss-quick-action-card { border-radius: var(--ss-radius-card); }

@@ -525,55 +525,55 @@ html, body {
 
 @media (max-width: 768px) {
   .mobile-dashboard {
-    gap: 16px;
-    padding: 16px 16px 104px;
+    gap: var(--ss-space-4);
+    padding: var(--ss-space-4) var(--ss-space-4) 104px;
   }
   .mobile-score-card,
   .mobile-section,
   .mobile-readiness-card {
-    border-radius: 24px;
-    border-color: rgba(191,219,254,.13);
-    padding: 16px;
-    box-shadow: 0 20px 60px rgba(2,6,23,.38), 0 8px 24px rgba(59,130,246,.10);
+    border-radius: var(--ss-radius-card);
+    border-color: var(--ss-border-subtle);
+    padding: var(--ss-space-4);
+    box-shadow: var(--ss-shadow-card);
   }
   .mobile-app-bar { min-height: 56px; }
   .mobile-brand { gap: 12px; }
   .mobile-brand strong { font-size: 1.05rem; line-height: 1.1; }
   .mobile-app-actions { gap: 8px; }
   .mobile-app-actions button,
-  .mobile-avatar { width: 48px; height: 48px; border-radius: 18px; }
+  .mobile-avatar { width: var(--ss-tap-target); height: var(--ss-tap-target); border-radius: var(--ss-radius-control); }
 
-  .mobile-score-card { gap: 16px; padding-top: 24px; }
+  .mobile-score-card { gap: var(--ss-space-4); padding-top: var(--ss-space-6); }
   .mobile-score-ring { width: 184px !important; height: 184px !important; }
   .mobile-score-ring strong { font-size: 3.25rem !important; }
-  .mobile-primary-cta { height: 52px; min-height: 52px; border-radius: 18px; font-size: .95rem; }
+  .mobile-primary-cta { height: 52px; min-height: 52px; border-radius: var(--ss-radius-control); font-size: .95rem; }
 
-  .mobile-section-head { min-height: 24px; margin-bottom: 16px; }
+  .mobile-section-head { min-height: var(--ss-space-6); margin-bottom: var(--ss-space-4); }
   .mobile-section-head .eyebrow { font-size: .76rem; line-height: 1; }
   .mobile-section-head a { font-size: .82rem; }
 
-  .mobile-quick-grid { gap: 12px; }
+  .mobile-quick-grid { gap: var(--ss-space-3); }
   .mobile-quick-card {
     min-height: 88px;
-    padding: 16px;
-    border-radius: 20px;
+    padding: var(--ss-space-4);
+    border-radius: var(--ss-radius-row);
     display: grid;
     grid-template-columns: 44px minmax(0, 1fr) 12px;
-    gap: 12px;
+    gap: var(--ss-space-3);
     align-items: center;
   }
-  .mobile-quick-card > span { width: 44px; height: 44px; border-radius: 16px; }
+  .mobile-quick-card > span { width: var(--ss-icon-lg); height: var(--ss-icon-lg); border-radius: var(--ss-radius-icon); }
   .mobile-quick-card strong { font-size: .92rem; line-height: 1.15; }
   .mobile-quick-card b { justify-self: end; margin-left: 0; }
 
-  .mobile-account-list { gap: 12px; }
+  .mobile-account-list { gap: var(--ss-space-3); }
   .mobile-account-card {
     min-height: 64px;
-    padding: 12px 14px;
-    border-radius: 20px;
+    padding: var(--ss-space-3) 14px;
+    border-radius: var(--ss-radius-row);
     gap: 14px;
   }
-  .mobile-account-card .app-icon { width: 44px !important; height: 44px !important; border-radius: 16px !important; }
+  .mobile-account-card .app-icon { width: var(--ss-icon-lg) !important; height: var(--ss-icon-lg) !important; border-radius: var(--ss-radius-icon) !important; }
   .mobile-account-card strong { font-size: .95rem; line-height: 1.15; }
   .mobile-account-card small { font-size: .82rem; margin-top: 6px; }
   .mobile-account-card b { min-width: 58px; text-align: center; margin-left: 8px; padding: 7px 10px; }
@@ -581,7 +581,7 @@ html, body {
 
   .mobile-timeline {
     position: relative;
-    gap: 12px;
+    gap: var(--ss-space-3);
   }
   .mobile-timeline::before {
     content: "";
@@ -596,17 +596,17 @@ html, body {
     position: relative;
     min-height: 64px;
     padding: 12px 12px;
-    border-radius: 20px;
+    border-radius: var(--ss-radius-row);
     gap: 14px;
   }
-  .mobile-activity-card > span { width: 42px; height: 42px; border-radius: 16px; z-index: 1; }
+  .mobile-activity-card > span { width: 42px; height: 42px; border-radius: var(--ss-radius-icon); z-index: 1; }
   .mobile-activity-card strong { font-size: .92rem; line-height: 1.16; }
   .mobile-activity-card small { font-size: .82rem; margin-top: 6px; }
   .mobile-activity-card time { width: 52px; font-size: .76rem; align-self: center; }
 
   .mobile-readiness-card {
     gap: 14px;
-    padding: 18px 16px 16px;
+    padding: 18px var(--ss-space-4) var(--ss-space-4);
   }
   .mobile-readiness-card .progress { height: 10px; box-shadow: inset 0 0 0 1px rgba(191,219,254,.08); }
   .mobile-readiness-card .progress span { box-shadow: 0 0 18px rgba(34,197,94,.36); }
@@ -616,13 +616,13 @@ html, body {
     height: 72px;
     bottom: 12px;
     padding: 8px;
-    border-radius: 28px;
+    border-radius: var(--ss-space-7);
   }
   .mobile-bottom-nav a {
     min-width: 64px;
     height: 56px;
-    border-radius: 20px;
-    gap: 4px;
+    border-radius: var(--ss-radius-row);
+    gap: var(--ss-space-1);
     font-size: .66rem;
   }
   .mobile-bottom-nav a.active {
