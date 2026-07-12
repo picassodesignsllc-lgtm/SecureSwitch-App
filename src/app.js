@@ -895,10 +895,12 @@ function Hero() {
 }
 
 function ProtectionScore() {
-  return h('aside', { className: 'floating-score glass', 'aria-label': 'Live Protection Score' },
-    h('div', null, h('p', { className: 'eyebrow score-title' }, 'Live Protection Score'), h('strong', null, `${liveProtectionScore()}%`), h('span', null, 'Excellent')),
-    h('div', { className: 'mini-score-ring', style: { '--score': `${liveProtectionScore() * 3.6}deg` } }),
-    h('dl', null, h('div', null, h('dt', null, 'Accounts'), h('dd', null, '50')), h('div', null, h('dt', null, 'Review'), h('dd', null, '9')), h('div', null, h('dt', null, 'Plan'), h('dd', null, '3m')))
+  const summary = dashboardSummary(state.accounts);
+  const score = liveProtectionScore();
+  return h('aside', { className: 'floating-score glass protection-panel-card', 'aria-label': 'Live Protection Score' },
+    h('div', null, h('p', { className: 'eyebrow score-title' }, 'Live Protection Score'), h('strong', null, `${score}%`), h('span', null, protectionStatus(score).label)),
+    h('div', { className: 'target-score-ring', style: { '--score': `${score}%` } }, h('div', null, h('strong', null, score), h('span', null, '+5 this week'))),
+    h('dl', { className: 'target-score-stats' }, h('article', null, h('strong', null, summary.total), h('span', null, 'Accounts')), h('article', null, h('strong', null, summary.weakRecoveryAccounts), h('span', null, 'Need review')), h('article', null, h('strong', null, '7m'), h('span', null, 'Repair plan')))
   );
 }
 
@@ -918,7 +920,7 @@ function QuickActions() {
 
 function AccountCard({ account }) {
   const score = scoreFor(account);
-  return h('article', { className: 'account-row' }, h(BrandLogo, { name: account.name }), h('div', null, h('strong', null, account.name), h('small', null, `${account.handle || account.recoveryEmail} · ${account.category} · Reviewed ${account.lastReviewed}`)), h('b', { className: score < 80 ? 'review' : 'secure' }, `${score}% · ${riskLevel(account)} risk`), h('div', { className: 'account-actions' }, h('button', { onClick: () => editAccount(account) }, 'Edit'), h('button', { onClick: () => deleteAccount(account.id) }, 'Delete')));
+  return h('article', { className: 'account-row target-account-row' }, h(BrandLogo, { name: account.name }), h('div', { className: 'account-primary' }, h('strong', null, account.name), h('small', null, `${account.handle || account.recoveryEmail} · ${account.category} · Reviewed ${account.lastReviewed}`)), h('span', { className: 'account-meta-chip' }, account.authenticator || 'MFA pending'), h('b', { className: score < 80 ? 'review' : 'secure' }, `${score}% · ${riskLevel(account)}`), h('div', { className: 'account-actions' }, h('button', { onClick: () => editAccount(account), 'aria-label': `Edit ${account.name}` }, 'Edit'), h('button', { onClick: () => deleteAccount(account.id), 'aria-label': `Delete ${account.name}` }, 'Delete')));
 }
 
 function Accounts() {
@@ -1011,7 +1013,7 @@ function RecoveryWizardMVP() {
 
 function TopActions() { return h('header', { className: 'top-actions' }, h('button', { onClick: () => toast('Theme toggle ready'), 'aria-label': 'Toggle theme' }, h(Icon, { name: 'moon' })), h('button', { onClick: () => toast('3 recovery alerts'), 'aria-label': 'Recovery alerts' }, h(Icon, { name: 'bell' }), h('b', null, '3')), h('button', { className: 'primary add-account', onClick: () => location.hash = 'accounts' }, '+ Add Account')); }
 
-function Shortcuts() { const cards = [['accounts', 'Accounts', 'Manage and secure all your accounts', 'accounts'], ['switch', 'Switch Mode', 'Change access in seconds', 'switch'], ['blackout', 'Blackout Mode', 'Lock down and hide your data', 'blackout'], ['kit', 'Emergency Kit', 'Access critical info anywhere', 'kit']]; return h('section', { className: 'shortcut-grid' }, cards.map(([icon, label, copy, id]) => h('a', { key: label, className: 'shortcut glass', href: `#${id}` }, h('span', null, h(Icon, { name: icon })), h('div', null, h('strong', null, label), h('small', null, copy)), h('b', null, '›')))); }
+function Shortcuts() { const cards = [['accounts', 'Accounts', 'Manage and secure all your accounts', 'accounts'], ['switch', 'Switch Mode', 'Change access in seconds', 'switch'], ['blackout', 'Blackout Mode', 'Lock down and hide your data', 'blackout'], ['kit', 'Emergency Kit', 'Access critical info anywhere', 'kit']]; return h('section', { className: 'target-shortcuts' }, cards.map(([icon, label, copy, id]) => h('a', { key: label, className: 'shortcut target-shortcut-card glass', href: `#${id}` }, h('span', null, h(Icon, { name: icon })), h('div', null, h('strong', null, label), h('small', null, copy)), h('b', null, '›')))); }
 
 function HealthScoreGrid() {
   const summary = dashboardSummary(state.accounts);
@@ -1059,9 +1061,23 @@ function FloatingAICoach() {
   return h('aside', { className: 'floating-ai-coach glass', 'aria-label': 'AI Recovery Assistant' }, h('p', { className: 'eyebrow' }, 'AI Recovery Assistant'), h('strong', null, state.assistantPrompt), h('div', { className: 'prompt-list' }, prompts.map((prompt) => h('button', { key: prompt, className: state.assistantPrompt === prompt ? 'active' : '', onClick: () => setState({ assistantPrompt: prompt, assistantStep: 0 }) }, prompt))), h('div', { className: 'typing-line' }, 'SecureSwitch is preparing your recovery plan', h('span', null, '•••')), h('ol', { className: 'assistant-steps' }, steps.map((step, index) => h('li', { key: step, className: index <= state.assistantStep ? 'done' : '' }, h('span', null, index + 1), step))), h('div', { className: 'assistant-progress' }, h('span', { style: { width: `${((state.assistantStep + 1) / steps.length) * 100}%` } })), h('small', null, `Estimated recovery time: ${steps.length * 2} minutes`), h('button', { className: 'primary', onClick: () => setState({ assistantStep: Math.min(state.assistantStep + 1, steps.length - 1) }) }, 'Next step'));
 }
 
+
+function DashboardUtilityGrid() {
+  const summary = dashboardSummary(state.accounts);
+  const secured = Math.max(0, summary.total - summary.weakRecoveryAccounts);
+  const tiles = [
+    ['Trusted devices', state.devices.length || 7, 'Synced in the last 24h'],
+    ['Vault assets', state.backupCodes.length || 24, 'Encrypted recovery items'],
+    ['Security alerts', summary.securityAlerts.length || 3, 'Active watchlist items'],
+    ['Backup coverage', `${Math.max(0, 100 - summary.missingBackupCodes * 10)}%`, 'Offline codes ready'],
+    ['Secured accounts', secured, 'Recovery paths verified']
+  ];
+  return h('section', { className: 'desktop-utility-grid', 'aria-label': 'Dashboard recovery metrics' }, tiles.map(([label, value, copy]) => h('article', { className: 'utility-card glass', key: label }, h('span', null, label), h('strong', { className: 'animated-counter' }, value), h('small', null, copy))));
+}
+
 function Dashboard() {
   return h('main', { className: 'dashboard', 'data-route': 'dashboard' },
-    h('div', { className: 'main-column' }, h(TopActions), h(Hero), h(Shortcuts), h('div', { className: 'lower-grid' }, h(Accounts), h(Activity))),
+    h('div', { className: 'main-column' }, h(TopActions), h(Hero), h(Shortcuts), h(DashboardUtilityGrid), h('div', { className: 'lower-grid' }, h(Accounts), h(Activity))),
     h('aside', { className: 'dashboard-side right-protection-panel' }, h(ProtectionScore), h(ProtectedStatus), h(QuickActions), h(Readiness))
   );
 }
