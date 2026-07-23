@@ -33,6 +33,7 @@ if (findByClass('main-column').length !== 1) throw new Error('Center workspace m
 if (findByClass('right-protection-panel').length !== 1) throw new Error('Right protection rail must render exactly once.');
 if (findByClass('hero').length !== 1) throw new Error('Hero must render exactly once.');
 if (findByClass('premium-vault').length !== 1) throw new Error('Vault hero graphic must render exactly once.');
+if (findByClass('mobile-dashboard').length !== 1) throw new Error('Mobile dashboard prototype must render exactly once.');
 
 const rightRail = findByClass('right-protection-panel')[0];
 const rightRailNames = (rightRail.children ?? []).filter((child) => child && typeof child === 'object').map((child) => classList(child).find((cls) => ['floating-score', 'protected', 'quick-panel', 'readiness-panel'].includes(cls))).filter(Boolean);
@@ -40,15 +41,30 @@ const expectedRail = ['floating-score', 'protected', 'quick-panel', 'readiness-p
 if (JSON.stringify(rightRailNames) !== JSON.stringify(expectedRail)) throw new Error(`Right rail mismatch. Expected ${expectedRail.join(', ')}, got ${rightRailNames.join(', ')}`);
 
 if (findByClass('shortcut').length !== 4) throw new Error(`Expected four shortcut cards, found ${findByClass('shortcut').length}`);
-if (findByClass('account-row').length < 5) throw new Error('Expected compact readable account rows.');
-if (findByClass('activity').length < 4) throw new Error('Expected compact readable activity rows.');
+if (findByClass('account-row').length !== 5) throw new Error(`Expected exactly five account rows, found ${findByClass('account-row').length}.`);
+if (findByClass('activity').length !== 4) throw new Error(`Expected exactly four activity rows, found ${findByClass('activity').length}.`);
+const shortcutText = findByClass('shortcut').map(textOf).join(' | ');
+for (const title of ['Accounts', 'Switch Mode', 'Blackout Mode', 'Emergency Kit']) {
+  if (!shortcutText.includes(title)) throw new Error(`Shortcut title missing or fragmented in DOM: ${title}`);
+}
+if (findByClass('hollow-score-ring').length !== 1) throw new Error('Desktop hollow score ring must render exactly once.');
+const scoreStats = findByClass('target-score-stats')[0];
+if (!scoreStats || (scoreStats.children ?? []).length !== 3) throw new Error('Desktop protection score must render exactly three statistic cards.');
+if (findByClass('mobile-score-ring').length !== 1) throw new Error('Mobile 86% score ring must render exactly once.');
+if (findByClass('mobile-quick-card').length !== 4) throw new Error(`Expected four mobile quick actions, found ${findByClass('mobile-quick-card').length}.`);
+if (findByClass('mobile-account-card').length !== 5) throw new Error(`Expected five mobile account cards, found ${findByClass('mobile-account-card').length}.`);
+if (findByClass('mobile-activity-card').length !== 4) throw new Error(`Expected four mobile activity cards, found ${findByClass('mobile-activity-card').length}.`);
 
 for (const href of ['#dashboard', '#accounts', '#switch', '#blackout', '#kit', '#lookup', '#settings', '#timeline']) {
   if (!anchors.includes(href)) throw new Error(`Missing routed link: ${href}`);
 }
 const summaryText = textOf(tree);
-for (const expectedText of ['Never lose another account', 'Run Health Check', 'Watch Demo', '+ Add Account', 'Live Protection Score', 'You’re protected', 'Recovery Readiness', 'View all']) {
+for (const expectedText of ['Never lose another account', 'Run Health Check', 'Watch Demo', '+ Add Account', 'Accounts', 'Switch Mode', 'Blackout Mode', 'Emergency Kit', 'Live Protection Score', '86%', 'Excellent', 'You’re protected', 'Recovery Readiness', 'View all']) {
   if (!summaryText.includes(expectedText)) throw new Error(`Missing approved dashboard text/control: ${expectedText}`);
 }
 
-console.log('Rendered DOM audit passed: one approved dashboard, one right rail, required routed links, and readable account/activity rows.');
+for (const forbiddenText of ['Production account registry', 'Vault assets', '5/5 shown']) {
+  if (summaryText.includes(forbiddenText)) throw new Error(`Forbidden dashboard text remains: ${forbiddenText}`);
+}
+
+console.log('Rendered DOM audit passed: desktop remains locked, mobile dashboard renders required score/actions/accounts/activity/nav, required routed links, and forbidden legacy dashboard text is absent.');
