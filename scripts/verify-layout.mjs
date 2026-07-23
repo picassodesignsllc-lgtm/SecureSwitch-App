@@ -9,9 +9,8 @@ const app = await readFile('src/app.js', 'utf8');
 const requiredCss = [
   'grid-template-columns: 260px minmax(0, 1fr)',
   'grid-template-columns: minmax(0, 1fr) 370px',
-  'height: calc(100vh - 30px)',
-  'grid-template-rows: 48px 392px 96px minmax(0, 1fr)',
-  'height: 392px',
+  'grid-template-rows: 44px 430px 96px minmax(330px, auto)',
+  'height: 430px',
   'min-height: 96px',
   'width: 370px',
   'grid-template-columns: minmax(0, 1fr) 388px',
@@ -22,7 +21,7 @@ const requiredCss = [
   'width: 388px',
   'position: static !important',
   'transform: none !important',
-  'overflow: hidden !important',
+  'overflow: visible !important',
   '@media (min-width: 769px) and (max-width: 1279px)',
   '@media (max-width: 768px)',
   'width: min(100%, 390px)',
@@ -59,6 +58,12 @@ for (const required of ['h(TopActions)', 'h(Hero)', 'h(Shortcuts)', 'h(Accounts)
 for (const route of ["'dashboard'", "'accounts'", "'switch'", "'blackout'", "'kit'", "'lookup'", "'settings'"]) {
   if (!app.includes(route)) throw new Error(`Required routed link is missing: ${route}`);
 }
+
+for (const title of ['Accounts', 'Switch Mode', 'Blackout Mode', 'Emergency Kit']) {
+  if (!app.includes(title)) throw new Error(`Missing shortcut title: ${title}`);
+}
+if ((app.match(/h\('article', null, h\('strong', null/g) ?? []).length < 3) throw new Error('Expected score statistic cards under protection ring.');
+
 for (const text of ['Run Health Check', 'Watch Demo', '+ Add Account', 'View all', 'Password changed — Google — 2h ago']) {
   if (!app.includes(text)) throw new Error(`Required clickable control missing: ${text}`);
 }
@@ -67,7 +72,7 @@ for (const forbidden of ['solid-pie-score', 'pie-score', 'word-break: break-all'
   if (css.includes(forbidden) || app.includes(forbidden)) throw new Error(`Forbidden regression marker remains: ${forbidden}`);
 }
 
-for (const required of ['.shortcut strong', 'white-space: normal', 'word-break: normal', 'overflow-wrap: normal', 'hyphens: none', '.activity time { width: 72px', '.account-row { min-height: 54px']) {
+for (const required of ['.target-shortcuts', 'grid-template-columns: 44px minmax(0, 1fr) 16px', '.shortcut strong', 'white-space: normal', 'word-break: normal', 'overflow-wrap: normal', 'hyphens: none', '.activity time { width: 72px', '.account-row {', 'min-height: 54px', '.target-score-stats']) {
   if (!css.includes(required)) throw new Error(`Missing desktop defect-repair guard: ${required}`);
 }
 

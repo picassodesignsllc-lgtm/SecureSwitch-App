@@ -43,7 +43,13 @@ if (JSON.stringify(rightRailNames) !== JSON.stringify(expectedRail)) throw new E
 if (findByClass('shortcut').length !== 4) throw new Error(`Expected four shortcut cards, found ${findByClass('shortcut').length}`);
 if (findByClass('account-row').length !== 5) throw new Error(`Expected exactly five account rows, found ${findByClass('account-row').length}.`);
 if (findByClass('activity').length !== 4) throw new Error(`Expected exactly four activity rows, found ${findByClass('activity').length}.`);
+const shortcutText = findByClass('shortcut').map(textOf).join(' | ');
+for (const title of ['Accounts', 'Switch Mode', 'Blackout Mode', 'Emergency Kit']) {
+  if (!shortcutText.includes(title)) throw new Error(`Shortcut title missing or fragmented in DOM: ${title}`);
+}
 if (findByClass('hollow-score-ring').length !== 1) throw new Error('Desktop hollow score ring must render exactly once.');
+const scoreStats = findByClass('target-score-stats')[0];
+if (!scoreStats || (scoreStats.children ?? []).length !== 3) throw new Error('Desktop protection score must render exactly three statistic cards.');
 if (findByClass('mobile-score-ring').length !== 1) throw new Error('Mobile 86% score ring must render exactly once.');
 if (findByClass('mobile-quick-card').length !== 4) throw new Error(`Expected four mobile quick actions, found ${findByClass('mobile-quick-card').length}.`);
 if (findByClass('mobile-account-card').length !== 5) throw new Error(`Expected five mobile account cards, found ${findByClass('mobile-account-card').length}.`);
