@@ -9,8 +9,8 @@ const app = await readFile('src/app.js', 'utf8');
 const requiredCss = [
   'grid-template-columns: 260px minmax(0, 1fr)',
   'grid-template-columns: minmax(0, 1fr) 370px',
-  'grid-template-rows: 44px 430px 96px minmax(330px, auto)',
-  'height: 430px',
+  'grid-template-rows: 44px 448px 96px minmax(348px, 1fr)',
+  'height: 448px',
   'min-height: 96px',
   'width: 370px',
   'grid-template-columns: minmax(0, 1fr) 388px',
@@ -64,15 +64,15 @@ for (const title of ['Accounts', 'Switch Mode', 'Blackout Mode', 'Emergency Kit'
 }
 if ((app.match(/h\('article', null, h\('strong', null/g) ?? []).length < 3) throw new Error('Expected score statistic cards under protection ring.');
 
-for (const text of ['Run Health Check', 'Watch Demo', '+ Add Account', 'View all', 'Password changed — Google — 2h ago']) {
+for (const text of ['Run Health Check', 'Watch Demo', 'Add Account', 'View all', 'Password changed — Google — 2h ago']) {
   if (!app.includes(text)) throw new Error(`Required clickable control missing: ${text}`);
 }
 
-for (const forbidden of ['solid-pie-score', 'pie-score', 'word-break: break-all', 'overflow-wrap: anywhere', '-webkit-line-clamp', 'dashboard[data-route=\"dashboard\"] { transform: scale', 'dashboard[data-route="dashboard"] { transform: scale', '<'.repeat(7), '='.repeat(7), '>'.repeat(7)]) {
+for (const forbidden of ['solid-pie-score', 'pie-score', 'word-break: break-all', 'overflow-wrap: anywhere', '-webkit-line-clamp', 'dashboard[data-route=\"dashboard\"] { transform: scale', 'dashboard[data-route="dashboard"] { transform: scale', 'ss-mesh-drift', 'ss-ring-orbit', 'sidebar-toggle', 'sidebar-collapsed', '<'.repeat(7), '='.repeat(7), '>'.repeat(7)]) {
   if (css.includes(forbidden) || app.includes(forbidden)) throw new Error(`Forbidden regression marker remains: ${forbidden}`);
 }
 
-for (const required of ['.target-shortcuts', 'grid-template-columns: 44px minmax(0, 1fr) 16px', '.shortcut strong', 'white-space: normal', 'word-break: normal', 'overflow-wrap: normal', 'hyphens: none', '.activity time { width: 72px', '.account-row {', 'min-height: 54px', '.target-score-stats']) {
+for (const required of ['.target-shortcuts', 'grid-template-columns: 44px minmax(0, 1fr) 16px', '.shortcut strong', 'white-space: normal', 'word-break: normal', 'overflow-wrap: normal', 'hyphens: none', '.activity time { width: 64px', '.account-row {', 'min-height: 54px', '.target-score-stats']) {
   if (!css.includes(required)) throw new Error(`Missing desktop defect-repair guard: ${required}`);
 }
 

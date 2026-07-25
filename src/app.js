@@ -69,7 +69,8 @@ function Icon({ name, className = 'premium-svg-icon' }) {
     codes: ['M7 8 3 12l4 4m10-8 4 4-4 4M14 5l-4 14'],
     contacts: ['M16 11a4 4 0 1 0-8 0 4 4 0 0 0 8 0Zm-11 9a7 7 0 0 1 14 0'],
     moon: ['M20 15.5A8.5 8.5 0 0 1 8.5 4 7 7 0 1 0 20 15.5Z'],
-    bell: ['M18 16H6l1.2-2V10a4.8 4.8 0 0 1 9.6 0v4L18 16Zm-4 3a2 2 0 0 1-4 0']
+    bell: ['M18 16H6l1.2-2V10a4.8 4.8 0 0 1 9.6 0v4L18 16Zm-4 3a2 2 0 0 1-4 0'],
+    lock: ['M7 10V7a5 5 0 0 1 10 0v3', 'M6.5 10h11A1.5 1.5 0 0 1 19 11.5v8A1.5 1.5 0 0 1 17.5 21h-11A1.5 1.5 0 0 1 5 19.5v-8A1.5 1.5 0 0 1 6.5 10ZM12 14v3']
   };
   const paths = icons[name] || icons.dashboard;
   return h('svg', { className, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true }, paths.map((d) => h('path', { key: d, d })));
@@ -890,7 +891,7 @@ function VaultHeroVisual() {
 }
 
 function Hero() {
-  return h('section', { className: 'hero glass', id: 'dashboard' }, h('div', { className: 'hero-copy-panel' }, h('p', { className: 'eyebrow' }, '✦ Polished SaaS MVP'), h('h1', null, 'Never lose another account ', h('span', null, 'again.')), h('p', null, 'SecureSwitch protects your logins, recovery options, and digital identity before disaster strikes.'), h('div', { className: 'hero-actions' }, h('button', { className: 'primary', onClick: runHealthScan }, 'Run Health Check'), h('button', { onClick: () => toast('Demo walkthrough coming soon') }, 'Watch Demo'))), h(VaultHeroVisual));
+  return h('section', { className: 'hero glass', id: 'dashboard' }, h('div', { className: 'hero-copy-panel' }, h('p', { className: 'eyebrow' }, '✦ Polished SaaS MVP'), h('h1', null, 'Never lose another account ', h('span', null, 'again.')), h('p', null, 'SecureSwitch protects your logins, recovery options, and digital identity before disaster strikes.'), h('div', { className: 'hero-actions' }, h('button', { className: 'primary', onClick: runHealthScan }, h(Icon, { name: 'scan' }), 'Run Health Check'), h('button', { onClick: () => toast('Demo walkthrough coming soon') }, h(Icon, { name: 'dashboard' }), 'Watch Demo'))), h(VaultHeroVisual));
 }
 
 function ProtectionScore() {
@@ -899,12 +900,12 @@ function ProtectionScore() {
   return h('aside', { className: 'floating-score glass protection-panel-card', 'aria-label': 'Live Protection Score' },
     h('div', { className: 'score-copy' }, h('p', { className: 'eyebrow score-title' }, 'Live Protection Score')),
     h('div', { className: 'target-score-ring hollow-score-ring', style: { '--score': `${score * 3.6}deg` } }, h('div', null, h('strong', null, `${score}%`), h('span', null, 'Excellent'))),
-    h('dl', { className: 'target-score-stats' }, h('article', null, h('strong', null, 50), h('span', null, 'Accounts')), h('article', null, h('strong', null, 9), h('span', null, 'Need Review')), h('article', null, h('strong', null, '3m'), h('span', null, 'Switch Plan')))
+    h('dl', { className: 'target-score-stats' }, h('article', null, h('strong', null, 50), h('span', null, 'Accounts'), h(Icon, { name: 'accounts' })), h('article', null, h('strong', null, 9), h('span', null, 'Need Review'), h(Icon, { name: 'blackout' })), h('article', null, h('strong', null, '3m'), h('span', null, 'Switch Plan'), h(Icon, { name: 'switch' })))
   );
 }
 
 function ProtectedStatus() {
-  return h('article', { className: 'protected glass' }, h('span', { className: 'check-orb' }, '▣'), h('div', null, h('h3', null, 'You’re protected'), h('p', null, 'Great job! Keep your recovery methods up to date.')), h('b', null, '›'));
+  return h('article', { className: 'protected glass' }, h('span', { className: 'check-orb' }, h(Icon, { name: 'lock' })), h('div', null, h('h3', null, 'You’re protected'), h('p', null, 'Great job! Keep your recovery methods up to date.')), h('b', null, '›'));
 }
 
 function QuickActions() {
@@ -1016,7 +1017,7 @@ function RecoveryWizardMVP() {
   return h('section', { className: 'panel glass recovery-wizard-panel', id: 'recovery-wizard' }, h('div', { className: 'panel-head' }, h('div', null, h('p', { className: 'eyebrow' }, 'Recovery Wizard MVP'), h('h2', null, 'Emergency checklist with progress')), h('strong', null, `${state.recoveryWizardStep + 1}/${steps.length}`)), h('div', { className: 'wizard-scenarios' }, scenarios.map((scenario) => h('button', { key: scenario, className: state.recoveryWizardScenario === scenario ? 'active' : '', onClick: () => setState({ recoveryWizardScenario: scenario, recoveryWizardStep: 0 }) }, scenario))), h('ol', { className: 'wizard-checklist' }, steps.map((step, index) => h('li', { key: step, className: index <= state.recoveryWizardStep ? 'done' : '' }, h('span', null, index < state.recoveryWizardStep ? '✓' : index + 1), h('div', null, h('strong', null, step), h('small', null, index === state.recoveryWizardStep ? 'Current step' : index < state.recoveryWizardStep ? 'Completed' : 'Pending'))))), h('button', { className: 'primary', onClick: () => setState({ recoveryWizardStep: Math.min(state.recoveryWizardStep + 1, steps.length - 1) }) }, 'Mark step complete'));
 }
 
-function TopActions() { return h('header', { className: 'top-actions' }, h('button', { onClick: () => toast('Theme toggle ready'), 'aria-label': 'Toggle theme' }, h(Icon, { name: 'moon' })), h('button', { onClick: () => toast('3 recovery alerts'), 'aria-label': 'Recovery alerts' }, h(Icon, { name: 'bell' }), h('b', null, '3')), h('button', { className: 'primary add-account', onClick: () => location.hash = 'accounts' }, '+ Add Account')); }
+function TopActions() { return h('header', { className: 'top-actions', 'aria-label': 'Dashboard toolbar' }, h('button', { onClick: () => toast('Theme toggle ready'), 'aria-label': 'Toggle theme' }, h(Icon, { name: 'moon' })), h('button', { onClick: () => toast('3 recovery alerts'), 'aria-label': 'Recovery alerts' }, h(Icon, { name: 'bell' }), h('b', null, '3')), h('button', { className: 'primary add-account', onClick: () => location.hash = 'accounts' }, h(Icon, { name: 'plus' }), 'Add Account')); }
 
 function Shortcuts() { const cards = [['accounts', 'Accounts', 'Manage and secure all your accounts', 'accounts'], ['switch', 'Switch Mode', 'Change access in seconds', 'switch'], ['blackout', 'Blackout Mode', 'Lock down and hide your data', 'blackout'], ['kit', 'Emergency Kit', 'Access critical info anywhere', 'kit']]; return h('section', { className: 'target-shortcuts' }, cards.map(([icon, label, copy, id]) => h('a', { key: label, className: 'shortcut target-shortcut-card glass', href: `#${id}` }, h('span', null, h(Icon, { name: icon })), h('div', null, h('strong', null, label), h('small', null, copy)), h('b', null, '›')))); }
 
