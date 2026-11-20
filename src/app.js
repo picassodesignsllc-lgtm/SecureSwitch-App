@@ -53,6 +53,37 @@ function onboardingKey(user = state.user) { return `secureswitch:onboarded:${use
 function onboardingSeen(user = null) { try { return localStorage.getItem(onboardingKey(user)) === 'yes'; } catch { return false; } }
 function rememberOnboarding(user = null) { try { localStorage.setItem(onboardingKey(user || state.user), 'yes'); } catch { /* Ignore private browsing storage failures. */ } }
 
+
+const iconPaths = {
+  dashboard: ['M3 3h7v7H3z', 'M14 3h7v7h-7z', 'M14 14h7v7h-7z', 'M3 14h7v7H3z'],
+  account: ['M20 21a8 8 0 0 0-16 0', 'M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10z'],
+  switch: ['M16 3h5v5', 'M21 3l-7 7', 'M8 21H3v-5', 'M3 21l7-7'],
+  shield: ['M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'],
+  kit: ['M10 6V5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v1', 'M4 7h16v13H4z', 'M12 11v5', 'M9.5 13.5h5'],
+  search: ['M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z', 'M21 21l-4.3-4.3'],
+  settings: ['M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z', 'M19.4 15a1.7 1.7 0 0 0 .34 1.88l.05.06a2 2 0 0 1-2.83 2.83l-.06-.05A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 1.55V21a2 2 0 0 1-4 0v-.08A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.88.34l-.06.05a2 2 0 0 1-2.83-2.83l.05-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 0 1 0-4h.08A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.88l-.05-.06a2 2 0 0 1 2.83-2.83l.06.05A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.55V3a2 2 0 0 1 4 0v.08A1.7 1.7 0 0 0 15 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.05a2 2 0 0 1 2.83 2.83l-.05.06A1.7 1.7 0 0 0 19.4 9c.36.62.96 1 1.55 1H21a2 2 0 0 1 0 4h-.08A1.7 1.7 0 0 0 19.4 15z'],
+  moon: ['M21 12.8A8.5 8.5 0 1 1 11.2 3 6.5 6.5 0 0 0 21 12.8z'],
+  bell: ['M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9', 'M13.7 21a2 2 0 0 1-3.4 0'],
+  shieldCheck: ['M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z', 'M9 12l2 2 4-4'],
+  key: ['M21 2l-2 2', 'M15.5 7.5l2 2', 'M14 9l-6.5 6.5', 'M7.5 15.5A4 4 0 1 1 2 21a4 4 0 0 1 5.5-5.5z'],
+  users: ['M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2', 'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z', 'M22 21v-2a4 4 0 0 0-3-3.87', 'M16 3.13a4 4 0 0 1 0 7.75'],
+  plus: ['M12 5v14', 'M5 12h14'],
+  play: ['M8 5v14l11-7z'],
+  chevron: ['M9 18l6-6-6-6'],
+  lock: ['M7 11V8a5 5 0 0 1 10 0v3', 'M5 11h14v10H5z'],
+  mail: ['M4 5h16v14H4z', 'M4 7l8 6 8-6'],
+  scan: ['M4 7V4h3', 'M17 4h3v3', 'M20 17v3h-3', 'M7 20H4v-3', 'M8 12h8'],
+  fingerprint: ['M12 11a3 3 0 0 1 3 3c0 2-1 4-1 6', 'M8.5 14a3.5 3.5 0 0 1 7 0c0 1.4-.2 2.7-.7 4', 'M6 13.5a6 6 0 0 1 12 0c0 1.8-.2 3.6-.8 5.5', 'M4 16a8 8 0 0 1 16 0', 'M10 19c.4-1.2.5-2.7.5-4.5a1.5 1.5 0 0 1 3 0c0 2.1-.2 3.9-.8 5.5']
+};
+function Icon({ name, className = 'ui-icon', title = '' }) {
+  const paths = iconPaths[name] || iconPaths.shield;
+  return h('svg', { className, viewBox: '0 0 24 24', 'aria-hidden': title ? undefined : true, role: title ? 'img' : undefined, focusable: false },
+    title && h('title', null, title),
+    paths.map((d) => h('path', { key: d, d }))
+  );
+}
+function ChevronIcon() { return h(Icon, { name: 'chevron', className: 'ui-icon chevron-icon' }); }
+
 const state = { user: null, auth: null, db: null, firebase: null, firebaseReady: false, vaultKey: null, mode: 'login', userProfile: null, accounts: demoAccounts.map(normalizeAccount), recoveryMethods: [], trustedContacts: [], backupCodes: [], securityAlerts: [], recoveryTimeline: timelineEvents, emergencyKits: [], settings: {}, selectedRecovery: '+1 (415) 555-0184', switchOld: '+1 (415) 555-0184', switchNew: '+1 (628) 555-0149', blackoutArmed: false, emergencyActive: false, emergencyRecoveryActive: false, scanComplete: false, aiStep: 0, timelineFilter: 'All', simulatorScenario: 'My phone was stolen', simulatorRan: false, activeProfile: null, vaultUnlocked: false, selectedVaultCategory: 'Recovery Emails', assistantPrompt: 'My phone was stolen', assistantStep: 0, emergencyScenario: 'Phone Stolen', recoveryWizardScenario: 'Phone stolen', recoveryWizardStep: 0, accountSearch: '', accountCategory: 'All', accountRiskFilter: 'All', accountStatusFilter: 'All', accountSort: 'Risk', accountDensity: 'compact', deviceSearch: '', devicePlatformFilter: 'All', deviceRiskFilter: 'All', deviceTrustFilter: 'All', deviceStatusFilter: 'All', deviceSort: 'Last seen', deviceDensity: 'compact', recoverySearch: '', recoveryStatusFilter: 'All', recoveryRiskFilter: 'All', recoveryPasskeyFilter: 'All', recoveryMfaFilter: 'All', recoveryCategoryFilter: 'All', recoverySort: 'Readiness', recoveryDensity: 'compact', editingAccountId: '', loading: false, authError: '', dataError: '', exportStatus: '', importStatus: '', onboardingOpen: !onboardingSeen(), onboardingStep: 0, onboardingProtection: 'Advanced', onboardingAccounts: ['Google', 'Apple', 'Instagram'], vaultCreating: false, onboardingComplete: false, globalSearch: '', settingsSearch: '', notificationSearch: '', notificationFilter: 'All', notificationCategory: 'All Activity', notificationDateFilter: 'All', notificationUnreadOnly: false, notificationPinnedOnly: false, notificationSort: 'Newest', notificationDensity: 'compact', selectedNotificationId: '', pinnedNotifications: [], archivedNotifications: [], rememberMe: true, notificationsRead: [], notifications: [], activityFeed: [], recoveryContacts: [], securityScores: [], adminVisible: false, organizations: demoOrganizations, selectedOrgRole: 'Member', inviteEmail: '', productTourStep: 0, commandPaletteOpen: false, selectedAccountId: '', expandedAccountId: '', accountDetailTab: 'Overview', auditRan: false, auditReport: '', upgradeModal: '', route: (location.hash || '#dashboard').replace('#', '') || 'dashboard', reportType: 'Recovery Report', waitlistStatus: '', waitlistReferral: '', importSource: 'CSV', isOffline: typeof navigator !== 'undefined' ? !navigator.onLine : false, securityEvents: [], auditEvents: [], devices: [], subscriptionPlan: 'free', backupStatus: 'Automatic encrypted backups ready', toast: 'Ready', aiCopilotOpen: false, aiCopilotQuestion: 'What should I fix first?', aiCopilotAnswer: '', dismissedFixes: [], expandedTimelineId: '', pageLoading: false, successPulse: '', commandIndex: 0, selectedOrganizationId: 'family', enterpriseInvitations: [], approvalWorkflows: [], enterprisePolicies: defaultSecurityPolicies(), enterpriseAuditLog: [], dashboardWidgetOrder: (() => { try { return JSON.parse(localStorage.getItem('secureswitch:dashboard-widgets')) || ['Executive Score', 'Accounts', 'Activity']; } catch { return ['Executive Score', 'Accounts', 'Activity']; } })(), notificationStatusFilter: 'All', runtimeMode: (() => { try { return localStorage.getItem('secureswitch:runtime-mode') || 'auto'; } catch { return 'auto'; } })() };
 const h = (...args) => React.createElement(...args);
 function Icon({ name, className = 'ui-icon' }) {
@@ -880,7 +911,6 @@ function VaultHeroVisual() {
     h('article', { className: 'vault-detail glass' }, h('p', { className: 'eyebrow' }, 'Open Category'), h('h3', null, selected[0]), h('p', null, `${selected[3]} secured with AES-256 encryption, verification metadata, and recovery-ready backup status.`))
   );
 }
-
 function Hero() {
   return h('section', { className: 'hero glass', id: 'dashboard' },
     h('div', { className: 'hero-copy-panel' },
@@ -901,7 +931,6 @@ function ProtectionScore() {
     h('dl', null, h('div', null, h('dt', null, '50'), h('dd', null, 'Accounts'), h(Icon, { name: 'accounts' })), h('div', null, h('dt', null, '9'), h('dd', null, 'Need Review'), h(Icon, { name: 'blackout' })), h('div', null, h('dt', null, '3m'), h('dd', null, 'Switch Plan'), h(Icon, { name: 'switch' })))
   );
 }
-
 function ProtectedStatus() {
   return h('article', { className: 'protected glass' }, h('span', { className: 'check-orb' }, h(Icon, { name: 'lock' })), h('div', null, h('h3', null, 'You’re protected'), h('p', null, 'Great job! Keep your recovery methods up to date.')), h('b', null, '›'));
 }
